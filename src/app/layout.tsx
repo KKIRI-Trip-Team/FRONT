@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'KkiriTript',
+  title: 'KkiriTrip',
   description:
     'KkiriTrip - Find your perfect travel companion. Connect with like-minded travelers, plan your journey together, and create unforgettable memories. Join our community to discover new friends and explore the world side by side.',
 };
