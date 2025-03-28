@@ -1,20 +1,21 @@
 import js from '@eslint/js';
 import nextPlugin from '@next/eslint-plugin-next';
-import airbnbConfig from 'eslint-config-airbnb';
-import airbnbHooksConfig from 'eslint-config-airbnb/hooks';
 import prettierConfig from 'eslint-config-prettier';
 import prettierPlugin from 'eslint-plugin-prettier';
+import reactPlugin from 'eslint-plugin-react';
+import importPlugin from 'eslint-plugin-import';
 
 export default [
   js.configs.recommended,
-  ...airbnbConfig.extends,
-  ...airbnbHooksConfig.extends,
   {
     plugins: {
       '@next/next': nextPlugin,
       prettier: prettierPlugin,
+      react: reactPlugin,
+      import: importPlugin,
     },
     rules: {
+      'prettier/prettier': 'error',
       'react/react-in-jsx-scope': 'off',
       'react/jsx-filename-extension': [1, { extensions: ['.tsx', '.jsx'] }],
       'import/extensions': [
@@ -27,9 +28,11 @@ export default [
           tsx: 'never',
         },
       ],
-      'prettier/prettier': 'error',
     },
     settings: {
+      react: {
+        version: 'detect',
+      },
       'import/resolver': {
         node: {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
