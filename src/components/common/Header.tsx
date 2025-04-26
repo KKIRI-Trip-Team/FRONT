@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation'; // usePathname 추가
 import Link from 'next/link';
 import LogoIcon from '@/public/icons/logo-icon.svg';
 import LogoTitleIcon from '@/public/icons/logo-title-icon.svg';
@@ -13,10 +14,16 @@ import Menu from './Menu';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   const handleMenuOpen = () => {
     setMenuOpen((prev) => !prev);
   };
+
+  // 경로가 변경될 때마다 메뉴 닫기
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
 
   // 메뉴가 열릴 때 스크롤 방지
   useEffect(() => {
