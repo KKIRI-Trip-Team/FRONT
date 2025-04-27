@@ -3,7 +3,6 @@
 import { useFunnel } from '@use-funnel/browser';
 import dynamic from 'next/dynamic';
 
-// 🔥 Step 컴포넌트를 dynamic import로 변경
 const DestinationStep = dynamic(() => import('./destinationStep/page'), {
   ssr: false,
 });
