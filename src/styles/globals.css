@@ -1,3 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff')
+    format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@layer base {
+  :root {
+    --Primary: #5938db;
+    --PrimaryLight: #0085ff;
+    --Secondary: #13d7a5;
+    --Tertiary: #ff4bc1;
+
+    --Button: #f0edfc;
+
+    --Gray100: #f8f8f8;
+    --Gray200: #f1f1f2;
+    --Gray300: #e0e0e0;
+    --Gray400: #cccccc;
+    --Gray500: #b0b0b0;
+    --Gray600: #999999;
+    --Gray700: #616161;
+    --Gray800: #333333;
+    --Gray900: #222222;
+
+    --red: #ef2b2a;
+    --green: #27c937;
+    --yellow: #ffc218;
+    --white: #ffffff;
+  }
+}
