@@ -1,6 +1,4 @@
-// login.main
-'use client';
-
+// src/app/login/page.tsx
 import LogoIconLoginIcon from '@/public/icons/logo-icon-login.svg';
 import LogoTitleIcon from '@/public/icons/logo-title-icon.svg';
 import KakaoIcon from '@/public/icons/kakao-icon.svg';
@@ -9,7 +7,7 @@ import Link from 'next/link';
 
 const page = () => {
   return (
-    <div className="flex flex-col items-center justify-end w-full h-full pc:h-[934px] tb:min-h-screen mb:min-h-screen gap-5 py-10 bg-white shrink-0">
+    <div className="flex flex-col items-center justify-end w-full h-full pc:min-h-[934px] min-h-screen  gap-5 py-10 bg-white shrink-0">
       {/* 로고 */}
       <div className="flex flex-col items-center justify-center gap-[10px] flex-[1,0,0] grow shrink-0 basis-0 self-stretch">
         <LogoIconLoginIcon />
@@ -35,12 +33,16 @@ const page = () => {
 
       {/* 로그인기능 */}
       <div className="flex items-start gap-5">
-        <button className="text-center text-gray-600 text-caption1">
+        <Link
+          href={'/register'}
+          className="text-center text-gray-600 text-caption1"
+        >
           이메일로 회원가입
-        </button>
-        <button className="text-center text-gray-600 text-caption1">
+        </Link>
+
+        <Link href="/" className="text-center text-gray-600 text-caption1">
           아이디 찾기
-        </button>
+        </Link>
       </div>
     </div>
   );

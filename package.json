@@ -12,7 +12,7 @@
     "@hookform/resolvers": "^5.0.1",
     "@tanstack/react-query": "^5.69.0",
     "@toss/ky": "^1.2.1",
-    "@use-funnel/next": "^0.0.16",
+    "@use-funnel/browser": "^0.0.14",
     "next": "^15.2.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
