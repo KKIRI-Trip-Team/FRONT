@@ -136,6 +136,9 @@ export const theme = {
         },
       ],
     },
+    backgroundImage: {
+      'temporary-img': "url('@/public/images/example.busan.png')",
+    },
   },
 };
 export const plugins = [];

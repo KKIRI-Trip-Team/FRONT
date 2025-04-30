@@ -1,23 +1,27 @@
 'use client';
 
-import { useFunnel } from '@use-funnel/browser';
-import dynamic from 'next/dynamic';
+import DestinationStep from '@/components/tripPlanning/registerTrip/DestinationStep';
+import PeriodStep from '@/components/tripPlanning/registerTrip/Period';
+import MateStep from '@/components/tripPlanning/registerTrip/MateStep';
+import StyleStep from '@/components/tripPlanning/registerTrip/StyleStep';
+import ExpenseStep from '@/components/tripPlanning/registerTrip/ExpenseStep';
+import ExplainStep from '@/components/tripPlanning/registerTrip/ExplainStep';
 
-const DestinationStep = dynamic(() => import('./destinationStep/page'), {
-  ssr: false,
-});
-const PeriodStep = dynamic(() => import('./periodStep/page'), { ssr: false });
-const MateStep = dynamic(() => import('./mateStep/page'), { ssr: false });
-const StyleStep = dynamic(() => import('./styleStep/page'), { ssr: false });
-const ExpenseStep = dynamic(() => import('./expenseStep/page'), { ssr: false });
-const JourneyStep = dynamic(() => import('./summaryStep/page'), { ssr: false });
+import { useFunnel } from '@use-funnel/browser';
 
 export default function Page() {
   const funnel = useFunnel({
-    id: 'trip-planning-funnel',
+    id: 'trip-register-funnel',
     initial: {
       step: 'destination',
-      context: {},
+      context: {
+        destination: '',
+        period: '',
+        mate: '',
+        style: '',
+        expense: '',
+        explain: '',
+      },
     },
   });
 
@@ -32,7 +36,7 @@ export default function Page() {
       return <StyleStep funnel={funnel} />;
     case 'expense':
       return <ExpenseStep funnel={funnel} />;
-    case 'journey':
-      return <JourneyStep funnel={funnel} />;
+    case 'explain':
+      return <ExplainStep funnel={funnel} />;
   }
 }

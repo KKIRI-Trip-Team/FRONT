@@ -17,7 +17,7 @@ export default function PeriodStep({
 }: {
   funnel: ReturnType<typeof useFunnel>;
 }) {
-  const [selectedPeriod, setSelectedPeriod] = useState<string | undefined>('');
+  const [selectedPeriod, setSelectedPeriod] = useState('');
   const handlePeriod = (period: string) => {
     setSelectedPeriod(period);
     console.log(`${period}`);
@@ -26,13 +26,13 @@ export default function PeriodStep({
   const isSelected = selectedPeriod !== '';
 
   return (
-    <div className="flex flex-col items-center w-[1200px] h-[854px] p-[20px] pb-[20px]  gap-[40px] shrink-0">
+    <div className="flex flex-col items-center w-[1200px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px]  gap-[40px] bg-[var(--white)]  shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
       <div className="flex flex-col items-center self-stretch">
-        <span>2 / 6</span>
-        <h1 className="text-gray-900 text-center text-xl font-normal leading-[30px] tracking-[-0.5px]">
+        <span>3 / 6</span>
+        <h1 className="text-[var(--Gray900)] text-[20px] font-bold text-center leading-[30px]">
           얼마나 떠나시나요?
         </h1>
-        <span className="text-gray-600 text-center text-sm font-normal leading-[20px] tracking-[-0.5px]">
+        <span className="text-[var(--Gray600)] text-[14px] text-center font-normal leading-[20px]">
           여행 기간을 선택해주세요
         </span>
       </div>
@@ -41,7 +41,7 @@ export default function PeriodStep({
           <button
             key={period.id}
             onClick={() => handlePeriod(period.name)}
-            className={`w-[80px] h-[60px] rounded-[10px] flex flex-col items-center justify-center transition
+            className={`w-[80px] h-[60px] rounded-[10px] flex flex-col items-center justify-center transition text-center text-[14px] font-bold leading-[20px]
          ${
            selectedPeriod === period.name
              ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
@@ -52,11 +52,13 @@ export default function PeriodStep({
           </button>
         ))}
       </div>
-      <div className="flex h-[54px] w-full items-center justify-center bg-[#5938DB]">
+      <div
+        className={`flex h-[54px] w-full items-center justify-center bg-[#5938DB] ${isSelected ? 'bg-[#5938DB] cursor-pointer' : 'bg-[#F1F1F2]'}`}
+      >
         <button
-          disabled={!isSelected}
-          className={`text-white text-center text-base font-bold leading-[22px] tracking-[-0.5px] ${isSelected ? 'bg-[#5938DB] cursor-pointer' : 'bg-[#F1F1F2] cursor-not-allowed'}`}
-          onClick={() => funnel.history.push('period', {})}
+          // disabled={!isSelected}
+          className={`text-center w-full text-[16px] font-bold leading-[22px] ${isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'}`}
+          onClick={() => funnel.history.push('mate', {})}
         >
           다음
         </button>

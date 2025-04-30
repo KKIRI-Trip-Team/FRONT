@@ -1,18 +1,12 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
+// import { DummyComponent } from '@/components/board/board';
+import CreateTripScheduleButton from '@/components/tripPlanning/create-trip-schedule-button';
 
 export default function Home() {
-  const router = useRouter();
   return (
-    <>
+    <div>
       <div>Home</div>
-      <button
-        onClick={() => router.push('/tripPlanning')}
-        style={{ textDecoration: 'underline' }}
-      >
-        trip Planning가는 버튼
-      </button>
-    </>
+      {/* <DummyComponent /> */}
+      <CreateTripScheduleButton />
+    </div>
   );
 }
