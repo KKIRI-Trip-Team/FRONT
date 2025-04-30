@@ -1,20 +1,26 @@
+// components/Header.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation'; // usePathname 추가
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import LogoIcon from '@/public/icons/logo-icon.svg';
 import LogoTitleIcon from '@/public/icons/logo-title-icon.svg';
 import MenuIcon from '@/public/icons/menu-icon.svg';
 import SearchIcon from '@/public/icons/search-icon.svg';
-import DefaultProfilePcIcon from '@/public/icons/default-profile-icon-pc.svg';
-import DefaultProfileMobileIcon from '@/public/icons/default-profile-icon-mobile.svg';
 import XIcon from '@/public/icons/x-icon.svg';
 import Menu from './Menu';
+import ProfileIcon from '@/components/common/ProfileIcon';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { checkAuth } = useAuthStore();
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   const handleMenuOpen = () => {
     setMenuOpen((prev) => !prev);
@@ -70,14 +76,7 @@ export default function Header() {
                 <button>
                   <SearchIcon />
                 </button>
-                <button>
-                  <span className="hidden pc:block">
-                    <DefaultProfilePcIcon />
-                  </span>
-                  <span className="block pc:hidden">
-                    <DefaultProfileMobileIcon />
-                  </span>
-                </button>
+                <ProfileIcon />
               </>
             )}
           </div>
