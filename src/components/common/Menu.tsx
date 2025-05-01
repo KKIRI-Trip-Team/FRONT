@@ -1,14 +1,16 @@
+// components/Menu.tsx
 'use client';
 
 import { usePathname } from 'next/navigation';
-import DefaultProfilePcIcon from '@/public/icons/default-profile-icon-pc.svg';
-import DefaultProfileMobileIcon from '@/public/icons/default-profile-icon-mobile.svg';
 import RightArrowIcon from '@/public/icons/right-arrow-icon.svg';
 import Link from 'next/link';
 import { useMemo } from 'react';
+import ProfileIcon from '@/components/common/ProfileIcon';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const Menu = () => {
   const pathname = usePathname();
+  const { isLoggedIn } = useAuthStore();
 
   const mainMenuList = useMemo(
     () => [
@@ -34,43 +36,47 @@ const Menu = () => {
       className="fixed inset-0 z-20 mt-[60px] pb-[env(safe-area-inset-bottom)] mx-auto
       w-[375px] tb:w-[768px] pc:w-[1200px] pc:mt-[80px] pc:mb-[60px]"
     >
-      <div className="max-w-[1200px] mx-auto pc:h-full flex flex-col">
+      <div className="max-w-[1200px] mx-auto h-full flex flex-col">
         {/* 시작 메뉴 */}
         <div className="flex flex-col items-start gap-[20px] p-5 bg-white">
-          <button>
-            <span className="hidden pc:block">
-              <DefaultProfilePcIcon />
-            </span>
-            <span className="block pc:hidden">
-              <DefaultProfileMobileIcon />
-            </span>
-          </button>
-          <button className="flex items-center">
-            <span className="text-[var(--Gray900,#222)] text-subtitle1">
-              트레버디를 시작하세요
-            </span>
-            <RightArrowIcon />
-          </button>
+          <ProfileIcon linkEnabled={false} />
+          {isLoggedIn ? (
+            <Link href="/mypage">
+              <button className="flex items-center">
+                <span className="text-[var(--Gray900,#222)] text-subtitle1">
+                  마이페이지로 이동하기
+                </span>
+                <RightArrowIcon />
+              </button>
+            </Link>
+          ) : (
+            <Link href="/login">
+              <button className="flex items-center">
+                <span className="text-[var(--Gray900,#222)] text-subtitle1">
+                  트레버디를 시작하세요
+                </span>
+                <RightArrowIcon />
+              </button>
+            </Link>
+          )}
         </div>
 
         {/* 메인 메뉴 */}
-        <nav className="p-5 min-h-[234px] pc:min-h-[528px] pc:max-h-[566px] flex-grow">
+        <nav className="p-5 min-h-[234px] pc:min-h-[528px] pc:max-h-[566px] flex-grow bg-[var(--Gray100,#f8f8f8)]">
           <ul className="flex flex-col gap-[30px]">
-            <nav className="p-5 min-h-[234px] pc:min-h-[528px] pc:max-h-[566px] flex-grow">
-              <ul className="flex flex-col gap-[30px]">
-                {mainMenuList.map(({ href, label }) => (
-                  <li key={href}>
-                    <Link href={href}>
-                      <span
-                        className={`text-[var(--Gray900,#222)] ${pathname === href ? 'text-subtitle2' : 'text-body1'}`}
-                      >
-                        {label}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+            {mainMenuList.map(({ href, label }) => (
+              <li key={`${href}-${label}`}>
+                <Link href={href}>
+                  <span
+                    className={`text-[var(--Gray900,#222)] ${
+                      pathname === href ? 'text-subtitle2' : 'text-body1'
+                    }`}
+                  >
+                    {label}
+                  </span>
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
 
@@ -89,7 +95,7 @@ const Menu = () => {
         </div>
 
         {/* 저작권 표시 */}
-        <div className="bg-white flex py-[30px]  px-0  justify-center items-center gap-[0.63rem]">
+        <div className="bg-white flex py-[30px] px-0 justify-center items-center gap-[0.63rem]">
           <p className="text-[var(--Gray600,#999)] text-center text-caption2">
             © Trebuddy. All Rights Reserved.
           </p>

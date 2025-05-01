@@ -1,12 +1,9 @@
-// import { DummyComponent } from '@/components/board/board';
-import CreateTripScheduleButton from '@/components/tripPlanning/create-trip-schedule-button';
+import Page from './board/page';
 
 export default function Home() {
   return (
     <div>
-      <div>Home</div>
-      {/* <DummyComponent /> */}
-      <CreateTripScheduleButton />
+      <Page />
     </div>
   );
 }

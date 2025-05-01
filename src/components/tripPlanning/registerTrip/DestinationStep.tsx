@@ -72,10 +72,10 @@ export default function DestinationStep({
         ))}
       </div>
       <div
-        className={`flex h-[54px] w-full px-[0px] py-[16px] justify-center items-center shrink-0 self-stretch  ${isSelected ? 'bg-[#5938DB] cursor-pointer' : 'bg-[#F1F1F2] cursor-not-allowed'}`}
+        className={`flex h-[54px] w-full px-[0px] py-[16px] justify-center items-center shrink-0 self-stretch  ${isSelected ? 'bg-[#5938DB] cursor-pointer' : 'bg-[#F1F1F2]'}`}
       >
         <button
-          disabled={!isSelected}
+          // disabled={!isSelected}
           className={`text-center w-full text-[16px] font-bold leading-[22px] ${isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'}`}
           onClick={() => {
             funnel.history.push('period', {});

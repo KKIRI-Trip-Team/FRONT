@@ -64,7 +64,8 @@ export default function DetailTripHeader() {
               <>
                 <button
                   onClick={handleMenuOpen}
-                  className="font-[Pretendard] text-[14px] font-bold leading-[20px] tracking-[-0.5px] text-[var(--Primary)]"
+                  className="font-
+                  [Pretendard] text-[14px] font-bold leading-[20px] tracking-[-0.5px] text-[var(--Primary)]"
                 >
                   작성완료
                 </button>

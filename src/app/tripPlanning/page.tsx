@@ -18,9 +18,9 @@ export default function Page() {
         destination: '',
         period: '',
         mate: '',
-        style: '',
+        style: [],
         expense: '',
-        explain: '',
+        explain: {},
       },
     },
   });
