@@ -1,4 +1,5 @@
-import { useFunnel } from '@use-funnel/browser';
+import { BoardRegisterTypes } from '@/types/board-register';
+import { useFunnel, UseFunnelResults } from '@use-funnel/browser';
 import { useState } from 'react';
 
 const periods = [
@@ -12,12 +13,16 @@ const periods = [
   { id: 8, name: '7일 이상' },
 ];
 
-export default function PeriodStep({
-  funnel,
-}: {
-  funnel: ReturnType<typeof useFunnel>;
-}) {
+interface PeriodFunnel {
+  funnel: UseFunnelResults<
+    BoardRegisterTypes,
+    BoardRegisterTypes['periodStep']
+  >;
+}
+
+export default function PeriodStep({ funnel }: PeriodFunnel) {
   const [selectedPeriod, setSelectedPeriod] = useState('');
+
   const handlePeriod = (period: string) => {
     setSelectedPeriod(period);
     console.log(`${period}`);
@@ -28,7 +33,7 @@ export default function PeriodStep({
   return (
     <div className="flex flex-col items-center w-[1200px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px]  gap-[40px] bg-[var(--white)]  shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
       <div className="flex flex-col items-center self-stretch">
-        <span>3 / 6</span>
+        <span>2 / 6</span>
         <h1 className="text-[var(--Gray900)] text-[20px] font-bold text-center leading-[30px]">
           얼마나 떠나시나요?
         </h1>
@@ -58,7 +63,9 @@ export default function PeriodStep({
         <button
           // disabled={!isSelected}
           className={`text-center w-full text-[16px] font-bold leading-[22px] ${isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'}`}
-          onClick={() => funnel.history.push('mate', {})}
+          onClick={() =>
+            funnel.history.push('mateStep', { period: selectedPeriod })
+          }
         >
           다음
         </button>

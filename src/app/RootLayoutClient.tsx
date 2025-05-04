@@ -12,7 +12,6 @@ export default function RootLayoutClient({
   const pathname = usePathname();
   const isAuthRoute =
     pathname?.startsWith('/login') || pathname?.startsWith('/register');
-  const isDetailTrip = pathname.startsWith('/tripPlanning/tripDetail');
 
   return (
     <div

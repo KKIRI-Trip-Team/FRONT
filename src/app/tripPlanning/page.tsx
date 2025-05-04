@@ -1,42 +1,38 @@
 'use client';
 
 import DestinationStep from '@/components/tripPlanning/registerTrip/DestinationStep';
-import PeriodStep from '@/components/tripPlanning/registerTrip/Period';
+import PeriodStep from '@/components/tripPlanning/registerTrip/PeriodStep';
 import MateStep from '@/components/tripPlanning/registerTrip/MateStep';
 import StyleStep from '@/components/tripPlanning/registerTrip/StyleStep';
 import ExpenseStep from '@/components/tripPlanning/registerTrip/ExpenseStep';
 import ExplainStep from '@/components/tripPlanning/registerTrip/ExplainStep';
 
 import { useFunnel } from '@use-funnel/browser';
+import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 
 export default function Page() {
+  const { context } = useTripFunnelStore();
+
   const funnel = useFunnel({
-    id: 'trip-register-funnel',
+    id: 'register-trip-funnel',
     initial: {
-      step: 'destination',
-      context: {
-        destination: '',
-        period: '',
-        mate: '',
-        style: [],
-        expense: '',
-        explain: {},
-      },
+      step: 'destinationStep',
+      context: context,
     },
   });
 
   switch (funnel.step) {
-    case 'destination':
+    case 'destinationStep':
       return <DestinationStep funnel={funnel} />;
-    case 'period':
+    case 'periodStep':
       return <PeriodStep funnel={funnel} />;
-    case 'mate':
+    case 'mateStep':
       return <MateStep funnel={funnel} />;
-    case 'style':
+    case 'styleStep':
       return <StyleStep funnel={funnel} />;
-    case 'expense':
+    case 'expenseStep':
       return <ExpenseStep funnel={funnel} />;
-    case 'explain':
+    case 'explainStep':
       return <ExplainStep funnel={funnel} />;
   }
 }

@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { useFunnel } from '@use-funnel/browser';
+import { useEffect, useState } from 'react';
+import { UseFunnelResults } from '@use-funnel/browser';
+import { BoardRegisterTypes } from '@/types/board-register';
+import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 
 const cities = [
   { id: 1, emoji: '🗼', name: '서울' },
@@ -25,22 +27,36 @@ const cities = [
   { id: 19, emoji: '🏝', name: '제주' },
 ];
 
-export default function DestinationStep({
-  funnel,
-}: {
-  funnel: ReturnType<typeof useFunnel>;
-}) {
+interface DestinationFunnel {
+  funnel: UseFunnelResults<
+    BoardRegisterTypes,
+    BoardRegisterTypes['destinationStep']
+  >;
+}
+
+export default function DestinationStep({ funnel }: DestinationFunnel) {
+  const { context, setContext } = useTripFunnelStore();
   const [selectedCity, setSelectedCity] = useState('');
 
-  const handleCityName = (cityName: string) => {
-    setSelectedCity(cityName);
-    console.log(`도시 이름 : ${cityName}`);
+  const handleCityToggle = (cityName: string) => {
+    if (selectedCity === cityName) {
+      setSelectedCity(''); // 같은 거 누르면 해제
+    } else {
+      setSelectedCity(cityName); // 다른 거 누르면 갱신
+    }
   };
+
+  // 퍼넬 컨텍스트의 기존 값이 있다면 초기 세팅
+  useEffect(() => {
+    if (funnel.context.destination) {
+      setSelectedCity(funnel.context.destination);
+    }
+  }, [funnel.context.destination]);
 
   const isSelected = selectedCity !== '';
 
   return (
-    <div className="flex flex-col items-center w-[1200px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px]  gap-[40px] bg-white  shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
+    <div className="flex flex-col items-center w-[1200px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-white shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
       <div className="flex flex-col items-center self-stretch">
         <span>1 / 6</span>
         <h1 className="text-[var(--Gray900)] text-[20px] font-bold text-center leading-[30px]">
@@ -50,17 +66,18 @@ export default function DestinationStep({
           떠나고 싶은 도시를 선택해주세요
         </span>
       </div>
+
       <div className="flex items-start content-start flex-wrap gap-x-[18px] gap-y-[16px] flex-[1_0_0] self-stretch">
         {cities.map((city) => (
           <button
             key={city.id}
-            onClick={() => handleCityName(city.name)}
+            onClick={() => handleCityToggle(city.name)}
             className={`w-[80px] h-[80px] rounded-[10px] flex flex-col items-center justify-center transition
-            ${
-              selectedCity === city.name
-                ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
-                : 'bg-[#F8F8F8]'
-            }`}
+              ${
+                selectedCity === city.name
+                  ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
+                  : 'bg-[#F8F8F8]'
+              }`}
           >
             <span className="text-[16px] font-bold leading-[22px]">
               {city.emoji}
@@ -71,14 +88,20 @@ export default function DestinationStep({
           </button>
         ))}
       </div>
+
       <div
-        className={`flex h-[54px] w-full px-[0px] py-[16px] justify-center items-center shrink-0 self-stretch  ${isSelected ? 'bg-[#5938DB] cursor-pointer' : 'bg-[#F1F1F2]'}`}
+        className={`flex h-[54px] w-full px-[0px] py-[16px] justify-center items-center shrink-0 self-stretch  ${
+          isSelected ? 'bg-[#5938DB] cursor-pointer' : 'bg-[#F1F1F2]'
+        }`}
       >
         <button
-          // disabled={!isSelected}
-          className={`text-center w-full text-[16px] font-bold leading-[22px] ${isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'}`}
+          disabled={!isSelected}
+          className={`text-center w-full text-[16px] font-bold leading-[22px] ${
+            isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
+          }`}
           onClick={() => {
-            funnel.history.push('period', {});
+            funnel.history.push('periodStep', { destination: selectedCity });
+            setContext({ destination: selectedCity });
           }}
         >
           다음
