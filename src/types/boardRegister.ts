@@ -12,14 +12,14 @@ export type BoardRegisterTypes = {
     destination: string;
     period: string;
     gender?: string;
-    ages?: string[];
+    ageRange?: string[];
   };
 
   styleStep: {
     destination: string;
     period: string;
     gender: string;
-    ages: string[];
+    ageRange: string[];
     styles?: string[];
   };
 
@@ -27,7 +27,7 @@ export type BoardRegisterTypes = {
     destination: string;
     period: string;
     gender: string;
-    ages: string[];
+    ageRange: string[];
     styles: string[];
     expense?: string;
   };

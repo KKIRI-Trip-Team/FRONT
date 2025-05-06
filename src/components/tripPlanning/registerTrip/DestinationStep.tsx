@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { UseFunnelResults } from '@use-funnel/browser';
-import { BoardRegisterTypes } from '@/types/board-register';
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
+import { BoardRegisterTypes } from '@/types/boardRegister';
 
 const cities = [
   { id: 1, emoji: '🗼', name: '서울' },
@@ -40,16 +40,17 @@ export default function DestinationStep({ funnel }: DestinationFunnel) {
 
   const handleCityToggle = (cityName: string) => {
     if (selectedCity === cityName) {
-      setSelectedCity(''); // 같은 거 누르면 해제
+      setSelectedCity('');
     } else {
-      setSelectedCity(cityName); // 다른 거 누르면 갱신
+      setSelectedCity(cityName);
     }
   };
 
   // 퍼넬 컨텍스트의 기존 값이 있다면 초기 세팅
   useEffect(() => {
-    if (funnel.context.destination) {
-      setSelectedCity(funnel.context.destination);
+    if (context.destination) {
+      setSelectedCity(context.destination);
+      setContext({ destination: context.destination });
     }
   }, [funnel.context.destination]);
 
@@ -95,13 +96,15 @@ export default function DestinationStep({ funnel }: DestinationFunnel) {
         }`}
       >
         <button
-          disabled={!isSelected}
+          // disabled={!isSelected}
           className={`text-center w-full text-[16px] font-bold leading-[22px] ${
             isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
           }`}
           onClick={() => {
-            funnel.history.push('periodStep', { destination: selectedCity });
             setContext({ destination: selectedCity });
+            funnel.history.push('periodStep', {
+              destination: selectedCity,
+            });
           }}
         >
           다음

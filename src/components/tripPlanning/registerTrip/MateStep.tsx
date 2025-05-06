@@ -1,5 +1,7 @@
-import { useFunnel } from '@use-funnel/browser';
-import { useState } from 'react';
+import { useTripFunnelStore } from '@/store/useTripFunnelStore';
+import { BoardRegisterTypes } from '@/types/boardRegister';
+import { useFunnel, UseFunnelResults } from '@use-funnel/browser';
+import { useEffect, useState } from 'react';
 
 const genders = [
   { id: 1, name: '👩 여성' },
@@ -15,20 +17,33 @@ const ages = [
   { id: 5, name: '상관없음' },
 ];
 
-export default function MateStep({
-  funnel,
-}: {
-  funnel: ReturnType<typeof useFunnel>;
-}) {
+interface MateFunnel {
+  funnel: UseFunnelResults<BoardRegisterTypes, BoardRegisterTypes['mateStep']>;
+}
+
+export default function MateStep({ funnel }: MateFunnel) {
+  const { context, setContext } = useTripFunnelStore();
+
   const [selectedGender, setSelectedGender] = useState('');
   const [selectedAges, setSelectedAges] = useState<string[]>([]);
 
-  const handleGender = (gender: string) => {
-    setSelectedGender(gender);
-    console.log(`선택한 성별 : ${gender}`);
+  const ToggleGender = (gender: string) => {
+    if (selectedGender === gender) {
+      setSelectedGender('');
+    } else {
+      setSelectedGender(gender);
+    }
   };
+  useEffect(() => {
+    if (selectedGender === '' && context.gender) {
+      setSelectedGender(context.gender);
+    }
+    if (selectedAges.length === 0 && context.ageRange.length > 0) {
+      setSelectedAges(context.ageRange);
+    }
+  }, []);
 
-  const handleAges = (ages: string) => {
+  const handleAgesToggle = (ages: string) => {
     if (selectedAges.includes(ages)) {
       setSelectedAges(selectedAges.filter((age) => age !== ages));
     } else {
@@ -55,7 +70,7 @@ export default function MateStep({
           <div className="flex items-center content-center gap-[16px] flex-wrap">
             {genders.map((gender) => (
               <button
-                onClick={() => handleGender(gender.name)}
+                onClick={() => ToggleGender(gender.name)}
                 className={`flex flex-col content-center items-center px-[16px] py-[8px] rounded-[100px]  ${
                   selectedGender === gender.name
                     ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
@@ -90,7 +105,7 @@ export default function MateStep({
                     ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
                     : 'bg-[#F8F8F8]'
                 } rounded-[100px]`}
-                onClick={() => handleAges(age.name)}
+                onClick={() => handleAgesToggle(age.name)}
               >
                 <label className="text-[14px] font-bold leading-[20px] cursor-pointer text-[var(--Gray900)] text-center">
                   {age.name}
@@ -108,7 +123,14 @@ export default function MateStep({
         <button
           // disabled={!isSelected}
           className={`text-center w-full text-[16px] font-bold leading-[22px] ${isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'}`}
-          onClick={() => funnel.history.push('style', {})}
+          onClick={() => {
+            setContext({ ageRange: selectedAges, gender: selectedGender });
+            funnel.history.push('styleStep', {
+              ...context,
+              gender: selectedGender,
+              ageRange: selectedAges,
+            });
+          }}
         >
           다음
         </button>

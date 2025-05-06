@@ -17,12 +17,27 @@ export default function ExpenseStep({
         </span>
       </div>
 
-      {/* input 공통 컴포넌트 사용할 예정 */}
+      <div className="flex flex-col items-start gap-[4px] flex-[1_0_0] w-full">
+        <div className="flex justify-between items-center w-full border-b-[0.6px] border-b-[var(--Gray400)] focus-within:border-b-black">
+          <input
+            type="number"
+            placeholder="예상 비용"
+            className="flex-1 h-[48px] outline-none text-black placeholder:text-[24px] font-normal leading-[34px] tracking-[-0.5px] text-[var(--Gray400)]"
+          />
+          <span className="text-[24px] font-normal leading-[34px] tracking-[-0.5px] text-[var(--Gray900)]">
+            원
+          </span>
+        </div>
+
+        <p className="text-[12px] font-normal leading-[18px] text-[var(--Gray500)]">
+          최소 5,000원 ~ 최대 5,000,000원까지 입력이 가능합니다
+        </p>
+      </div>
 
       <div className="flex h-[54px] px-[0px] py-[16px] justify-center items-center shrink-0 bg-[var(--Gray200)] self-stretch">
         <button
           className="text-[16px] w-full text-center font-bold leading-[22px] text-[var(--Gray400)]"
-          onClick={() => funnel.history.push('explain', {})}
+          onClick={() => funnel.history.push('explainStep', {})}
         >
           다음
         </button>

@@ -1,6 +1,8 @@
-import { BoardRegisterTypes } from '@/types/board-register';
+import { useTripFunnelStore } from '@/store/useTripFunnelStore';
+import { BoardRegisterTypes } from '@/types/boardRegister';
+
 import { useFunnel, UseFunnelResults } from '@use-funnel/browser';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const periods = [
   { id: 1, name: '아무때나' },
@@ -21,11 +23,22 @@ interface PeriodFunnel {
 }
 
 export default function PeriodStep({ funnel }: PeriodFunnel) {
+  const { context, setContext } = useTripFunnelStore();
   const [selectedPeriod, setSelectedPeriod] = useState('');
 
-  const handlePeriod = (period: string) => {
-    setSelectedPeriod(period);
-    console.log(`${period}`);
+  useEffect(() => {
+    if (context.period) {
+      setSelectedPeriod(context.period);
+      setContext({ period: context.period });
+    }
+  }, [context.period]);
+
+  const handlePeriodToggle = (period: string) => {
+    if (period === selectedPeriod) {
+      setSelectedPeriod('');
+    } else {
+      setSelectedPeriod(period);
+    }
   };
 
   const isSelected = selectedPeriod !== '';
@@ -45,7 +58,7 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
         {periods.map((period) => (
           <button
             key={period.id}
-            onClick={() => handlePeriod(period.name)}
+            onClick={() => handlePeriodToggle(period.name)}
             className={`w-[80px] h-[60px] rounded-[10px] flex flex-col items-center justify-center transition text-center text-[14px] font-bold leading-[20px]
          ${
            selectedPeriod === period.name
@@ -63,9 +76,13 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
         <button
           // disabled={!isSelected}
           className={`text-center w-full text-[16px] font-bold leading-[22px] ${isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'}`}
-          onClick={() =>
-            funnel.history.push('mateStep', { period: selectedPeriod })
-          }
+          onClick={() => {
+            setContext({ period: selectedPeriod });
+            funnel.history.push('mateStep', {
+              ...context,
+              period: selectedPeriod,
+            });
+          }}
         >
           다음
         </button>

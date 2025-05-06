@@ -1,5 +1,7 @@
-import { useFunnel } from '@use-funnel/browser';
-import { useState } from 'react';
+import { useTripFunnelStore } from '@/store/useTripFunnelStore';
+import { BoardRegisterTypes } from '@/types/boardRegister';
+import { useFunnel, UseFunnelResults } from '@use-funnel/browser';
+import { useEffect, useState } from 'react';
 
 const styles = [
   { id: 1, name: '휴식 🧘🍵' },
@@ -21,21 +23,28 @@ const styles = [
   { id: 17, name: '근처 아무식당🍽️' },
 ];
 
-export default function StyleStep({
-  funnel,
-}: {
-  funnel: ReturnType<typeof useFunnel>;
-}) {
+interface StyleFunnel {
+  funnel: UseFunnelResults<BoardRegisterTypes, BoardRegisterTypes['styleStep']>;
+}
+
+export default function StyleStep({ funnel }: StyleFunnel) {
+  const { context, setContext } = useTripFunnelStore();
+
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
 
-  const handleStyles = (styles: string) => {
+  useEffect(() => {
+    if (context.styles && context.styles.length > 0) {
+      setSelectedStyles(context.styles);
+    }
+  }, []);
+
+  const handleStylesToggle = (styles: string) => {
     if (selectedStyles.includes(styles)) {
       setSelectedStyles(selectedStyles.filter((style) => style !== styles));
     } else {
       setSelectedStyles([...selectedStyles, styles]);
     }
   };
-  console.log(selectedStyles);
 
   const isSelected = selectedStyles.length > 2;
 
@@ -55,7 +64,7 @@ export default function StyleStep({
         {styles.map((style) => (
           <div
             key={style.id}
-            onClick={() => handleStyles(style.name)}
+            onClick={() => handleStylesToggle(style.name)}
             className={`flex content-center items-center px-[20px] py-[10px] ${
               selectedStyles.includes(style.name)
                 ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
@@ -76,7 +85,13 @@ export default function StyleStep({
         <button
           // disabled={!isSelected}
           className="text-[16px] w-full text-center font-bold leading-[22px] text-[var(--Gray400)]"
-          onClick={() => funnel.history.push('expense', {})}
+          onClick={() => {
+            setContext({ styles: selectedStyles });
+            funnel.history.push('expenseStep', {
+              ...context,
+              styles: selectedStyles,
+            });
+          }}
         >
           다음
         </button>

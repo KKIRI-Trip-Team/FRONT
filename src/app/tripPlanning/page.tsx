@@ -9,11 +9,12 @@ import ExplainStep from '@/components/tripPlanning/registerTrip/ExplainStep';
 
 import { useFunnel } from '@use-funnel/browser';
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
+import { BoardRegisterTypes } from '@/types/boardRegister';
 
 export default function Page() {
   const { context } = useTripFunnelStore();
 
-  const funnel = useFunnel({
+  const funnel = useFunnel<BoardRegisterTypes>({
     id: 'register-trip-funnel',
     initial: {
       step: 'destinationStep',
