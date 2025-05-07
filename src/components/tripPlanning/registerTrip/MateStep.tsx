@@ -4,6 +4,9 @@ import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 import { BoardRegisterTypes } from '@/types/boardRegister';
 import { UseFunnelResults } from '@use-funnel/browser';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { slideFadeVariants } from '@/utils/motionVariants';
+import { useTransitionStore } from '@/store/transitionStore';
 
 const genders = [
   { id: 1, name: '👩 여성' },
@@ -25,6 +28,7 @@ interface MateFunnel {
 
 export default function MateStep({ funnel }: MateFunnel) {
   const { stepIndex, context, setContext, setStepIndex } = useTripFunnelStore();
+  const { direction } = useTransitionStore();
   const [selectedGender, setSelectedGender] = useState('');
   const [selectedAges, setSelectedAges] = useState<string[]>([]);
 
@@ -62,7 +66,15 @@ export default function MateStep({ funnel }: MateFunnel) {
   };
 
   return (
-    <div className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] p-[20px] gap-[40px] bg-white shrink-0 font-[Pretendard] tracking-[-0.5px]">
+    <motion.div
+      key="mateStep"
+      custom={direction}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={slideFadeVariants}
+      className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] p-[20px] gap-[40px] bg-white shrink-0 font-[Pretendard] tracking-[-0.5px]"
+    >
       <div className="flex flex-col items-center self-stretch">
         <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">
           <span>{stepIndex}</span>
@@ -138,6 +150,6 @@ export default function MateStep({ funnel }: MateFunnel) {
       >
         다음
       </button>
-    </div>
+    </motion.div>
   );
 }

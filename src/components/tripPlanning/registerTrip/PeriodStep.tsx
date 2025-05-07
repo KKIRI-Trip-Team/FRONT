@@ -4,6 +4,9 @@ import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 import { BoardRegisterTypes } from '@/types/boardRegister';
 import { UseFunnelResults } from '@use-funnel/browser';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { slideFadeVariants } from '@/utils/motionVariants';
+import { useTransitionStore } from '@/store/transitionStore';
 
 const periods = [
   { id: 1, name: '아무때나' },
@@ -25,6 +28,7 @@ interface PeriodFunnel {
 
 export default function PeriodStep({ funnel }: PeriodFunnel) {
   const { stepIndex, context, setContext, setStepIndex } = useTripFunnelStore();
+  const { direction } = useTransitionStore();
   const [selectedPeriod, setSelectedPeriod] = useState('');
 
   useEffect(() => {
@@ -52,7 +56,15 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
   };
 
   return (
-    <div className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-[var(--white)] shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
+    <motion.div
+      key="periodStep"
+      custom={direction}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={slideFadeVariants}
+      className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-[var(--white)] shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]"
+    >
       <div className="flex flex-col items-center self-stretch">
         <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">
           <span>{stepIndex}</span>
@@ -90,6 +102,6 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
       >
         다음
       </button>
-    </div>
+    </motion.div>
   );
 }

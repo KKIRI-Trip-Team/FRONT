@@ -10,6 +10,7 @@ import ExplainStep from '@/components/tripPlanning/registerTrip/ExplainStep';
 import { useFunnel } from '@use-funnel/browser';
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 import { BoardRegisterTypes } from '@/types/boardRegister';
+import { useFunnelDirection } from '@/hooks/useFunnelDirection';
 
 export default function Page() {
   const { context } = useTripFunnelStore();
@@ -21,6 +22,8 @@ export default function Page() {
       context: context,
     },
   });
+
+  useFunnelDirection(funnel.step);
 
   switch (funnel.step) {
     case 'destinationStep':

@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react';
 import { UseFunnelResults } from '@use-funnel/browser';
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 import { BoardRegisterTypes } from '@/types/boardRegister';
+import { motion } from 'framer-motion';
+import { slideFadeVariants } from '@/utils/motionVariants';
+import { useTransitionStore } from '@/store/transitionStore';
 
 const cities = [
   { id: 1, emoji: '🗼', name: '서울' },
@@ -36,6 +39,7 @@ interface DestinationFunnel {
 
 export default function DestinationStep({ funnel }: DestinationFunnel) {
   const { stepIndex, context, setContext, setStepIndex } = useTripFunnelStore();
+  const { direction } = useTransitionStore();
   const [selectedCity, setSelectedCity] = useState('');
 
   // 기존 저장된 값이 있다면 초기값 반영
@@ -64,7 +68,15 @@ export default function DestinationStep({ funnel }: DestinationFunnel) {
   };
 
   return (
-    <div className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-white shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
+    <motion.div
+      key="destinationStep"
+      custom={direction}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={slideFadeVariants}
+      className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-white shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]"
+    >
       <div className="flex flex-col items-center self-stretch">
         <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">
           <span>{stepIndex}</span>
@@ -109,6 +121,6 @@ export default function DestinationStep({ funnel }: DestinationFunnel) {
       >
         다음
       </button>
-    </div>
+    </motion.div>
   );
 }
