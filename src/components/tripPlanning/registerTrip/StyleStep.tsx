@@ -1,6 +1,8 @@
+'use client';
+
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 import { BoardRegisterTypes } from '@/types/boardRegister';
-import { useFunnel, UseFunnelResults } from '@use-funnel/browser';
+import { UseFunnelResults } from '@use-funnel/browser';
 import { useEffect, useState } from 'react';
 
 const styles = [
@@ -8,10 +10,10 @@ const styles = [
   { id: 2, name: '체험 🤿' },
   { id: 3, name: '액티비티🏃' },
   { id: 4, name: '쇼핑 🛒🛍' },
-  { id: 5, name: '견문 넓히기🏛🖼 ' },
+  { id: 5, name: '견문 넓히기🏛🖼' },
   { id: 6, name: '식도락 🍕🍖' },
   { id: 7, name: '감성투어 🌆' },
-  { id: 8, name: '가성비 ️💸' },
+  { id: 8, name: '가성비 💸' },
   { id: 9, name: '플랙스 🤑' },
   { id: 10, name: '꼼꼼한 계획 ✍⏱' },
   { id: 11, name: '즉흥 🤹‍♀️' },
@@ -29,69 +31,82 @@ interface StyleFunnel {
 
 export default function StyleStep({ funnel }: StyleFunnel) {
   const { context, setContext } = useTripFunnelStore();
-
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
 
   useEffect(() => {
-    if (context.styles && context.styles.length > 0) {
+    if (context.styles?.length > 0) {
       setSelectedStyles(context.styles);
     }
   }, []);
 
-  const handleStylesToggle = (styles: string) => {
-    if (selectedStyles.includes(styles)) {
-      setSelectedStyles(selectedStyles.filter((style) => style !== styles));
-    } else {
-      setSelectedStyles([...selectedStyles, styles]);
-    }
+  const toggleStyle = (styleName: string) => {
+    setSelectedStyles((prev) =>
+      prev.includes(styleName)
+        ? prev.filter((s) => s !== styleName)
+        : [...prev, styleName],
+    );
   };
 
-  const isSelected = selectedStyles.length > 2;
+  const isSelected = selectedStyles.length >= 3;
+
+  const getStyleClass = (isActive: boolean) =>
+    isActive
+      ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
+      : 'bg-[#F8F8F8]';
+
+  const handleNext = () => {
+    const nextContext = { ...context, styles: selectedStyles };
+    setContext({ styles: selectedStyles });
+    funnel.history.push('expenseStep', nextContext);
+  };
 
   return (
-    <div className="flex flex-col items-center w-[1200px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-white  shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
+    <div className="flex flex-col items-center w-[1200px] h-[854px] p-[20px_20px_40px_20px] gap-[40px] bg-white font-[Pretendard] tracking-[-0.5px]">
       <div className="flex flex-col items-center self-stretch">
-        <span>4 / 6</span>
-        <h1 className="text-[var(--Gray900)] text-[20px] font-bold text-center leading-[30px]">
+        <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">
+          <span>4</span>
+          <span className="text-[rgba(0,133,255,0.5)]">/</span>
+          <span className="text-[rgba(0,133,255,0.5)]">6</span>
+        </div>
+        <h1 className="text-[20px] font-bold text-[var(--Gray900)] text-center leading-[30px]">
           여행 스타일이 궁금해요
         </h1>
-        <span className="text-[var(--Gray600)] text-[14px] text-center font-normal leading-[20px]">
-          평소 여행스타일을 3개 이상 택해주세요
+        <span className="text-[14px] text-[var(--Gray600)] text-center leading-[20px]">
+          평소 여행 스타일을 3개 이상 선택해주세요
         </span>
       </div>
 
       <div className="flex items-start content-start gap-[16px] flex-[1_0_0] self-stretch flex-wrap">
-        {styles.map((style) => (
-          <div
-            key={style.id}
-            onClick={() => handleStylesToggle(style.name)}
-            className={`flex content-center items-center px-[20px] py-[10px] ${
-              selectedStyles.includes(style.name)
-                ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
-                : 'bg-[#F8F8F8]'
-            } rounded-[100px]`}
-          >
-            <label className="text-center text-[12px] font-bold leading-[18px] cursor-pointer">
-              {style.name}
-            </label>
-            <input type="checkbox" hidden value={style.name} />
-          </div>
-        ))}
+        {styles.map((style) => {
+          const isActive = selectedStyles.includes(style.name);
+          return (
+            <div
+              key={style.id}
+              onClick={() => toggleStyle(style.name)}
+              className={`px-[20px] py-[10px] rounded-[100px] cursor-pointer flex items-center ${getStyleClass(
+                isActive,
+              )}`}
+            >
+              <label className="text-[12px] font-bold leading-[18px] cursor-pointer">
+                {style.name}
+              </label>
+              <input type="checkbox" hidden value={style.name} />
+            </div>
+          );
+        })}
       </div>
 
       <div
-        className={`flex w-full h-[54px] px-[0px] py-[16px] justify-center items-center shrink-0 self-stretch  ${isSelected ? 'bg-[#5938DB] cursor-pointer' : 'bg-[#F1F1F2]'}`}
+        className={`flex w-full h-[54px] justify-center items-center self-stretch ${
+          isSelected ? 'bg-[#5938DB]' : 'bg-[#F1F1F2]'
+        }`}
       >
         <button
-          // disabled={!isSelected}
-          className="text-[16px] w-full text-center font-bold leading-[22px] text-[var(--Gray400)]"
-          onClick={() => {
-            setContext({ styles: selectedStyles });
-            funnel.history.push('expenseStep', {
-              ...context,
-              styles: selectedStyles,
-            });
-          }}
+          disabled={!isSelected}
+          onClick={handleNext}
+          className={`w-full text-[16px] font-bold leading-[22px] text-center ${
+            isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
+          } disabled:cursor-not-allowed disabled:opacity-50`}
         >
           다음
         </button>

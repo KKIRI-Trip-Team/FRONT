@@ -1,6 +1,8 @@
+'use client';
+
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 import { BoardRegisterTypes } from '@/types/boardRegister';
-import { useFunnel, UseFunnelResults } from '@use-funnel/browser';
+import { UseFunnelResults } from '@use-funnel/browser';
 import { useEffect, useState } from 'react';
 
 const genders = [
@@ -23,62 +25,71 @@ interface MateFunnel {
 
 export default function MateStep({ funnel }: MateFunnel) {
   const { context, setContext } = useTripFunnelStore();
-
   const [selectedGender, setSelectedGender] = useState('');
   const [selectedAges, setSelectedAges] = useState<string[]>([]);
 
-  const ToggleGender = (gender: string) => {
-    if (selectedGender === gender) {
-      setSelectedGender('');
-    } else {
-      setSelectedGender(gender);
-    }
-  };
   useEffect(() => {
-    if (selectedGender === '' && context.gender) {
-      setSelectedGender(context.gender);
-    }
-    if (selectedAges.length === 0 && context.ageRange.length > 0) {
-      setSelectedAges(context.ageRange);
-    }
-  }, []);
+    if (context.gender) setSelectedGender(context.gender);
+    if (context.ageRange?.length > 0) setSelectedAges(context.ageRange);
+  }, [context.gender, context.ageRange]);
 
-  const handleAgesToggle = (ages: string) => {
-    if (selectedAges.includes(ages)) {
-      setSelectedAges(selectedAges.filter((age) => age !== ages));
-    } else {
-      setSelectedAges([...selectedAges, ages]);
-    }
+  const toggleGender = (gender: string) => {
+    setSelectedGender((prev) => (prev === gender ? '' : gender));
+  };
+
+  const toggleAge = (age: string) => {
+    setSelectedAges((prev) =>
+      prev.includes(age) ? prev.filter((a) => a !== age) : [...prev, age],
+    );
   };
 
   const isSelected = selectedGender !== '' && selectedAges.length > 0;
 
+  const getSelectedStyle = (active: boolean) =>
+    active
+      ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
+      : 'bg-[#F8F8F8]';
+
+  const handleNext = () => {
+    const nextContext = {
+      ...context,
+      gender: selectedGender,
+      ageRange: selectedAges,
+    };
+    setContext({ gender: selectedGender, ageRange: selectedAges });
+    funnel.history.push('styleStep', nextContext);
+  };
+
   return (
-    <div className="flex flex-col items-center w-[1200px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-white  shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
+    <div className="flex flex-col items-center w-[1200px] h-[854px] p-[20px] gap-[40px] bg-white shrink-0 font-[Pretendard] tracking-[-0.5px]">
       <div className="flex flex-col items-center self-stretch">
-        <span>2 / 6</span>
+        <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">
+          <span>3</span>
+          <span className="text-[rgba(0,133,255,0.5)]">/</span>
+          <span className="text-[rgba(0,133,255,0.5)]">6</span>
+        </div>
         <h1 className="text-[var(--Gray900)] text-[20px] font-bold text-center leading-[30px]">
           누구랑 떠나시겠어요?
         </h1>
-        <span className="text-[var(--Gray600)] text-[14px] text-center font-normal leading-[20px]">
+        <span className="text-[var(--Gray600)] text-[14px] text-center leading-[20px]">
           함께 여행을 즐길 메이트를 설정해주세요
         </span>
       </div>
+
       <div className="flex flex-col items-start gap-[60px] flex-[1_0_0] self-stretch">
-        <section className="flex flex-col items-start gap-[20px]">
-          <h1 className="text-[20px] font-bold leading-[22px]">성별</h1>
-          <div className="flex items-center content-center gap-[16px] flex-wrap">
+        {/* 성별 선택 */}
+        <section className="flex flex-col gap-[20px]">
+          <h1 className="text-[20px] font-bold">성별</h1>
+          <div className="flex gap-[16px] flex-wrap">
             {genders.map((gender) => (
               <button
-                onClick={() => ToggleGender(gender.name)}
-                className={`flex flex-col content-center items-center px-[16px] py-[8px] rounded-[100px]  ${
-                  selectedGender === gender.name
-                    ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
-                    : 'bg-[#F8F8F8]'
-                }`}
                 key={gender.id}
+                onClick={() => toggleGender(gender.name)}
+                className={`px-[16px] py-[8px] rounded-[100px] ${getSelectedStyle(
+                  selectedGender === gender.name,
+                )}`}
               >
-                <span className="text-[var(--Gray900)] text-center text-[14px] font-bold leading-[20px]">
+                <span className="text-[14px] font-bold text-[var(--Gray900)]">
                   {gender.name}
                 </span>
               </button>
@@ -86,31 +97,29 @@ export default function MateStep({ funnel }: MateFunnel) {
           </div>
         </section>
 
-        <section className="flex flex-col items-start gap-[20px] self-stretch">
+        {/* 연령대 선택 */}
+        <section className="flex flex-col gap-[20px] self-stretch">
           <div className="flex items-center gap-[10px]">
-            <h1 className="text-[16px] font-bold text-[var(--Gray900)] leading-[22px] ">
+            <h1 className="text-[16px] font-bold text-[var(--Gray900)]">
               연령대
             </h1>
-            <h3 className="text-[12px] text-[var(--Gray600)] font-bold leading-[18px]">
+            <h3 className="text-[12px] text-[var(--Gray600)] font-bold">
               중복 선택 가능
             </h3>
           </div>
 
-          <div className="flex items-start content-start gap-[16px] flex-wrap self-stretch">
+          <div className="flex flex-wrap gap-[16px]">
             {ages.map((age) => (
               <div
                 key={age.id}
-                className={`flex flex-col content-center items-center px-[16px] py-[8px] ${
-                  selectedAges.includes(age.name)
-                    ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
-                    : 'bg-[#F8F8F8]'
-                } rounded-[100px]`}
-                onClick={() => handleAgesToggle(age.name)}
+                onClick={() => toggleAge(age.name)}
+                className={`px-[16px] py-[8px] rounded-[100px] cursor-pointer ${getSelectedStyle(
+                  selectedAges.includes(age.name),
+                )}`}
               >
-                <label className="text-[14px] font-bold leading-[20px] cursor-pointer text-[var(--Gray900)] text-center">
+                <label className="text-[14px] font-bold text-[var(--Gray900)]">
                   {age.name}
                 </label>
-                <input type="checkbox" value={age.name} hidden />
               </div>
             ))}
           </div>
@@ -118,19 +127,16 @@ export default function MateStep({ funnel }: MateFunnel) {
       </div>
 
       <div
-        className={`flex w-full h-[54px] px-[0px] py-[16px] justify-center items-center shrink-0 self-stretch  ${isSelected ? 'bg-[#5938DB] cursor-pointer' : 'bg-[#F1F1F2]'}`}
+        className={`flex w-full h-[54px] justify-center items-center self-stretch ${
+          isSelected ? 'bg-[#5938DB]' : 'bg-[#F1F1F2]'
+        }`}
       >
         <button
-          // disabled={!isSelected}
-          className={`text-center w-full text-[16px] font-bold leading-[22px] ${isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'}`}
-          onClick={() => {
-            setContext({ ageRange: selectedAges, gender: selectedGender });
-            funnel.history.push('styleStep', {
-              ...context,
-              gender: selectedGender,
-              ageRange: selectedAges,
-            });
-          }}
+          disabled={!isSelected}
+          onClick={handleNext}
+          className={`w-full text-[16px] font-bold leading-[22px] text-center ${
+            isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
+          } disabled:cursor-not-allowed disabled:opacity-50`}
         >
           다음
         </button>

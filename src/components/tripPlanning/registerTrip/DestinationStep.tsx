@@ -9,8 +9,8 @@ const cities = [
   { id: 1, emoji: '🗼', name: '서울' },
   { id: 2, emoji: '🌊', name: '부산' },
   { id: 3, emoji: '🌞', name: '대구' },
-  { id: 4, emoji: '🛫 ', name: '인천' },
-  { id: 5, emoji: '💪 ', name: '광주' },
+  { id: 4, emoji: '🛫', name: '인천' },
+  { id: 5, emoji: '💪', name: '광주' },
   { id: 6, emoji: '🪷', name: '경주' },
   { id: 7, emoji: '🥯', name: '대전' },
   { id: 8, emoji: '🌅', name: '울산' },
@@ -38,28 +38,38 @@ export default function DestinationStep({ funnel }: DestinationFunnel) {
   const { context, setContext } = useTripFunnelStore();
   const [selectedCity, setSelectedCity] = useState('');
 
-  const handleCityToggle = (cityName: string) => {
-    if (selectedCity === cityName) {
-      setSelectedCity('');
-    } else {
-      setSelectedCity(cityName);
-    }
-  };
-
-  // 퍼넬 컨텍스트의 기존 값이 있다면 초기 세팅
+  // 기존 저장된 값이 있다면 초기값 반영
   useEffect(() => {
     if (context.destination) {
       setSelectedCity(context.destination);
-      setContext({ destination: context.destination });
     }
-  }, [funnel.context.destination]);
+  }, [context.destination]);
+
+  const handleCityToggle = (cityName: string) => {
+    setSelectedCity((prev) => (prev === cityName ? '' : cityName));
+  };
 
   const isSelected = selectedCity !== '';
+
+  const getCityButtonStyle = (isActive: boolean) =>
+    isActive
+      ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
+      : 'bg-[#F8F8F8]';
+
+  const handleNext = () => {
+    const nextContext = { ...context, destination: selectedCity };
+    setContext({ destination: selectedCity });
+    funnel.history.push('periodStep', nextContext);
+  };
 
   return (
     <div className="flex flex-col items-center w-[1200px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-white shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
       <div className="flex flex-col items-center self-stretch">
-        <span>1 / 6</span>
+        <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">
+          <span>1</span>
+          <span className="text-[rgba(0,133,255,0.5)]">/</span>
+          <span className="text-[rgba(0,133,255,0.5)]">6</span>
+        </div>
         <h1 className="text-[var(--Gray900)] text-[20px] font-bold text-center leading-[30px]">
           어디로 떠나시나요?
         </h1>
@@ -73,12 +83,9 @@ export default function DestinationStep({ funnel }: DestinationFunnel) {
           <button
             key={city.id}
             onClick={() => handleCityToggle(city.name)}
-            className={`w-[80px] h-[80px] rounded-[10px] flex flex-col items-center justify-center transition
-              ${
-                selectedCity === city.name
-                  ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
-                  : 'bg-[#F8F8F8]'
-              }`}
+            className={`w-[80px] h-[80px] rounded-[10px] flex flex-col items-center justify-center transition ${getCityButtonStyle(
+              selectedCity === city.name,
+            )}`}
           >
             <span className="text-[16px] font-bold leading-[22px]">
               {city.emoji}
@@ -91,21 +98,16 @@ export default function DestinationStep({ funnel }: DestinationFunnel) {
       </div>
 
       <div
-        className={`flex h-[54px] w-full px-[0px] py-[16px] justify-center items-center shrink-0 self-stretch  ${
-          isSelected ? 'bg-[#5938DB] cursor-pointer' : 'bg-[#F1F1F2]'
+        className={`flex h-[54px] w-full px-[0px] py-[16px] justify-center items-center shrink-0 self-stretch ${
+          isSelected ? 'bg-[#5938DB]' : 'bg-[#F1F1F2]'
         }`}
       >
         <button
-          // disabled={!isSelected}
+          disabled={!isSelected}
           className={`text-center w-full text-[16px] font-bold leading-[22px] ${
             isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
-          }`}
-          onClick={() => {
-            setContext({ destination: selectedCity });
-            funnel.history.push('periodStep', {
-              destination: selectedCity,
-            });
-          }}
+          } disabled:cursor-not-allowed disabled:opacity-50`}
+          onClick={handleNext}
         >
           다음
         </button>

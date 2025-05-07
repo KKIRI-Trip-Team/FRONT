@@ -6,8 +6,8 @@ type TripContext = {
   mate: string;
   gender: string;
   ageRange: string[];
-  expense: string;
   styles: string[];
+  expense: number;
   explain: Record<string, any>;
 };
 
@@ -24,7 +24,7 @@ export const useTripFunnelStore = create<TripFunnelStore>((set) => ({
     mate: '',
     gender: '',
     ageRange: [],
-    expense: '',
+    expense: 0,
     styles: [],
     explain: {},
   },
@@ -44,7 +44,7 @@ export const useTripFunnelStore = create<TripFunnelStore>((set) => ({
         mate: '',
         gender: '',
         ageRange: [],
-        expense: '',
+        expense: 0,
         styles: [],
         explain: {},
       },

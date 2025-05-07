@@ -1,7 +1,8 @@
+'use client';
+
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 import { BoardRegisterTypes } from '@/types/boardRegister';
-
-import { useFunnel, UseFunnelResults } from '@use-funnel/browser';
+import { UseFunnelResults } from '@use-funnel/browser';
 import { useEffect, useState } from 'react';
 
 const periods = [
@@ -10,7 +11,7 @@ const periods = [
   { id: 3, name: '1박 2일' },
   { id: 4, name: '2박 3일' },
   { id: 5, name: '3박 4일' },
-  { id: 6, name: '4발 5일' },
+  { id: 6, name: '4박 5일' },
   { id: 7, name: '5박 6일' },
   { id: 8, name: '7일 이상' },
 ];
@@ -29,24 +30,34 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
   useEffect(() => {
     if (context.period) {
       setSelectedPeriod(context.period);
-      setContext({ period: context.period });
     }
   }, [context.period]);
 
   const handlePeriodToggle = (period: string) => {
-    if (period === selectedPeriod) {
-      setSelectedPeriod('');
-    } else {
-      setSelectedPeriod(period);
-    }
+    setSelectedPeriod((prev) => (prev === period ? '' : period));
   };
 
   const isSelected = selectedPeriod !== '';
 
+  const getButtonStyle = (isActive: boolean) =>
+    isActive
+      ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
+      : 'bg-[#F8F8F8]';
+
+  const handleNext = () => {
+    const nextContext = { ...context, period: selectedPeriod };
+    setContext({ period: selectedPeriod });
+    funnel.history.push('mateStep', nextContext);
+  };
+
   return (
-    <div className="flex flex-col items-center w-[1200px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px]  gap-[40px] bg-[var(--white)]  shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
+    <div className="flex flex-col items-center w-[1200px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-[var(--white)] shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
       <div className="flex flex-col items-center self-stretch">
-        <span>2 / 6</span>
+        <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">
+          <span>2</span>
+          <span className="text-[rgba(0,133,255,0.5)]">/</span>
+          <span className="text-[rgba(0,133,255,0.5)]">6</span>
+        </div>
         <h1 className="text-[var(--Gray900)] text-[20px] font-bold text-center leading-[30px]">
           얼마나 떠나시나요?
         </h1>
@@ -54,35 +65,30 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
           여행 기간을 선택해주세요
         </span>
       </div>
+
       <div className="flex justify-center items-start content-start flex-wrap gap-x-[18px] gap-y-[16px] flex-[1_0_0] self-stretch">
         {periods.map((period) => (
           <button
             key={period.id}
             onClick={() => handlePeriodToggle(period.name)}
-            className={`w-[80px] h-[60px] rounded-[10px] flex flex-col items-center justify-center transition text-center text-[14px] font-bold leading-[20px]
-         ${
-           selectedPeriod === period.name
-             ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
-             : 'bg-[#F8F8F8]'
-         }`}
+            className={`w-[80px] h-[60px] rounded-[10px] flex flex-col items-center justify-center transition text-center text-[14px] font-bold leading-[20px] ${getButtonStyle(selectedPeriod === period.name)}`}
           >
             {period.name}
           </button>
         ))}
       </div>
+
       <div
-        className={`flex h-[54px] w-full items-center justify-center bg-[#5938DB] ${isSelected ? 'bg-[#5938DB] cursor-pointer' : 'bg-[#F1F1F2]'}`}
+        className={`flex h-[54px] w-full items-center justify-center ${
+          isSelected ? 'bg-[#5938DB]' : 'bg-[#F1F1F2]'
+        }`}
       >
         <button
-          // disabled={!isSelected}
-          className={`text-center w-full text-[16px] font-bold leading-[22px] ${isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'}`}
-          onClick={() => {
-            setContext({ period: selectedPeriod });
-            funnel.history.push('mateStep', {
-              ...context,
-              period: selectedPeriod,
-            });
-          }}
+          disabled={!isSelected}
+          onClick={handleNext}
+          className={`text-center w-full text-[16px] font-bold leading-[22px] ${
+            isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
+          } disabled:cursor-not-allowed disabled:opacity-50`}
         >
           다음
         </button>

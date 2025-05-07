@@ -29,6 +29,6 @@ export type BoardRegisterTypes = {
     gender: string;
     ageRange: string[];
     styles: string[];
-    expense?: string;
+    expense?: number;
   };
 };
