@@ -24,10 +24,11 @@ interface PeriodFunnel {
 }
 
 export default function PeriodStep({ funnel }: PeriodFunnel) {
-  const { context, setContext } = useTripFunnelStore();
+  const { stepIndex, context, setContext, setStepIndex } = useTripFunnelStore();
   const [selectedPeriod, setSelectedPeriod] = useState('');
 
   useEffect(() => {
+    setStepIndex(2);
     if (context.period) {
       setSelectedPeriod(context.period);
     }
@@ -51,10 +52,10 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
   };
 
   return (
-    <div className="flex flex-col items-center w-[1200px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-[var(--white)] shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
+    <div className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-[var(--white)] shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
       <div className="flex flex-col items-center self-stretch">
         <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">
-          <span>2</span>
+          <span>{stepIndex}</span>
           <span className="text-[rgba(0,133,255,0.5)]">/</span>
           <span className="text-[rgba(0,133,255,0.5)]">6</span>
         </div>
@@ -78,21 +79,17 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
         ))}
       </div>
 
-      <div
-        className={`flex h-[54px] w-full items-center justify-center ${
+      <button
+        disabled={!isSelected}
+        className={`flex h-[54px] px-[0px] py-[16px] justify-center items-center shrink-0 text-center w-full text-[16px] font-bold leading-[22px] ${
+          isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
+        } ${
           isSelected ? 'bg-[#5938DB]' : 'bg-[#F1F1F2]'
-        }`}
+        } disabled:cursor-not-allowed disabled:opacity-50`}
+        onClick={handleNext}
       >
-        <button
-          disabled={!isSelected}
-          onClick={handleNext}
-          className={`text-center w-full text-[16px] font-bold leading-[22px] ${
-            isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
-          } disabled:cursor-not-allowed disabled:opacity-50`}
-        >
-          다음
-        </button>
-      </div>
+        다음
+      </button>
     </div>
   );
 }

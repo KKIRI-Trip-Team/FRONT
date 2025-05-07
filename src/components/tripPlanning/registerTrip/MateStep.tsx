@@ -24,11 +24,12 @@ interface MateFunnel {
 }
 
 export default function MateStep({ funnel }: MateFunnel) {
-  const { context, setContext } = useTripFunnelStore();
+  const { stepIndex, context, setContext, setStepIndex } = useTripFunnelStore();
   const [selectedGender, setSelectedGender] = useState('');
   const [selectedAges, setSelectedAges] = useState<string[]>([]);
 
   useEffect(() => {
+    setStepIndex(3);
     if (context.gender) setSelectedGender(context.gender);
     if (context.ageRange?.length > 0) setSelectedAges(context.ageRange);
   }, [context.gender, context.ageRange]);
@@ -47,7 +48,7 @@ export default function MateStep({ funnel }: MateFunnel) {
 
   const getSelectedStyle = (active: boolean) =>
     active
-      ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
+      ? 'outline outline-[0.8px] outline-[var(--PrimaryLight)] bg-[rgba(0,133,255,0.1)]'
       : 'bg-[#F8F8F8]';
 
   const handleNext = () => {
@@ -61,10 +62,10 @@ export default function MateStep({ funnel }: MateFunnel) {
   };
 
   return (
-    <div className="flex flex-col items-center w-[1200px] h-[854px] p-[20px] gap-[40px] bg-white shrink-0 font-[Pretendard] tracking-[-0.5px]">
+    <div className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] p-[20px] gap-[40px] bg-white shrink-0 font-[Pretendard] tracking-[-0.5px]">
       <div className="flex flex-col items-center self-stretch">
         <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">
-          <span>3</span>
+          <span>{stepIndex}</span>
           <span className="text-[rgba(0,133,255,0.5)]">/</span>
           <span className="text-[rgba(0,133,255,0.5)]">6</span>
         </div>
@@ -126,21 +127,17 @@ export default function MateStep({ funnel }: MateFunnel) {
         </section>
       </div>
 
-      <div
-        className={`flex w-full h-[54px] justify-center items-center self-stretch ${
+      <button
+        disabled={!isSelected}
+        className={`flex h-[54px] px-[0px] py-[16px] justify-center items-center shrink-0 text-center w-full text-[16px] font-bold leading-[22px] ${
+          isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
+        } ${
           isSelected ? 'bg-[#5938DB]' : 'bg-[#F1F1F2]'
-        }`}
+        } disabled:cursor-not-allowed disabled:opacity-50`}
+        onClick={handleNext}
       >
-        <button
-          disabled={!isSelected}
-          onClick={handleNext}
-          className={`w-full text-[16px] font-bold leading-[22px] text-center ${
-            isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
-          } disabled:cursor-not-allowed disabled:opacity-50`}
-        >
-          다음
-        </button>
-      </div>
+        다음
+      </button>
     </div>
   );
 }

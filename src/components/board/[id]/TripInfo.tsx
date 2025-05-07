@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import ScheduleItem from '../schedule.tsx/ScheduleItem';
 
 export default function TripInfo() {
@@ -17,7 +16,7 @@ export default function TripInfo() {
       </div>
 
       {/* 지역사진 */}
-      <div className="w-[1200px] h-[750px] shrink-0 bg-detail-image"></div>
+      <div className="pc:w-[1200px] pc:h-[750px] tb:w-[768px] tb:h-[375px] shrink-0 bg-detail-image"></div>
 
       {/* 스케쥴 리스트 */}
       <div className="w-full flex px-[20px] py-[0px] flex-col justify-center items-start gap-[30px]">

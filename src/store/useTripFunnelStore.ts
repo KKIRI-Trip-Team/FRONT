@@ -13,7 +13,9 @@ type TripContext = {
 
 interface TripFunnelStore {
   context: TripContext;
+  stepIndex: number;
   setContext: (updated: Partial<TripContext>) => void;
+  setStepIndex: (index: number) => void;
   resetContext: () => void;
 }
 
@@ -28,6 +30,8 @@ export const useTripFunnelStore = create<TripFunnelStore>((set) => ({
     styles: [],
     explain: {},
   },
+  stepIndex: 1,
+
   setContext: (updated) =>
     set((state) => ({
       context: {
@@ -35,6 +39,8 @@ export const useTripFunnelStore = create<TripFunnelStore>((set) => ({
         ...updated,
       },
     })),
+
+  setStepIndex: (index) => set({ stepIndex: index }),
 
   resetContext: () =>
     set({
@@ -48,5 +54,6 @@ export const useTripFunnelStore = create<TripFunnelStore>((set) => ({
         styles: [],
         explain: {},
       },
+      stepIndex: 1,
     }),
 }));

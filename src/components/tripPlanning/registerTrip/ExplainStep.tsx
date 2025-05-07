@@ -24,8 +24,9 @@ export default function ExplainStep({
   };
 
   return (
-    <div className="flex flex-col items-center w-[1200px] pb-[40px] pl-[20px] pr-[20px] pt-[20px]  gap-[40px] bg-white  shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
+    <div className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] pb-[40px] pl-[20px] pr-[20px] pt-[20px]  gap-[40px] bg-white  shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
       <div className="flex flex-col items-center self-stretch">
+        7
         <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">
           <span>6</span>
           <span className="text-[rgba(0,133,255,0.5)]">/</span>
@@ -39,12 +40,12 @@ export default function ExplainStep({
         </span>
       </div>
 
-      <div className="w-[1160px] h-[670px] bg-[var(--Gray200)] flex items-center justify-center">
+      <div className="pc:w-[1160px] pc:h-[670px] tb:w-[728px] tb:h-[335px] bg-[var(--Gray200)] flex items-center justify-center">
         <ICON />
       </div>
 
       <section className="w-full gap-[4px]">
-        <div className="flex h-[48px] items-center gap-[10px] self-stretch border-b-[0.6px] border-[var(--Gray400)] focus-within:border-b-2 border-b-black">
+        <div className="flex h-[48px] items-center gap-[10px] self-stretch border-b-[0.6px] border-b-[var(--Gray400)]">
           <input
             type="text"
             placeholder="여행 제목"
@@ -62,7 +63,7 @@ export default function ExplainStep({
       </section>
 
       <section className="w-full gap-[4px]">
-        <div className="flex h-[200px] items-start p-[10px] gap-[10px] self-stretch border-[0.6px] border-[var(--Gray400)] focus-within:border-2 border-black ">
+        <div className="flex h-[200px] items-start p-[10px] gap-[10px] self-stretch border-[0.6px] border-[var(--Gray400)]">
           <textarea
             placeholder="여행 상세내용"
             onChange={onChangeContentLength}

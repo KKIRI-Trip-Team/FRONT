@@ -16,7 +16,7 @@ export default async function page({
     return <div>게시글을 찾을 수 없습니다.</div>;
   }
   return (
-    <div className="flex w-[1200px] pb-[40px] flex-col items-start">
+    <div className="flex pc:w-[1200px] pb-[40px] flex-col items-start">
       {/* 대표 이미지 및 유저 정보 section */}
       <UserInfo {...post} />
 

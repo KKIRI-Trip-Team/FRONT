@@ -30,10 +30,11 @@ interface StyleFunnel {
 }
 
 export default function StyleStep({ funnel }: StyleFunnel) {
-  const { context, setContext } = useTripFunnelStore();
+  const { stepIndex, context, setContext, setStepIndex } = useTripFunnelStore();
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
 
   useEffect(() => {
+    setStepIndex(4);
     if (context.styles?.length > 0) {
       setSelectedStyles(context.styles);
     }
@@ -51,7 +52,7 @@ export default function StyleStep({ funnel }: StyleFunnel) {
 
   const getStyleClass = (isActive: boolean) =>
     isActive
-      ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
+      ? 'outline outline-[0.8px] outline-[var(--PrimaryLight)] bg-[rgba(0,133,255,0.1)]'
       : 'bg-[#F8F8F8]';
 
   const handleNext = () => {
@@ -61,10 +62,10 @@ export default function StyleStep({ funnel }: StyleFunnel) {
   };
 
   return (
-    <div className="flex flex-col items-center w-[1200px] h-[854px] p-[20px_20px_40px_20px] gap-[40px] bg-white font-[Pretendard] tracking-[-0.5px]">
+    <div className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] p-[20px_20px_40px_20px] gap-[40px] bg-white font-[Pretendard] tracking-[-0.5px]">
       <div className="flex flex-col items-center self-stretch">
         <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">
-          <span>4</span>
+          <span>{stepIndex}</span>
           <span className="text-[rgba(0,133,255,0.5)]">/</span>
           <span className="text-[rgba(0,133,255,0.5)]">6</span>
         </div>
@@ -76,18 +77,18 @@ export default function StyleStep({ funnel }: StyleFunnel) {
         </span>
       </div>
 
-      <div className="flex items-start content-start gap-[16px] flex-[1_0_0] self-stretch flex-wrap">
+      <div className="flex items-start content-start gap-[16px] self-stretch flex-[1_0_0] flex-wrap">
         {styles.map((style) => {
           const isActive = selectedStyles.includes(style.name);
           return (
             <div
               key={style.id}
               onClick={() => toggleStyle(style.name)}
-              className={`px-[20px] py-[10px] rounded-[100px] cursor-pointer flex items-center ${getStyleClass(
+              className={`flex px-[20px] py-[10px] justify-center items-center rounded-[100px] ${getStyleClass(
                 isActive,
               )}`}
             >
-              <label className="text-[12px] font-bold leading-[18px] cursor-pointer">
+              <label className="text-[12px] font-bold leading-[18px] cursor-pointer text-center">
                 {style.name}
               </label>
               <input type="checkbox" hidden value={style.name} />
@@ -96,21 +97,17 @@ export default function StyleStep({ funnel }: StyleFunnel) {
         })}
       </div>
 
-      <div
-        className={`flex w-full h-[54px] justify-center items-center self-stretch ${
+      <button
+        disabled={!isSelected}
+        className={`flex h-[54px] px-[0px] py-[16px] justify-center items-center shrink-0 text-center w-full text-[16px] font-bold leading-[22px] ${
+          isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
+        } ${
           isSelected ? 'bg-[#5938DB]' : 'bg-[#F1F1F2]'
-        }`}
+        } disabled:cursor-not-allowed disabled:opacity-50`}
+        onClick={handleNext}
       >
-        <button
-          disabled={!isSelected}
-          onClick={handleNext}
-          className={`w-full text-[16px] font-bold leading-[22px] text-center ${
-            isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
-          } disabled:cursor-not-allowed disabled:opacity-50`}
-        >
-          다음
-        </button>
-      </div>
+        다음
+      </button>
     </div>
   );
 }

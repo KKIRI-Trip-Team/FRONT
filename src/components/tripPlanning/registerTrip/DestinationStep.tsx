@@ -35,11 +35,12 @@ interface DestinationFunnel {
 }
 
 export default function DestinationStep({ funnel }: DestinationFunnel) {
-  const { context, setContext } = useTripFunnelStore();
+  const { stepIndex, context, setContext, setStepIndex } = useTripFunnelStore();
   const [selectedCity, setSelectedCity] = useState('');
 
   // 기존 저장된 값이 있다면 초기값 반영
   useEffect(() => {
+    setStepIndex(1);
     if (context.destination) {
       setSelectedCity(context.destination);
     }
@@ -63,10 +64,10 @@ export default function DestinationStep({ funnel }: DestinationFunnel) {
   };
 
   return (
-    <div className="flex flex-col items-center w-[1200px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-white shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
+    <div className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-white shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]">
       <div className="flex flex-col items-center self-stretch">
         <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">
-          <span>1</span>
+          <span>{stepIndex}</span>
           <span className="text-[rgba(0,133,255,0.5)]">/</span>
           <span className="text-[rgba(0,133,255,0.5)]">6</span>
         </div>
@@ -83,7 +84,7 @@ export default function DestinationStep({ funnel }: DestinationFunnel) {
           <button
             key={city.id}
             onClick={() => handleCityToggle(city.name)}
-            className={`w-[80px] h-[80px] rounded-[10px] flex flex-col items-center justify-center transition ${getCityButtonStyle(
+            className={`w-[80px] h-[80px] rounded-[10px] flex flex-col items-center justify-center ${getCityButtonStyle(
               selectedCity === city.name,
             )}`}
           >
@@ -97,21 +98,17 @@ export default function DestinationStep({ funnel }: DestinationFunnel) {
         ))}
       </div>
 
-      <div
-        className={`flex h-[54px] w-full px-[0px] py-[16px] justify-center items-center shrink-0 self-stretch ${
+      <button
+        disabled={!isSelected}
+        className={`flex h-[54px] px-[0px] py-[16px] justify-center items-center shrink-0 text-center w-full text-[16px] font-bold leading-[22px] ${
+          isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
+        } ${
           isSelected ? 'bg-[#5938DB]' : 'bg-[#F1F1F2]'
-        }`}
+        } disabled:cursor-not-allowed disabled:opacity-50`}
+        onClick={handleNext}
       >
-        <button
-          disabled={!isSelected}
-          className={`text-center w-full text-[16px] font-bold leading-[22px] ${
-            isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
-          } disabled:cursor-not-allowed disabled:opacity-50`}
-          onClick={handleNext}
-        >
-          다음
-        </button>
-      </div>
+        다음
+      </button>
     </div>
   );
 }

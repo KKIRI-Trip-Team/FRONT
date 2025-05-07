@@ -43,10 +43,8 @@ export default function UserInfo({
   return (
     <section className="flex flex-col gap-[20px] bg-[var(--white)] self-stretch font-[Pretendard]">
       <Image
-        className="self-stretch"
+        className="self-stretch pc:w-[1200px] pc:h-[750px] tb:w-[768px] tb:h-[375px]"
         src={coverImage}
-        width={1200}
-        height={750}
         alt={destination}
       />
 

@@ -1,8 +1,8 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import CircleIcon from '@/public/icons/circle-icon.svg';
 
 import { BoardType } from '@/types/board';
-import Link from 'next/link';
 
 export default function BoardCard({
   id,
@@ -17,7 +17,7 @@ export default function BoardCard({
 }: BoardType) {
   return (
     <Link href={`board/${id}`}>
-      <div className="flex w-[373px] flex-col justify-center items-start font-[Pretendard]">
+      <div className="flex w-[373px] tb:w-[354px] mb:w-[275px] flex-col justify-center items-start font-[Pretendard]">
         <Image
           className="h-[275px] self-stretch"
           width={0}

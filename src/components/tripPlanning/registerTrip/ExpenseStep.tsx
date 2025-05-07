@@ -11,12 +11,13 @@ interface ExpenseFunnel {
 }
 
 export default function ExpenseStep({ funnel }: ExpenseFunnel) {
-  const { context, setContext } = useTripFunnelStore();
+  const { stepIndex, context, setContext, setStepIndex } = useTripFunnelStore();
 
   const [moneyValid, setMoneyValid] = useState('');
   const [isValid, setIsValid] = useState(false);
 
   useEffect(() => {
+    setStepIndex(5);
     if (context.expense) {
       setMoneyValid(context.expense.toLocaleString());
       setIsValid(true);
@@ -44,10 +45,10 @@ export default function ExpenseStep({ funnel }: ExpenseFunnel) {
   };
 
   return (
-    <div className="flex flex-col items-center w-[1200px] h-[854px] p-[20px] gap-[40px] bg-white font-[Pretendard] not-italic tracking-[-0.5px]">
+    <div className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] p-[20px] gap-[40px] bg-white font-[Pretendard] not-italic tracking-[-0.5px]">
       <div className="flex flex-col items-center self-stretch">
         <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">
-          <span>5</span>
+          <span>{stepIndex}</span>
           <span className="text-[rgba(0,133,255,0.5)]">/</span>
           <span className="text-[rgba(0,133,255,0.5)]">6</span>
         </div>
@@ -96,20 +97,14 @@ export default function ExpenseStep({ funnel }: ExpenseFunnel) {
         </p>
       </div>
 
-      <div
-        className={`flex w-full h-[54px] py-[16px] justify-center items-center self-stretch ${
-          isValidMoney ? 'bg-[#5938DB] cursor-pointer' : 'bg-[#F1F1F2]'
-        }`}
+      <button
+        className={`flex h-[54px] py-[16px] justify-center items-center self-stretch w-full text-[16px] font-bold leading-[22px] text-center ${
+          isValidMoney ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
+        } ${isValidMoney ? 'bg-[#5938DB] cursor-pointer' : 'bg-[#F1F1F2]'}`}
+        onClick={handleNextClick}
       >
-        <button
-          className={`w-full text-[16px] font-bold leading-[22px] text-center ${
-            isValidMoney ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
-          }`}
-          onClick={handleNextClick}
-        >
-          다음
-        </button>
-      </div>
+        다음
+      </button>
     </div>
   );
 }
