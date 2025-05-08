@@ -2,9 +2,10 @@
 
 import ICON from '@/public/icons/trip-make-icon.svg';
 
-import { useFunnel } from '@use-funnel/browser';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+import { useFunnel } from '@use-funnel/browser';
 
 export default function ExplainStep({
   funnel,

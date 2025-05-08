@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LogoIcon from '@/public/icons/logo-icon.svg';
 import LogoTitleIcon from '@/public/icons/logo-title-icon.svg';
@@ -16,6 +16,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const { checkAuth } = useAuthStore();
 
   useEffect(() => {
@@ -73,7 +74,7 @@ export default function Header() {
                 <button onClick={handleMenuOpen}>
                   <MenuIcon />
                 </button>
-                <button>
+                <button onClick={() => router.push('/search')}>
                   <SearchIcon />
                 </button>
                 <ProfileIcon />

@@ -11,9 +11,19 @@ import coverImage8 from '@/public/images/coverImage8.png';
 import coverImage9 from '@/public/images/coverImage9.png';
 import coverImage10 from '@/public/images/coverImage10.png';
 
+import searchCoverImage1 from '@/public/images/searchCoverImage1.png';
+import searchCoverImage2 from '@/public/images/searchCoverImage2.png';
+import searchCoverImage3 from '@/public/images/searchCoverImage3.png';
+import searchCoverImage4 from '@/public/images/searchCoverImage4.png';
+
 import profileImage1 from '@/public/images/profileImage1.png';
 import profileImage2 from '@/public/images/profileImage2.png';
 import profileImage3 from '@/public/images/profileImage3.png';
+
+import searchProfileImage1 from '@/public/images/searchCoverImage1.png';
+import searchProfileImage2 from '@/public/images/searchCoverImage2.png';
+import searchProfileImage3 from '@/public/images/searchCoverImage3.png';
+import searchProfileImage4 from '@/public/images/searchCoverImage4.png';
 
 import { BoardType } from '@/types/board';
 
@@ -109,7 +119,7 @@ export const mockData: BoardType[] = [
   },
   {
     id: 9,
-    destination: '제주',
+    destination: '제주도',
     period: '일주일',
     mainTitle: '일주일 추천 코스',
     subTitle: '우도가 선물하는 힐링 타임',
@@ -128,5 +138,49 @@ export const mockData: BoardType[] = [
     profileImage: profileImage3,
     nickname: '트레버디10',
     styles: ['#30대', '#자연친화', '#견문 넓히기', '#휴식'],
+  },
+  {
+    id: 11,
+    destination: '제주도',
+    period: '3박 4일',
+    mainTitle: '부산 봄 즐기기',
+    subTitle: '생각보다 할 것도, 먹을 것도 많아서 바빳던 ... ',
+    coverImage: searchCoverImage1,
+    profileImage: searchProfileImage1,
+    nickname: '트레버디1',
+    styles: ['#20~30대', '#자연친화', '#견문 넓히기', '#휴식'],
+  },
+  {
+    id: 12,
+    destination: '제주도',
+    period: '1박 2일',
+    mainTitle: '긴 휴가보다 1박 2일 전주여행',
+    subTitle: '전주 먹방여행',
+    coverImage: searchCoverImage2,
+    profileImage: searchProfileImage2,
+    nickname: '트레버디2',
+    styles: ['#20대', '#감성투어', '#가성비', '#웨이팅 가능'],
+  },
+  {
+    id: 13,
+    destination: '제주도',
+    period: '아무때나',
+    mainTitle: '벚꽃놀이 가실분',
+    subTitle: '서울 벚꽃 명소 도장꺠기 고고씽 시간 맞을떄만 만나요',
+    coverImage: searchCoverImage3,
+    profileImage: searchProfileImage3,
+    nickname: '트레버디3',
+    styles: ['#20~50대', '#핫플', '#자연친화', '#인생샷필수'],
+  },
+  {
+    id: 14,
+    destination: '제주도',
+    period: '당일치기',
+    mainTitle: '낮과 밤 언제나 아름다운, 낙동강',
+    subTitle: "강을 보며 잠시 쉬어가기 좋은 '월영정'",
+    coverImage: searchCoverImage4,
+    profileImage: searchProfileImage3,
+    nickname: '트레버디4',
+    styles: ['#40대', '#휴식', '#자연친화', '#감성투어'],
   },
 ];

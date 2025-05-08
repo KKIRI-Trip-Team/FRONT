@@ -1,8 +1,11 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 import { BoardRegisterTypes } from '@/types/boardRegister';
 import { UseFunnelResults } from '@use-funnel/browser';
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { slideFadeVariants } from '@/utils/motionVariants';
 import { useTransitionStore } from '@/store/transitionStore';
 
@@ -87,6 +90,7 @@ export default function ExpenseStep({ funnel }: ExpenseFunnel) {
             placeholder="예상 비용"
             value={moneyValid}
             onChange={onChangeMoney}
+            maxLength={10}
             className="flex-1 h-[48px] outline-none text-black placeholder:text-[24px] font-normal leading-[34px] tracking-[-0.5px] text-[var(--Gray400)]"
           />
           <span className="ml-2 text-[24px] font-normal leading-[34px] tracking-[-0.5px] text-[var(--Gray900)]">

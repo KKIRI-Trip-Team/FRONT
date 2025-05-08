@@ -17,7 +17,7 @@ export default function BoardCard({
 }: BoardType) {
   return (
     <Link href={`board/${id}`}>
-      <div className="flex w-[373px] tb:w-[354px] mb:w-[275px] flex-col justify-center items-start font-[Pretendard]">
+      <div className="flex pc:w-[373px] tb:w-[354px] mb:w-[275px] flex-col justify-center items-start font-[Pretendard]">
         <Image
           className="h-[275px] self-stretch"
           width={0}
