@@ -15,13 +15,13 @@ export default function SearchResultList({ q }: { q?: string }) {
       </section>
 
       {filteredData.length > 0 ? (
-        <section className="flex px-[20px] h-[768px] items-start content-start gap-[20px] flex-[1_0_0] flex-wrap">
+        <section className="flex px-[20px] items-start content-start gap-[20px] flex-[1_0_0] flex-wrap">
           {filteredData.map((item) => (
             <BoardCard key={item.id} {...item} />
           ))}
         </section>
       ) : (
-        <section className="flex py-[100px] h-[768px] flex-col items-center gap-[10px] shrink-0 self-stretch bg-[var(--white)] font-[Pretendard]">
+        <section className="flex py-[100px] flex-col items-center gap-[10px] shrink-0 self-stretch bg-[var(--white)] font-[Pretendard]">
           <NoSearchDataIcon />
           <span className="text-[var(--Gray600)] text-center text-[14px] font-normal leading-[20px] tracking-[-0.5px]">
             검색 결과가 없습니다.

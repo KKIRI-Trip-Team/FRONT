@@ -1,5 +1,5 @@
-import RecentSearchList from '@/components/search/RecentSearchList';
 import RecoAIList from '@/components/search/RecoAIList';
+import RecentSearchList from '@/components/search/RecentSearchList';
 import SearchResultList from '@/components/search/SearchResultList';
 
 export default async function Page({
