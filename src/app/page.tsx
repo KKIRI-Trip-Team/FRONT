@@ -1,3 +1,9 @@
+import Page from './board/page';
+
 export default function Home() {
-  return <div className="text-4xl">Home</div>;
+  return (
+    <div>
+      <Page />
+    </div>
+  );
 }
