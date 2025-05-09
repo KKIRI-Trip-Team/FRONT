@@ -29,7 +29,8 @@
       "@/styles/*": ["./src/styles/*"],
       "@/utils/*": ["./src/utils/*"],
       "@/types/*": ["./src/types/*"]
-    }
+    },
+    "types": ["kakao.maps.d.ts"]
   },
   "include": [
     "declarations.d.ts",
