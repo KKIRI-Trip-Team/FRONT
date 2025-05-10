@@ -6,11 +6,11 @@ import RightArrowIcon from '@/public/icons/right-arrow-icon.svg';
 import Link from 'next/link';
 import { useMemo } from 'react';
 import ProfileIcon from '@/components/common/ProfileIcon';
-import { useAuthStore } from '@/store/useAuthStore';
+import { useAuthStore } from '@/store/authStore';
 
 const Menu = () => {
   const pathname = usePathname();
-  const { isLoggedIn } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
 
   const mainMenuList = useMemo(
     () => [
@@ -40,7 +40,7 @@ const Menu = () => {
         {/* 시작 메뉴 */}
         <div className="flex flex-col items-start gap-[20px] p-5 bg-white">
           <ProfileIcon linkEnabled={false} />
-          {isLoggedIn ? (
+          {isAuthenticated ? (
             <Link href="/mypage">
               <button className="flex items-center">
                 <span className="text-[var(--Gray900,#222)] text-subtitle1">
@@ -62,7 +62,7 @@ const Menu = () => {
         </div>
 
         {/* 메인 메뉴 */}
-        <nav className="p-5 min-h-[234px] pc:min-h-[528px] pc:max-h-[566px] flex-grow">
+        <nav className="p-5 min-h-[234px] pc:min-h-[528px] pc:max-h-[566px] flex-grow bg-[#f8f8f8]">
           <ul className="flex flex-col gap-[30px]">
             {mainMenuList.map(({ href, label }) => (
               <li key={`${href}-${label}`}>
