@@ -1,24 +1,23 @@
+// app/(auth)/register/page.tsx
 'use client';
 
 import { useFunnel } from '@use-funnel/browser';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { RegisterStepTypes } from '@/types/register';
+import { registerStepType, profileStepType } from '@/types/register';
 import RegisterStep from '@/components/auth/register/RegisterStep';
-import NicknameStep from '@/components/auth/register/NicknameStep';
-import CompleteStep from '@/components/auth/register/CompleteStep';
+import ProfileStep from '@/components/auth/register/ProfileStep';
 
 const page = () => {
   const router = useRouter();
-  const funnel = useFunnel<RegisterStepTypes>({
+  const funnel = useFunnel<{
+    registerStep: registerStepType;
+    profileStep: profileStepType;
+  }>({
     id: 'register-funnel',
     initial: {
       step: 'registerStep',
-      context: {
-        email: '',
-        password: '',
-        passwordConfirm: '',
-      },
+      context: {},
     },
   });
 
@@ -36,21 +35,27 @@ const page = () => {
     };
   }, [router]);
 
-  // 현재 단계에 따라 컴포넌트 렌더링
-  if (funnel.step === 'registerStep') {
-    return <RegisterStep funnel={funnel} />;
+  switch (funnel.step) {
+    case 'registerStep':
+      return (
+        <RegisterStep
+          funnel={funnel}
+          onNext={(email: string, password: string) =>
+            funnel.history.push('profileStep', () => ({
+              email,
+              password,
+            }))
+          }
+        />
+      );
+    case 'profileStep':
+      return (
+        <ProfileStep
+          email={funnel.context.email}
+          password={funnel.context.password}
+        />
+      );
   }
-
-  if (funnel.step === 'nicknameStep') {
-    return <NicknameStep funnel={funnel} />;
-  }
-
-  if (funnel.step === 'completeStep') {
-    return <CompleteStep funnel={funnel} />;
-  }
-
-  // 기본 리턴 - 타입스크립트 오류 방지
-  return <div>회원가입페이지</div>;
 };
 
 export default page;
