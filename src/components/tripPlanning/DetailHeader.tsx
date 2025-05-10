@@ -1,21 +1,17 @@
-// components/Header.tsx
 'use client';
+
+import Menu from '../common/Menu';
+import XICON from '@/public/icons/x-icon.svg';
+import SAVEICON from '@/public/icons/save-icon.svg';
+import LEFTARROWICON from '@/public/icons/left-arrow-icon.svg';
 
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import LogoIcon from '@/public/icons/logo-icon.svg';
-import LogoTitleIcon from '@/public/icons/logo-title-icon.svg';
-import MenuIcon from '@/public/icons/menu-icon.svg';
-import SearchIcon from '@/public/icons/search-icon.svg';
-import XIcon from '@/public/icons/x-icon.svg';
-import Menu from './Menu';
-import ProfileIcon from '@/components/common/ProfileIcon';
 
-export default function Header() {
+export default function DetailTripHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-
+  const router = useRouter();
   const handleMenuOpen = () => {
     setMenuOpen((prev) => !prev);
   };
@@ -50,27 +46,29 @@ export default function Header() {
           tb:w-[768px] 
           pc:w-[1200px] pc:h-[80px] pc:border-b-0"
         >
-          {/* 로고 */}
-          <Link href="/" className="flex items-center">
-            <LogoIcon />
-            <LogoTitleIcon />
-          </Link>
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-[16px]"
+          >
+            <LEFTARROWICON />
+            <SAVEICON />
+          </button>
 
           {/* 버튼 */}
           <div className="flex gap-5">
             {menuOpen ? (
               <button onClick={handleMenuOpen}>
-                <XIcon />
+                <XICON />
               </button>
             ) : (
               <>
-                <button onClick={handleMenuOpen}>
-                  <MenuIcon />
+                <button
+                  onClick={handleMenuOpen}
+                  className="font-
+                  [Pretendard] text-[14px] font-bold leading-[20px] tracking-[-0.5px] text-[var(--Primary)]"
+                >
+                  작성완료
                 </button>
-                <button onClick={() => router.push('/search')}>
-                  <SearchIcon />
-                </button>
-                <ProfileIcon />
               </>
             )}
           </div>

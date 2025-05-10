@@ -36,7 +36,7 @@ const Menu = () => {
       className="fixed inset-0 z-20 mt-[60px] pb-[env(safe-area-inset-bottom)] mx-auto
       w-[375px] tb:w-[768px] pc:w-[1200px] pc:mt-[80px] pc:mb-[60px]"
     >
-      <div className="max-w-[1200px] mx-auto pc:h-full flex flex-col">
+      <div className="max-w-[1200px] mx-auto h-full flex flex-col">
         {/* 시작 메뉴 */}
         <div className="flex flex-col items-start gap-[20px] p-5 bg-white">
           <ProfileIcon linkEnabled={false} />
