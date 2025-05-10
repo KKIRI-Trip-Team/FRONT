@@ -1,4 +1,6 @@
-import KakaoMap from '@/components/map/kakaoMap';
+'use client';
+
+import KakaoMap from '@/components/map/KakaoMap';
 
 export default function Page() {
   return (

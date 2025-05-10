@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
+import DetailTripHeader from '@/components/tripPlanning/TripDetailHeader';
 
 export default function RootLayoutClient({
   children,
@@ -13,6 +14,7 @@ export default function RootLayoutClient({
   const isAuthRoute =
     pathname?.startsWith('/login') || pathname?.startsWith('/register');
 
+  const isTripDetailPage = pathname.startsWith('/tripPlanning/tripDetail');
   return (
     <div
       className="mx-auto w-full max-w-[1920px] flex flex-col items-center
@@ -20,7 +22,7 @@ export default function RootLayoutClient({
       tb:max-w-[768px] 
       mb:max-w-[375px]"
     >
-      {!isAuthRoute && <Header />}
+      {isTripDetailPage ? <DetailTripHeader /> : !isAuthRoute && <Header />}
       <main className="w-full">{children}</main>
       <Footer />
     </div>

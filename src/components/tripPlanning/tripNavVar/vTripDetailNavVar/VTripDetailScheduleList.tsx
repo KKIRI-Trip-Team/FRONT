@@ -69,13 +69,13 @@ export default function VTripDetailScheduleList() {
         </div>
         <div className="flex h-[40px] items-center shrink-0 self-stretch">
           <div className="flex flex-col justify-center items-center gap-[10px] flex-[1_0_0] self-stretch border-t border-r border-t-[var(--Gray100)] border-r-[var(--Gray100)] ">
-            <button className="w-[24px] h-[24px] aspect-1/1 rotate-[-180deg]">
+            <button className="w-[24px] h-[24px] aspect-1/1 rotate-[-90deg]">
               <ArrowIcon />
             </button>
           </div>
 
           <div className="flex flex-col justify-center items-center gap-[10px] flex-[1_0_0] self-stretch border-t border-t-[var(--Gray100)] ">
-            <button className="w-[24px] h-[24px] aspect-1/1">
+            <button className="w-[24px] h-[24px] aspect-1/1 rotate-[90deg]">
               <ArrowIcon />
             </button>
           </div>
@@ -105,15 +105,16 @@ export default function VTripDetailScheduleList() {
             <TrashIcon />
           </div>
         </div>
+
         <div className="flex h-[40px] items-center shrink-0 self-stretch">
           <div className="flex flex-col justify-center items-center gap-[10px] flex-[1_0_0] self-stretch border-t border-r border-t-[var(--Gray100)] border-r-[var(--Gray100)] ">
-            <button className="w-[24px] h-[24px] aspect-1/1 rotate-[-180deg]">
+            <button className="w-[24px] h-[24px] aspect-1/1 rotate-[-90deg]">
               <ArrowIcon />
             </button>
           </div>
 
           <div className="flex flex-col justify-center items-center gap-[10px] flex-[1_0_0] self-stretch border-t border-t-[var(--Gray100)] ">
-            <button className="w-[24px] h-[24px] aspect-1/1">
+            <button className="w-[24px] h-[24px] aspect-1/1 rotate-[90deg]">
               <ArrowIcon />
             </button>
           </div>

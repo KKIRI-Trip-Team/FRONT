@@ -56,27 +56,16 @@ export default function DetailTripHeader() {
 
           {/* 버튼 */}
           <div className="flex gap-5">
-            {menuOpen ? (
-              <button onClick={handleMenuOpen}>
-                <XICON />
-              </button>
-            ) : (
-              <>
-                <button
-                  onClick={handleMenuOpen}
-                  className="font-
+            <button
+              onClick={handleMenuOpen}
+              className="font-
                   [Pretendard] text-[14px] font-bold leading-[20px] tracking-[-0.5px] text-[var(--Primary)]"
-                >
-                  작성완료
-                </button>
-              </>
-            )}
+            >
+              작성완료
+            </button>
           </div>
         </header>
       </div>
-
-      {/* 메뉴 오버레이 */}
-      {menuOpen && <Menu />}
     </>
   );
 }

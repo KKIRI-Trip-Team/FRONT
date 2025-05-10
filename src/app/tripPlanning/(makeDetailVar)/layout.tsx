@@ -1,3 +1,4 @@
+import DetailTripHeader from '@/components/tripPlanning/TripDetailHeader';
 import HTripNavVar from '@/components/tripPlanning/tripNavVar/HTripNavVar';
 import VTripNavVar from '@/components/tripPlanning/tripNavVar/VTripNavVar';
 

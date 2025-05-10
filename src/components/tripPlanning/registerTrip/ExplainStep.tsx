@@ -95,7 +95,7 @@ export default function ExplainStep({
           // disabled={!isSelected}
           // className={`text-center w-full text-[16px] font-bold leading-[22px] ${isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'}`}
           onClick={() => {
-            funnel.history.push('period', {});
+            funnel.history.push('', {});
           }}
         >
           다음
