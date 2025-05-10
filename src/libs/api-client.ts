@@ -1,24 +1,8 @@
-// src/utils/api.ts
+// libs/api-client.ts
 
 import ky from '@toss/ky';
-
-/**
- * API 응답의 기본 구조
- */
-interface ApiResponse<T> {
-  data: T;
-  success: boolean;
-  message?: string;
-}
-
-/**
- * API 요청 옵션
- */
-interface ApiOptions {
-  withCredentials?: boolean;
-  headers?: Record<string, string>;
-  timeout?: number;
-}
+import { ApiResponse, ApiOptions } from '@/types/api';
+import { getToken } from '@/utils/auth';
 
 /**
  * API 클라이언트 설정
@@ -53,7 +37,7 @@ const createApiClient = (baseUrl: string, options: ApiOptions = {}) => {
       request: Request,
       options: RequestInit,
       response: Response,
-    ): Response | void;
+    ): Response | void | Promise<Response | void>;
   }
 
   interface KyHooks {
@@ -71,29 +55,49 @@ const createApiClient = (baseUrl: string, options: ApiOptions = {}) => {
 
   const client = ky.create({
     prefixUrl: baseUrl,
-    credentials: mergedOptions.withCredentials ? 'include' : 'same-origin',
+    credentials: 'include', // 쿠키를 포함하기 위해 필요
     timeout: mergedOptions.timeout,
     headers: mergedOptions.headers,
     hooks: {
       beforeRequest: [
-        (request: Request) => {
-          // 요청 전 훅 - JWT 토큰 추가 등의 작업 수행 가능
-          const token = localStorage.getItem('token');
-          if (token) {
-            request.headers.set('Authorization', `Bearer ${token}`);
+        (request) => {
+          if (typeof document !== 'undefined') {
+            const accessToken = getToken();
+
+            if (accessToken) {
+              request.headers.set('Authorization', `Bearer ${accessToken}`);
+            }
           }
         },
       ],
       afterResponse: [
-        (_request: Request, _options: RequestInit, response: Response) => {
-          // 응답 후 훅 - 토큰 갱신이나 에러 처리 등의 작업 수행 가능
-          if (response.status === 401) {
-            // 인증 오류 처리 예시
-            localStorage.removeItem('token');
-            if (typeof window !== 'undefined') {
-              window.location.href = '/auth/login';
-            }
+        async (
+          _request: Request,
+          _options: RequestInit,
+          response: Response,
+        ) => {
+          // 응답 헤더에서 쿠키 정보 확인 (디버깅 용도)
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Response headers:', response.headers);
           }
+
+          // // 401 Unauthorized 응답 처리
+          // if (response.status === 401) {
+          //   // 인증 오류 처리 - 리다이렉트만 수행
+          //   // 쿠키는 서버에서 삭제하거나 만료시간 설정으로 관리
+          //   if (typeof window !== 'undefined') {
+          //     window.location.href = '/auth/login';
+          //   }
+          // }
+
+          // // 403 Forbidden - 권한 오류 처리
+          // if (response.status === 403) {
+          //   if (typeof window !== 'undefined') {
+          //     // 권한 오류 페이지로 리다이렉트 또는 다른 처리
+          //     console.error('접근 권한이 없습니다.');
+          //   }
+          // }
+
           return response;
         },
       ],
@@ -205,29 +209,31 @@ const createApiClient = (baseUrl: string, options: ApiOptions = {}) => {
  */
 const handleApiError = async <T>(error: any): Promise<ApiResponse<T>> => {
   if (error.response) {
-    // 서버로부터 응답이 있는 경우
     try {
-      const errorData = await error.response.json();
+      // 응답이 비어 있는지 확인
+      const text = await error.response.text();
+      const errorData = text
+        ? JSON.parse(text)
+        : { message: '빈 응답이 반환되었습니다.' };
 
-      // 서버 응답 내용을 콘솔에 출력
-      console.log('서버 응답 데이터:', {
-        message: errorData.message,
-        data: errorData.data,
-        timestamp: errorData.timestamp,
+      console.log('서버 응답:', {
+        message: errorData.message || '응답 메시지 없음',
+        status: error.response.status,
       });
-      alert(errorData.message);
 
       return {
         data: null as T,
-        success: false,
+        statusCode: error.response.status || 500,
         message: errorData.message || '서버 오류가 발생했습니다.',
+        timestamp: errorData.timestamp || new Date().toISOString(),
       };
     } catch (parseError) {
       console.log('응답 파싱 오류:', parseError);
       return {
         data: null as T,
-        success: false,
-        message: `서버 오류 (${error.response.status}): ${error.response.statusText}`,
+        statusCode: error.response.status || 500,
+        message: `서버 오류 (${error.response.status}): 응답을 처리할 수 없습니다`,
+        timestamp: new Date().toISOString(),
       };
     }
   }
@@ -235,8 +241,9 @@ const handleApiError = async <T>(error: any): Promise<ApiResponse<T>> => {
   // 네트워크 오류 등
   return {
     data: null as T,
-    success: false,
+    statusCode: 500,
     message: error.message || '네트워크 오류가 발생했습니다.',
+    timestamp: new Date().toISOString(),
   };
 };
 

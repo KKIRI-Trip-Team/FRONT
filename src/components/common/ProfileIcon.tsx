@@ -6,8 +6,8 @@ import DefaultProfileMobileIcon from '@/public/icons/default-profile-icon-mobile
 import DefaultProfileAuthPcIcon from '@/public/icons/default-profile-auth-icon-pc.svg';
 import DefaultProfileAuthMobileIcon from '@/public/icons/default-profile-auth-icon-mobile.svg';
 import Link from 'next/link';
-import { useAuthStore } from '@/store/useAuthStore';
-import { useEffect } from 'react';
+import Image from 'next/image';
+import { useAuthStore } from '@/store/authStore';
 
 interface ProfileIconProps {
   linkEnabled?: boolean;
@@ -18,23 +18,21 @@ export default function ProfileIcon({
   linkEnabled = true,
   onClick,
 }: ProfileIconProps) {
-  const { isLoggedIn, profileImage, checkAuth } = useAuthStore();
-
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+  const { user, isAuthenticated } = useAuthStore();
 
   const content = (
     <>
-      {!isLoggedIn ? (
+      {!isAuthenticated ? (
         <>
           <DefaultProfilePcIcon className="hidden pc:block" />
           <DefaultProfileMobileIcon className="block pc:hidden" />
         </>
-      ) : profileImage ? (
-        <img
-          src={profileImage}
-          alt="User Profile"
+      ) : user && user.profileUrl !== '' ? (
+        <Image
+          src={`https://trebuddy-s3-bucket.s3.ap-northeast-2.amazonaws.com/${user.profileUrl}`}
+          alt={'userProfileImage'}
+          width={60}
+          height={60}
           className="w-10 h-10 rounded-full pc:w-[60px] pc:h-[60px]"
         />
       ) : (
@@ -48,7 +46,7 @@ export default function ProfileIcon({
 
   if (linkEnabled) {
     return (
-      <Link href={isLoggedIn ? '/mypage' : '/login'} className="block">
+      <Link href={isAuthenticated ? '/mypage' : '/login'} className="block">
         {content}
       </Link>
     );

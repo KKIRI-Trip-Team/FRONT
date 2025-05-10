@@ -1,34 +1,21 @@
+// components/auth/LoginForm.tsx
 'use client';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { loginSchema, LoginFormData } from '@/utils/schema';
-import { useApi } from '@/hooks/useApi';
-import { ENDPOINTS } from '@/constants/endpoints';
 import { useRouter } from 'next/navigation';
-import { User } from '@/types/user';
 import AuthInput from '@/components/auth/AuthInput';
-
-// 로그인 성공 처리를 위한 커스텀 훅
-function useLoginSuccess(isSuccess: boolean, data: any, router: any) {
-  useEffect(() => {
-    if (isSuccess && data?.accessToken) {
-      console.log('로그인성공', data);
-      localStorage.setItem('accessToken', data.accessToken);
-      router.push('/');
-    }
-  }, [isSuccess, data, router]);
-}
+import { login } from '@/api/auth';
+import { useAuthStore } from '@/store/authStore';
+import { setToken } from '@/utils/auth';
+import { User } from '@/types/user';
 
 export default function LoginForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-
-  const { post, isLoading, isSuccess, data } = useApi<{
-    accessToken: string;
-    user: User;
-  }>();
+  const authStore = useAuthStore();
 
   const {
     register,
@@ -48,10 +35,30 @@ export default function LoginForm() {
   const password = watch('password');
   const isFormFilled = email && password;
 
-  useLoginSuccess(isSuccess, data, router);
-
   const onSubmit = async (formData: LoginFormData) => {
-    await post(ENDPOINTS.USER.LOGIN, formData);
+    try {
+      const response = await login(formData);
+
+      if (response.statusCode === 200) {
+        const { data } = response;
+        const userData: User = {
+          email: data.email,
+          nickname: data.nickname,
+          profileUrl: data.profileUrl,
+        };
+
+        setToken(data.accessToken);
+
+        authStore.setUser(userData);
+        authStore.setAuthenticated(true);
+        authStore.setLoading(false);
+
+        router.push('/');
+        router.refresh();
+      }
+    } catch (error) {
+      console.error('로그인 에러 : ', error);
+    }
   };
 
   const handlePasswordVisibility = {
@@ -60,7 +67,7 @@ export default function LoginForm() {
     onMouseLeave: () => setShowPassword(false),
   };
 
-  // 버튼 클래스 조합
+  // Button style classes
   const buttonBaseClasses =
     'flex h-[54px] py-4 justify-center items-center flex-shrink-0 self-stretch mb-[30px]';
   const buttonEnabledClasses = 'bg-[#5938DB] text-white';
@@ -80,7 +87,7 @@ export default function LoginForm() {
           이메일로 로그인
         </h1>
 
-        {/* 이메일 입력 폼 */}
+        {/* Email input form */}
         <AuthInput
           id="email"
           label="이메일 주소"
@@ -91,7 +98,7 @@ export default function LoginForm() {
           clearErrors={clearErrors}
         />
 
-        {/* 비밀번호 입력 폼 */}
+        {/* Password input form */}
         <AuthInput
           id="password"
           label="비밀번호 입력"
@@ -105,13 +112,13 @@ export default function LoginForm() {
         />
       </div>
 
-      {/* 조건부 스타일이 적용된 버튼 */}
+      {/* Conditionally styled button */}
       <button
         type="submit"
-        disabled={!isFormFilled || isLoading}
+        disabled={!isFormFilled}
         className={`${buttonBaseClasses} ${buttonColorClass}`}
       >
-        {isLoading ? '로그인 중...' : isFormFilled ? '로그인' : '확인'}
+        {isFormFilled ? '로그인' : '확인'}
       </button>
     </form>
   );

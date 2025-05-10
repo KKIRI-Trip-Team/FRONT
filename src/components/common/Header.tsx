@@ -11,17 +11,10 @@ import SearchIcon from '@/public/icons/search-icon.svg';
 import XIcon from '@/public/icons/x-icon.svg';
 import Menu from './Menu';
 import ProfileIcon from '@/components/common/ProfileIcon';
-import { useAuthStore } from '@/store/useAuthStore';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
-  const { checkAuth } = useAuthStore();
-
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
 
   const handleMenuOpen = () => {
     setMenuOpen((prev) => !prev);
