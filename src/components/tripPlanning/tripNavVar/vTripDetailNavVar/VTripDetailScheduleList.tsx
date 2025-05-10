@@ -2,38 +2,9 @@ import ArrowIcon from '@/public/icons/right-arrow-icon.svg';
 import FindPlaceIcon from '@/public/icons/find-place-icon.svg';
 import TrashIcon from '@/public/icons/trash-icon.svg';
 
-export default function TripNavVar() {
+export default function VTripDetailScheduleList() {
   return (
-    <div className="flex flex-col gap-[12px] w-[310px] h-[814px] px-[0px] py-[20px] items-center shrink-0 rounded-[20px] bg-[var(--white)] shadow-[0px_0px_10px_0px_rgba(0,0,0,0.10)] font-[Pretendard]">
-      <section className="flex px-[20px] py-[16px] items-center gap-[10px] self-stretch">
-        {/* 버튼 컴포넌트 화 예정 */}
-        <div className="flex w-[60px] h-[40px] flex-col justify-center items-center gap-[6px] rounded-[10px] bg-[var(--white)] shadow-[0px_0px_10px_0px_rgba(0,0,0,0.10)] cursor-pointer">
-          <span className="text-[12px] font-bold leading-[18px] tracking-[-0.5px] text-[var(--Gray900)]">
-            DAY1
-          </span>
-        </div>
-        <div className="flex w-[60px] h-[40px] flex-col justify-center items-center gap-[6px] rounded-[10px] bg-[var(--white)] shadow-[0px_0px_10px_0px_rgba(0,0,0,0.10)] cursor-pointer">
-          <span className="text-[12px] font-bold leading-[18px] tracking-[-0.5px] text-[var(--Gray900)]">
-            DAY1
-          </span>
-        </div>
-        <div className="flex w-[60px] h-[40px] flex-col justify-center items-center gap-[6px] rounded-[10px] bg-[var(--white)] shadow-[0px_0px_10px_0px_rgba(0,0,0,0.10)] cursor-pointer">
-          <span className="text-[12px] font-bold leading-[18px] tracking-[-0.5px] text-[var(--Gray900)]">
-            DAY1
-          </span>
-        </div>
-        <div className="flex w-[60px] h-[40px] flex-col justify-center items-center gap-[6px] rounded-[10px] bg-[var(--white)] shadow-[0px_0px_10px_0px_rgba(0,0,0,0.10)] cursor-pointer">
-          <span className="text-[12px] font-bold leading-[18px] tracking-[-0.5px] text-[var(--Gray900)]">
-            DAY1
-          </span>
-        </div>
-      </section>
-
-      <section className="text-[14px] font-normal leading-[20px] tracking-[-0.5px] text-center self-stretch text-[var(--Gray600)]">
-        <div>일정을 등록하고</div>
-        <div>여행을 생성해보세요!</div>
-      </section>
-
+    <>
       {/* 일정 컴포넌트화 예정 */}
       <section className="flex w-[270px] h-[122px] flex-col justify-center items-center shrink-0 rounded-[16px] bg-[var(--white) shadow-[0px_0px_10px_0px_rgba(0,0,0,0.10)]">
         <div className="flex px-[12px] py-[20px] items-center self-stretch justify-between">
@@ -157,6 +128,6 @@ export default function TripNavVar() {
           장소등록
         </div>
       </section>
-    </div>
+    </>
   );
 }
