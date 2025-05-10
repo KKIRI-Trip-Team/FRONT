@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="kr" suppressHydrationWarning={true}>
+    <html lang="kr">
       <body className={'bg-[#f8f8f8] min-w-[375px] min-h-screen'}>
         <RootLayoutClient>{children}</RootLayoutClient>
       </body>
