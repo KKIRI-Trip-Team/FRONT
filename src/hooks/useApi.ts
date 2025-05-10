@@ -1,3 +1,5 @@
+// hooks/useApi.ts
+'use client';
 import { useState, useCallback } from 'react';
 import { api } from '@/libs/api-client';
 import { ERROR_MESSAGES } from '@/constants/messages';
@@ -137,6 +139,29 @@ export function useApi<T>() {
     }
   }, []);
 
+  const upload = useCallback(async (endpoint: string, formData: FormData) => {
+    setState((prev) => ({ ...prev, isLoading: true }));
+    try {
+      const response = await api.upload<T>(endpoint, formData);
+      setState({
+        data: response.data,
+        isLoading: false,
+        error: null,
+        isSuccess: true,
+      });
+      return response;
+    } catch (error) {
+      setState({
+        data: null,
+        isLoading: false,
+        error:
+          error instanceof Error ? error.message : ERROR_MESSAGES.UNKNOWN_ERROR,
+        isSuccess: false,
+      });
+      throw error;
+    }
+  }, []);
+
   return {
     ...state,
     get,
@@ -144,5 +169,6 @@ export function useApi<T>() {
     put,
     patch,
     delete: deleteRequest,
+    upload,
   };
 }
