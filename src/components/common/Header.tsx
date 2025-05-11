@@ -11,7 +11,6 @@ import SearchIcon from '@/public/icons/search-icon.svg';
 import XIcon from '@/public/icons/x-icon.svg';
 import Menu from './Menu';
 import ProfileIcon from '@/components/common/ProfileIcon';
-import { useAuthStore } from '@/store/useAuthStore';
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 
 export default function Header() {

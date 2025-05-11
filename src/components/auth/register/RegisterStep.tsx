@@ -1,5 +1,4 @@
-// components/RegisterForm.tsx
-
+// components/RegisterStep.tsx
 'use client';
 
 import { useState } from 'react';
@@ -9,8 +8,9 @@ import { registerSchema, RegisterFormData } from '@/utils/schema';
 import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/constants/endpoints';
 import AuthInput from '@/components/auth/AuthInput';
+import { RegisterStepProps } from '@/types/funnel';
 
-export default function RegisterForm() {
+export default function RegisterStepPage({ funnel }: RegisterStepProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
@@ -28,7 +28,7 @@ export default function RegisterForm() {
     defaultValues: {
       email: '',
       password: '',
-      passwordConfirm: '', // passwordConfirm 추가
+      passwordConfirm: '',
     },
   });
 
@@ -50,6 +50,7 @@ export default function RegisterForm() {
   };
 
   const onSubmit = async (data: RegisterFormData) => {
+    console.log('회원가입 요청');
     try {
       setIsLoading(true);
       // 회원가입 요청
@@ -59,15 +60,18 @@ export default function RegisterForm() {
         confirmPassword: data.passwordConfirm,
       });
 
-      if (!response.ok) {
-        throw new Error('회원가입에 실패했습니다.');
-      }
+      if (response.statusCode === 201) {
+        console.log('회원가입 성공:', response);
 
-      alert('회원가입 성공');
-      // 로그인 페이지로 이동 등 추가 처리
+        // 로그인 성공 후 프로필 설정으로 이동 + context에 email,password 추가
+        funnel.history.push('profileStep', {
+          email: data.email,
+          password: data.password,
+        });
+      }
     } catch (error) {
       console.error('회원가입 오류:', error);
-      alert('회원가입 중 오류가 발생했습니다.');
+      alert('회원가입에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsLoading(false);
     }
