@@ -12,11 +12,13 @@ import XIcon from '@/public/icons/x-icon.svg';
 import Menu from './Menu';
 import ProfileIcon from '@/components/common/ProfileIcon';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const resetAll = useTripFunnelStore((state) => state.resetAll);
   const { checkAuth } = useAuthStore();
 
   useEffect(() => {
@@ -58,7 +60,7 @@ export default function Header() {
           pc:w-[1200px] pc:h-[80px] pc:border-b-0"
         >
           {/* 로고 */}
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center" onClick={resetAll}>
             <LogoIcon />
             <LogoTitleIcon />
           </Link>

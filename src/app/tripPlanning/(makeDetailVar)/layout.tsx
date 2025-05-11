@@ -8,9 +8,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div>{children}</div>
 
       {/* PC 전용 네비게이션 */}
-      <div className="hidden pc:block pc:absolute pc:top-5 pc:left-5 pc:z-10">
+      {/* <div className="hidden pc:block pc:absolute pc:top-5 pc:left-5 pc:z-10">
         <VTripNavVar />
-      </div>
+      </div> */}
 
       {/* 태블릿 이하 전용 네비게이션 */}
       <div className="block pc:hidden">

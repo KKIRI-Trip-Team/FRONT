@@ -31,4 +31,14 @@ export type BoardRegisterTypes = {
     styles: string[];
     expense?: number;
   };
+
+  explainStep: {
+    destination: string;
+    period: string;
+    gender: string;
+    ageRange: string[];
+    styles: string[];
+    expense: number;
+    explain: Record<string, any>;
+  };
 };

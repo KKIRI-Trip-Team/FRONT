@@ -5,13 +5,17 @@ import ICON from '@/public/icons/trip-make-icon.svg';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { useFunnel } from '@use-funnel/browser';
+import { useFunnel, UseFunnelResults } from '@use-funnel/browser';
+import { BoardRegisterTypes } from '@/types/boardRegister';
 
-export default function ExplainStep({
-  funnel,
-}: {
-  funnel: ReturnType<typeof useFunnel>;
-}) {
+interface ExplainFunnel {
+  funnel: UseFunnelResults<
+    BoardRegisterTypes,
+    BoardRegisterTypes['explainStep']
+  >;
+}
+
+export default function ExplainStep({ funnel }: ExplainFunnel) {
   const router = useRouter();
   const [tripTitle, setTripTitle] = useState(0);
   const [tripContent, setTripContent] = useState(0);
@@ -92,11 +96,11 @@ export default function ExplainStep({
         className={`flex h-[54px] w-full px-[0px] py-[16px] justify-center items-center shrink-0 self-stretch bg-[#F1F1F2]`}
       >
         <button
-          // disabled={!isSelected}
-          // className={`text-center w-full text-[16px] font-bold leading-[22px] ${isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'}`}
-          onClick={() => {
-            funnel.history.push('', {});
-          }}
+        // disabled={!isSelected}
+        // className={`text-center w-full text-[16px] font-bold leading-[22px] ${isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'}`}
+        // onClick={() => {
+        //   funnel.history.push('', {});
+        // }}
         >
           다음
         </button>

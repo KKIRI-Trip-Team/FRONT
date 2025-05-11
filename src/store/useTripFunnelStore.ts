@@ -4,7 +4,6 @@ import { persist } from 'zustand/middleware';
 type TripContext = {
   destination: string;
   period: string;
-  mate: string;
   gender: string;
   ageRange: string[];
   styles: string[];
@@ -17,7 +16,7 @@ interface TripFunnelStore {
   stepIndex: number;
   setContext: (updated: Partial<TripContext>) => void;
   setStepIndex: (index: number) => void;
-  resetContext: () => void;
+  resetAll: () => void;
 }
 
 export const useTripFunnelStore = create<TripFunnelStore>()(
@@ -26,7 +25,6 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
       context: {
         destination: '',
         period: '',
-        mate: '',
         gender: '',
         ageRange: [],
         expense: 0,
@@ -45,12 +43,11 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
 
       setStepIndex: (index) => set({ stepIndex: index }),
 
-      resetContext: () =>
+      resetAll: () => {
         set({
           context: {
             destination: '',
             period: '',
-            mate: '',
             gender: '',
             ageRange: [],
             expense: 0,
@@ -58,8 +55,11 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
             explain: {},
           },
           stepIndex: 1,
-        }),
+        });
+        localStorage.removeItem('trip-funnel-storage');
+      },
     }),
+
     {
       name: 'trip-funnel-storage', // localStorage key
       partialize: (state) => ({ context: state.context }), // 필요한 값만 저장
