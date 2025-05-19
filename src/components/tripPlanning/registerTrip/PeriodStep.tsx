@@ -31,6 +31,7 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
   const { stepIndex, context, setContext, setStepIndex } = useTripFunnelStore();
   const { direction } = useTransitionStore();
   const [selectedPeriod, setSelectedPeriod] = useState('');
+  const [periodId, setPeriodId] = useState<number | null>(null);
 
   useEffect(() => {
     setStepIndex(2);
@@ -39,8 +40,14 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
     }
   }, [context.period]);
 
-  const handlePeriodToggle = (period: string) => {
-    setSelectedPeriod((prev) => (prev === period ? '' : period));
+  const handlePeriodToggle = (period: string, id: number) => {
+    if (selectedPeriod === period) {
+      setSelectedPeriod('');
+      setPeriodId(null);
+    } else {
+      setSelectedPeriod(period);
+      setPeriodId(id);
+    }
   };
 
   const isSelected = selectedPeriod !== '';
@@ -84,7 +91,7 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
         {periods.map((period) => (
           <button
             key={period.id}
-            onClick={() => handlePeriodToggle(period.name)}
+            onClick={() => handlePeriodToggle(period.name, period.id)}
             className={`w-[80px] h-[60px] rounded-[10px] flex flex-col items-center justify-center transition text-center text-[14px] font-bold leading-[20px] ${getButtonStyle(selectedPeriod === period.name)}`}
           >
             {period.name}

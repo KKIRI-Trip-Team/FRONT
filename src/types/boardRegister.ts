@@ -39,6 +39,26 @@ export type BoardRegisterTypes = {
     ageRange: string[];
     styles: string[];
     expense: number;
-    explain: Record<string, any>;
+    explain?: {
+      title: string;
+      subTitle: string;
+    };
+  };
+
+  detailStep: {
+    destination: string;
+    period: string;
+    gender: string;
+    ageRange: string[];
+    styles: string[];
+    expense: number;
+    explain: {
+      title: string;
+      subTitle: string;
+    };
+    daysPlan: {
+      day: number;
+      markers: { lat: number; lng: number }[];
+    }[];
   };
 };

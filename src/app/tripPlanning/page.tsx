@@ -6,6 +6,7 @@ import MateStep from '@/components/tripPlanning/registerTrip/MateStep';
 import StyleStep from '@/components/tripPlanning/registerTrip/StyleStep';
 import ExpenseStep from '@/components/tripPlanning/registerTrip/ExpenseStep';
 import ExplainStep from '@/components/tripPlanning/registerTrip/ExplainStep';
+import DetailStep from '@/components/tripPlanning/registerTrip/DetailStep';
 
 import { useFunnel } from '@use-funnel/browser';
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
@@ -38,5 +39,7 @@ export default function Page() {
       return <ExpenseStep funnel={funnel} />;
     case 'explainStep':
       return <ExplainStep funnel={funnel} />;
+    case 'detailStep':
+      return <DetailStep />;
   }
 }

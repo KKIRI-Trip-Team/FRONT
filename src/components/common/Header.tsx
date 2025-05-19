@@ -18,11 +18,6 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const resetAll = useTripFunnelStore((state) => state.resetAll);
-  const { checkAuth } = useAuthStore();
-
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
 
   const handleMenuOpen = () => {
     setMenuOpen((prev) => !prev);

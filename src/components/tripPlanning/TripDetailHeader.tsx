@@ -1,38 +1,12 @@
 'use client';
 
-import Menu from '../common/Menu';
-import XICON from '@/public/icons/x-icon.svg';
 import SAVEICON from '@/public/icons/save-icon.svg';
 import LEFTARROWICON from '@/public/icons/left-arrow-icon.svg';
 
-import { useEffect, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 export default function DetailTripHeader() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const pathname = usePathname();
   const router = useRouter();
-  const handleMenuOpen = () => {
-    setMenuOpen((prev) => !prev);
-  };
-
-  // 경로가 변경될 때마다 메뉴 닫기
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
-
-  // 메뉴가 열릴 때 스크롤 방지
-  useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, [menuOpen]);
 
   return (
     <>
@@ -46,18 +20,17 @@ export default function DetailTripHeader() {
           tb:w-[768px] 
           pc:w-[1200px] pc:h-[80px] pc:border-b-0"
         >
-          <button
-            onClick={() => router.back()}
-            className="flex items-center gap-[16px]"
-          >
-            <LEFTARROWICON />
-            <SAVEICON />
-          </button>
-
+          <div className="flex items-center gap-[16px]">
+            <button onClick={() => router.back()}>
+              <LEFTARROWICON />
+            </button>
+            <button onClick={() => window.alert('저장되었습니다')}>
+              <SAVEICON />
+            </button>
+          </div>
           {/* 버튼 */}
           <div className="flex gap-5">
             <button
-              onClick={handleMenuOpen}
               className="font-
                   [Pretendard] text-[14px] font-bold leading-[20px] tracking-[-0.5px] text-[var(--Primary)]"
             >
