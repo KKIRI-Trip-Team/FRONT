@@ -1,16 +1,19 @@
 'use client';
 
 import ICON from '@/public/icons/trip-make-icon.svg';
+import Image from 'next/image';
 
 import { motion } from 'framer-motion';
 import { slideFadeVariants } from '@/utils/motionVariants';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useFunnel, UseFunnelResults } from '@use-funnel/browser';
+import { UseFunnelResults } from '@use-funnel/browser';
 import { BoardRegisterTypes } from '@/types/boardRegister';
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 import { useTransitionStore } from '@/store/transitionStore';
+import { uploadImageToServer } from '../imageUpload/ImageUpload';
+import { useApi } from '@/hooks/useApi';
 
 interface ExplainFunnel {
   funnel: UseFunnelResults<
@@ -21,9 +24,27 @@ interface ExplainFunnel {
 
 export default function ExplainStep({ funnel }: ExplainFunnel) {
   const router = useRouter();
-  const { context, stepIndex, setContext, setStepIndex } = useTripFunnelStore();
+  const { trip, stepIndex, setContext, setStepIndex } = useTripFunnelStore();
   const { direction } = useTransitionStore();
+  const { post } = useApi();
+  const [image, setImage] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    console.log('📦 선택된 파일:', file);
+
+    try {
+      const key = await uploadImageToServer(file, post);
+      setImage(key); // 이미지 키를 저장
+      console.log('✅ 이미지 키:', key);
+    } catch (err) {
+      console.log('❌ 이미지 업로드 실패:', err);
+    }
+  };
   // 전역 context
   const [title, setTitle] = useState('');
   const [subTitle, setSubTitle] = useState('');
@@ -33,7 +54,7 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
   const [subTitleLength, setSubTitleLength] = useState(0);
 
   useEffect(() => {
-    const { title, subTitle } = context.explain;
+    const { title, subTitle, image } = trip.explain;
     setStepIndex(6);
     if (title) {
       setTitle(title);
@@ -41,14 +62,17 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
     if (subTitle) {
       setSubTitle(subTitle);
     }
-  }, [title, subTitle]);
+    if (image) {
+      setImage(image);
+    }
+  }, [title, subTitle, image]);
 
   const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
     setTitleLength(e.currentTarget.value.length);
   };
 
-  const onChangesubtitleLength = (
+  const onChangeSubtitleLength = (
     e: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     setSubTitle(e.target.value);
@@ -56,7 +80,7 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
   };
 
   const makeDetailTrip = () => {
-    setContext({ explain: { title, subTitle } });
+    setContext({ explain: { title, subTitle, image } });
     router.push('/tripPlanning/tripDetail');
   };
 
@@ -85,7 +109,29 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
       </div>
 
       <div className="pc:w-[1160px] pc:h-[670px] tb:w-[728px] tb:h-[335px] bg-[var(--Gray200)] flex items-center justify-center">
-        <ICON />
+        <label
+          htmlFor="imageUpload"
+          className="cursor-pointer w-full h-full flex justify-center items-center"
+        >
+          {image ? (
+            <Image
+              src={`https://trebuddy-s3-bucket.s3.ap-northeast-2.amazonaws.com/${image}`}
+              alt={'boardImage'}
+              width={1160}
+              height={670}
+            />
+          ) : (
+            <ICON />
+          )}
+        </label>
+        <input
+          id="imageUpload"
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={handleImageChange}
+          hidden
+        />
       </div>
 
       <section className="w-full gap-[4px]">
@@ -95,7 +141,7 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
             placeholder="여행 제목"
             value={title}
             onChange={onChangeTitle}
-            maxLength={20}
+            maxLength={30}
             className="flex-1 text-[24px] font-normal leading-[34px] tracking-[-0.5px]  placeholder:text-[#CCC] outline-none pb-[10px]"
           />
         </div>
@@ -103,7 +149,7 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
         <div className="flex justify-end items-start gap-[4px] self-stretch text-[10px] font-bold leading-[16px] tracking-[-0.5px]">
           <span className="text-[var(--Gray900)]">{titleLength}</span>
           <span className="text-[var(--Gray500)]">/</span>
-          <span className="text-[var(--Gray500)]">20</span>
+          <span className="text-[var(--Gray500)]">30</span>
         </div>
       </section>
 
@@ -112,8 +158,9 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
           <textarea
             placeholder="여행 상세내용"
             value={subTitle}
-            onChange={onChangesubtitleLength}
-            maxLength={60}
+            onChange={onChangeSubtitleLength}
+            rows={5}
+            maxLength={400}
             className="flex-1 text-[24px] font-normal leading-[34px] tracking-[-0.5px] placeholder:text-[#CCC] outline-none pb-[10px] resize-none"
           />
         </div>
@@ -121,7 +168,7 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
         <div className="flex justify-end items-start gap-[4px] self-stretch text-[10px] font-bold leading-[16px] tracking-[-0.5px]">
           <span className="text-[var(--Gray900)]">{subTitleLength}</span>
           <span className="text-[var(--Gray500)]">/</span>
-          <span className="text-[var(--Gray500)]">60</span>
+          <span className="text-[var(--Gray500)]">400</span>
         </div>
       </section>
 

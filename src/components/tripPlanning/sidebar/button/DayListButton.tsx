@@ -3,9 +3,9 @@
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 
 export default function DayListButton() {
-  const { context } = useTripFunnelStore();
+  const { trip } = useTripFunnelStore();
 
-  const period = context.period;
+  const period = trip.period;
   const daysMatch = period.match(/^\d+/);
   const days = daysMatch ? parseInt(daysMatch[0], 10) : 1;
 

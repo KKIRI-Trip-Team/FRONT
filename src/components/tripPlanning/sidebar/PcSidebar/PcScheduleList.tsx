@@ -1,9 +1,5 @@
 'use client';
 
-import UpArrowIcon from '@/public/icons/arrow-up-icon.svg';
-import DownArrowIcon from '@/public/icons/arrow-down-icon.svg';
-import TrashIcon from '@/public/icons/trash-icon.svg';
-
 import NoScheduleItemText from '../text/NoScheduleItemText';
 import MakeScheduleItemButton from '../button/MakeScheduleItemButton';
 

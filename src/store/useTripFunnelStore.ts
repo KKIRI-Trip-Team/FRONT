@@ -9,6 +9,8 @@ export type ScheduleItem = {
   phoneNumber: string;
   lat: number;
   lon: number;
+  place_url?: string;
+  road_address?: string;
 };
 
 // 상세일정 작성 시 각 요일별 마커 타입
@@ -28,11 +30,12 @@ type TripContext = {
   explain: {
     title: string;
     subTitle: string;
+    image: string;
   };
 };
 
 interface TripFunnelStore {
-  context: TripContext;
+  trip: TripContext;
   stepIndex: number;
   daysPlan: DayPlan[];
 
@@ -54,7 +57,7 @@ interface TripFunnelStore {
 export const useTripFunnelStore = create<TripFunnelStore>()(
   persist(
     (set) => ({
-      context: {
+      trip: {
         destination: '',
         period: '',
         gender: '',
@@ -64,6 +67,7 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
         explain: {
           title: '',
           subTitle: '',
+          image: '',
         },
       },
       currentDay: 1,
@@ -74,8 +78,8 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
 
       setContext: (updated) =>
         set((state) => ({
-          context: {
-            ...state.context,
+          trip: {
+            ...state.trip,
             ...updated,
           },
         })),
@@ -101,6 +105,10 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
             targetDay.places.push(place);
           } else {
             updatedPlans.push({ day, places: [place] });
+          }
+
+          if (targetDay?.places.length === 20) {
+            alert('하루에 최대 20개까지 선택가능합니다.');
           }
 
           return { daysPlan: updatedPlans };
@@ -143,7 +151,7 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
 
       resetAll: () => {
         set({
-          context: {
+          trip: {
             destination: '',
             period: '',
             gender: '',
@@ -153,19 +161,20 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
             explain: {
               title: '',
               subTitle: '',
+              image: '',
             },
           },
           stepIndex: 1,
           daysPlan: [],
         });
-        localStorage.removeItem('trip-funnel-storage');
+        localStorage.removeItem('trip-storage');
       },
     }),
     {
-      name: 'trip-funnel-storage',
+      name: 'trip-storage',
 
       partialize: (state) => ({
-        context: state.context,
+        trip: state.trip,
         daysPlan: state.daysPlan,
       }),
     },

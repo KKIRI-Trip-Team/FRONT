@@ -39,17 +39,17 @@ interface DestinationFunnel {
 }
 
 export default function DestinationStep({ funnel }: DestinationFunnel) {
-  const { stepIndex, context, setContext, setStepIndex } = useTripFunnelStore();
+  const { stepIndex, trip, setContext, setStepIndex } = useTripFunnelStore();
   const { direction } = useTransitionStore();
   const [selectedCity, setSelectedCity] = useState('');
 
   // 기존 저장된 값이 있다면 초기값 반영
   useEffect(() => {
     setStepIndex(1);
-    if (context.destination) {
-      setSelectedCity(context.destination);
+    if (trip.destination) {
+      setSelectedCity(trip.destination);
     }
-  }, [context.destination]);
+  }, [trip.destination]);
 
   const handleCityToggle = (cityName: string) => {
     setSelectedCity((prev) => (prev === cityName ? '' : cityName));
@@ -63,7 +63,7 @@ export default function DestinationStep({ funnel }: DestinationFunnel) {
       : 'bg-[#F8F8F8]';
 
   const handleNext = () => {
-    const nextContext = { ...context, destination: selectedCity };
+    const nextContext = { ...trip, destination: selectedCity };
     setContext({ destination: selectedCity });
     funnel.history.push('periodStep', nextContext);
   };

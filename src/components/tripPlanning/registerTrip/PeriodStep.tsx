@@ -28,17 +28,17 @@ interface PeriodFunnel {
 }
 
 export default function PeriodStep({ funnel }: PeriodFunnel) {
-  const { stepIndex, context, setContext, setStepIndex } = useTripFunnelStore();
+  const { stepIndex, trip, setContext, setStepIndex } = useTripFunnelStore();
   const { direction } = useTransitionStore();
   const [selectedPeriod, setSelectedPeriod] = useState('');
   const [periodId, setPeriodId] = useState<number | null>(null);
 
   useEffect(() => {
     setStepIndex(2);
-    if (context.period) {
-      setSelectedPeriod(context.period);
+    if (trip.period) {
+      setSelectedPeriod(trip.period);
     }
-  }, [context.period]);
+  }, [trip.period]);
 
   const handlePeriodToggle = (period: string, id: number) => {
     if (selectedPeriod === period) {
@@ -58,7 +58,7 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
       : 'bg-[#F8F8F8]';
 
   const handleNext = () => {
-    const nextContext = { ...context, period: selectedPeriod };
+    const nextContext = { ...trip, period: selectedPeriod };
     setContext({ period: selectedPeriod });
     funnel.history.push('mateStep', nextContext);
   };

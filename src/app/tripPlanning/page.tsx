@@ -1,26 +1,48 @@
 'use client';
 
-import DestinationStep from '@/components/tripPlanning/registerTrip/DestinationStep';
-import PeriodStep from '@/components/tripPlanning/registerTrip/PeriodStep';
-import MateStep from '@/components/tripPlanning/registerTrip/MateStep';
-import StyleStep from '@/components/tripPlanning/registerTrip/StyleStep';
-import ExpenseStep from '@/components/tripPlanning/registerTrip/ExpenseStep';
-import ExplainStep from '@/components/tripPlanning/registerTrip/ExplainStep';
-import DetailStep from '@/components/tripPlanning/registerTrip/DetailStep';
+import dynamic from 'next/dynamic';
 
 import { useFunnel } from '@use-funnel/browser';
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 import { BoardRegisterTypes } from '@/types/boardRegister';
 import { useFunnelDirection } from '@/hooks/useFunnelDirection';
 
+const DestinationStep = dynamic(
+  () => import('@/components/tripPlanning/registerTrip/DestinationStep'),
+  { ssr: false },
+);
+
+const PeriodStep = dynamic(
+  () => import('@/components/tripPlanning/registerTrip/PeriodStep'),
+  { ssr: false },
+);
+
+const MateStep = dynamic(
+  () => import('@/components/tripPlanning/registerTrip/MateStep'),
+  { ssr: false },
+);
+
+const StyleStep = dynamic(
+  () => import('@/components/tripPlanning/registerTrip/StyleStep'),
+);
+
+const ExpenseStep = dynamic(
+  () => import('@/components/tripPlanning/registerTrip/ExpenseStep'),
+);
+
+const ExplainStep = dynamic(
+  () => import('@/components/tripPlanning/registerTrip/ExplainStep'),
+  { ssr: false },
+);
+
 export default function Page() {
-  const { context } = useTripFunnelStore();
+  const { trip } = useTripFunnelStore();
 
   const funnel = useFunnel<BoardRegisterTypes>({
-    id: 'register-trip-funnel',
+    id: 'register-trip',
     initial: {
       step: 'destinationStep',
-      context: context,
+      context: trip,
     },
   });
 
@@ -39,7 +61,5 @@ export default function Page() {
       return <ExpenseStep funnel={funnel} />;
     case 'explainStep':
       return <ExplainStep funnel={funnel} />;
-    case 'detailStep':
-      return <DetailStep />;
   }
 }

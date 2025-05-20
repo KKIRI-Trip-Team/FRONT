@@ -2,12 +2,13 @@
 
 import ArrowIcon from '@/public/icons/right-arrow-icon.svg';
 
+import { createPortal } from 'react-dom';
+
 import { useMapStore } from '@/store/useMapstore';
 import { useEffect, useRef, useState } from 'react';
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 import { cityCoordinates } from '@/constants/cityCoordinates';
 import { KakaoCategory } from '@/constants/kakaoCategory';
-import { createPortal } from 'react-dom';
 
 interface KakaoCategoryItem {
   id: KakaoCategory;
@@ -122,7 +123,7 @@ function DisplayPlaceInfo({ places, onClose }: PlaceOverlayProps) {
 }
 
 export default function KakaoMap() {
-  const { context, daysPlan } = useTripFunnelStore();
+  const { trip, daysPlan } = useTripFunnelStore();
   const [scriptLoaded, setScriptLoaded] = useState(false);
 
   const setMapSelectedPlace = useMapStore((s) => s.setSelectedPlace);
@@ -139,7 +140,7 @@ export default function KakaoMap() {
   const [placeOverlay, setPlaceOverlay] =
     useState<kakao.maps.CustomOverlay | null>(null);
 
-  // 카카오맵 API 카테고리 변수들
+  // 카카오맵 API 카테고리 변수들 / 검색 결과 변수들
   const [currentCategory, setCurrentCategory] = useState<KakaoCategory>();
   const placesServiceRef = useRef<kakao.maps.services.Places | undefined>(
     undefined,
@@ -148,8 +149,12 @@ export default function KakaoMap() {
   const searchPlacesRef = useRef<() => void | undefined>(undefined);
   const [keyword, setKeyword] = useState('');
 
-  const city = context.destination;
+  // 사용자가 지정한 목적지 기반 카카오 UI렌더링 변수들
+  const city = trip.destination;
   const coordinate = cityCoordinates[city];
+
+  const placeFromScheduleItem = useMapStore((s) => s.selectedPlace);
+  const currentDay = useTripFunnelStore((s) => s.currentDay);
 
   // Kakao Maps 스크립트 로드
   useEffect(() => {
@@ -194,12 +199,67 @@ export default function KakaoMap() {
 
   // 마커 정리
   useEffect(() => {
-    // daysPlane 이 있다면은 초기접속시에 그 일정에 추가한 x,y좌표를 기준으로 마커 UI렌더링 표시
-
     return () => {
       markers.forEach((marker) => marker.setMap(null));
     };
   }, [markers]);
+
+  useEffect(() => {
+    // daysPlane 이 있다면은 초기접속시에 그 일정에 추가한 x,y좌표를 기준으로 마커 UI렌더링 표시
+    if (!map) return;
+
+    const { kakao } = window;
+    const currentPlaces =
+      daysPlan.find((d) => d.day === currentDay)?.places || [];
+
+    // 마커 초기화
+    markers.forEach((m) => m.setMap(null));
+    // 오버레이 있을시 없앰
+    if (placeOverlay) placeOverlay.setMap(null);
+
+    setMarkers([]);
+
+    // 새 마커 추가
+    const newMarkers = currentPlaces.map((place) => {
+      const position = new kakao.maps.LatLng(+place.lat, +place.lon);
+      const marker = new kakao.maps.Marker({ position });
+      marker.setMap(map);
+
+      return marker;
+    });
+
+    setMarkers(newMarkers);
+    setCurrentCategory(undefined);
+  }, [currentDay, map, daysPlan]);
+
+  useEffect(() => {
+    if (!map || !placeFromScheduleItem) return;
+
+    const { kakao } = window;
+    const { x, y } = placeFromScheduleItem;
+
+    const position = new kakao.maps.LatLng(+y, +x);
+
+    markers.forEach((marker) => marker.setMap(null));
+    if (placeOverlay) placeOverlay.setMap(null);
+
+    const marker = new kakao.maps.Marker({ position });
+    marker.setMap(map);
+    setMarkers([marker]);
+
+    const container = document.createElement('div');
+    overlayRef.current = container;
+
+    const overlay = new kakao.maps.CustomOverlay({
+      content: container,
+      position: marker.getPosition(),
+    });
+
+    setPlaceOverlay(overlay);
+    setSelectedPlace(placeFromScheduleItem);
+    overlay.setMap(map);
+    map.setCenter(position);
+  }, [placeFromScheduleItem, map]);
 
   // 카테고리 변경
   const handleCategoryChange = (category: KakaoCategory | undefined) => {
@@ -208,7 +268,7 @@ export default function KakaoMap() {
     if (!map || !placesServiceRef.current) return;
 
     // 기존 마커 제거
-    markers.forEach((m) => m.setMap(null));
+    // markers.forEach((m) => m.setMap(null));
     // 기존 오버레이 제거
     setSelectedPlace(null);
     setMarkers([]);

@@ -42,23 +42,7 @@ export type BoardRegisterTypes = {
     explain?: {
       title: string;
       subTitle: string;
+      image: string;
     };
-  };
-
-  detailStep: {
-    destination: string;
-    period: string;
-    gender: string;
-    ageRange: string[];
-    styles: string[];
-    expense: number;
-    explain: {
-      title: string;
-      subTitle: string;
-    };
-    daysPlan: {
-      day: number;
-      markers: { lat: number; lng: number }[];
-    }[];
   };
 };

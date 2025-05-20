@@ -1,19 +1,8 @@
 import { create } from 'zustand';
 
-export type SelectedPlace = {
-  id: string;
-  place_name: string;
-  address_name: string;
-  road_address_name?: string;
-  category_name: string;
-  phone: string;
-  x: string;
-  y: string;
-};
-
 interface MapStore {
-  selectedPlace: SelectedPlace | null;
-  setSelectedPlace: (place: SelectedPlace) => void;
+  selectedPlace: kakao.maps.services.PlacesSearchResultItem | null;
+  setSelectedPlace: (place: kakao.maps.services.PlacesSearchResultItem) => void;
   clearSelectedPlace: () => void;
 }
 

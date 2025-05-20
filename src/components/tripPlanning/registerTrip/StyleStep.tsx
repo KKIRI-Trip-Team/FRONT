@@ -34,14 +34,14 @@ interface StyleFunnel {
 }
 
 export default function StyleStep({ funnel }: StyleFunnel) {
-  const { stepIndex, context, setContext, setStepIndex } = useTripFunnelStore();
+  const { stepIndex, trip, setContext, setStepIndex } = useTripFunnelStore();
   const { direction } = useTransitionStore();
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
 
   useEffect(() => {
     setStepIndex(4);
-    if (context.styles?.length > 0) {
-      setSelectedStyles(context.styles);
+    if (trip.styles?.length > 0) {
+      setSelectedStyles(trip.styles);
     }
   }, []);
 
@@ -61,7 +61,7 @@ export default function StyleStep({ funnel }: StyleFunnel) {
       : 'bg-[#F8F8F8]';
 
   const handleNext = () => {
-    const nextContext = { ...context, styles: selectedStyles };
+    const nextContext = { ...trip, styles: selectedStyles };
     setContext({ styles: selectedStyles });
     funnel.history.push('expenseStep', nextContext);
   };

@@ -28,16 +28,16 @@ interface MateFunnel {
 }
 
 export default function MateStep({ funnel }: MateFunnel) {
-  const { stepIndex, context, setContext, setStepIndex } = useTripFunnelStore();
+  const { stepIndex, trip, setContext, setStepIndex } = useTripFunnelStore();
   const { direction } = useTransitionStore();
   const [selectedGender, setSelectedGender] = useState('');
   const [selectedAges, setSelectedAges] = useState<string[]>([]);
 
   useEffect(() => {
     setStepIndex(3);
-    if (context.gender) setSelectedGender(context.gender);
-    if (context.ageRange?.length > 0) setSelectedAges(context.ageRange);
-  }, [context.gender, context.ageRange]);
+    if (trip.gender) setSelectedGender(trip.gender);
+    if (trip.ageRange?.length > 0) setSelectedAges(trip.ageRange);
+  }, [trip.gender, trip.ageRange]);
 
   const toggleGender = (gender: string) => {
     setSelectedGender((prev) => (prev === gender ? '' : gender));
@@ -58,7 +58,7 @@ export default function MateStep({ funnel }: MateFunnel) {
 
   const handleNext = () => {
     const nextContext = {
-      ...context,
+      ...trip,
       gender: selectedGender,
       ageRange: selectedAges,
     };

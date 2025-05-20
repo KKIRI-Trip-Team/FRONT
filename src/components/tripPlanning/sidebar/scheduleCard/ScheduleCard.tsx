@@ -8,12 +8,14 @@ import DownArrowIcon from '@/public/icons/down-arrow-icon.svg';
 import TrashIcon from '@/public/icons/trash-icon.svg';
 
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
+import { useMapStore } from '@/store/useMapstore';
 
 export default function ScheduleCard() {
   const daysPlan = useTripFunnelStore((s) => s.daysPlan);
   const currentDay = useTripFunnelStore((s) => s.currentDay);
   const schedule = daysPlan.find((d) => d.day === currentDay)?.places || [];
 
+  const setSelectedPlace = useMapStore((s) => s.setSelectedPlace);
   const removePlace = useTripFunnelStore((s) => s.removePlaceFromDay);
   const moveUp = useTripFunnelStore((s) => s.movePlaceUp);
   const moveDown = useTripFunnelStore((s) => s.movePlaceDown);
@@ -26,7 +28,26 @@ export default function ScheduleCard() {
           className="flex w-[270px] h-[122px] flex-col justify-center items-center shrink-0 rounded-[16px] bg-[var(--white)] shadow-[0px_0px_10px_0px_rgba(0,0,0,0.10)]"
         >
           <div className="flex px-[12px] py-[20px] items-center self-stretch justify-between">
-            <div className="flex w-[169px] h-[42px] items-start gap-[10px]">
+            <div
+              onClick={() => {
+                const placeResultItem: kakao.maps.services.PlacesSearchResultItem =
+                  {
+                    id: place.id,
+                    place_name: place.name,
+                    address_name: place.address,
+                    road_address_name: place.road_address as string,
+                    category_name: place.category,
+                    category_group_name: '',
+                    phone: place.phoneNumber,
+                    x: place.lon.toString(),
+                    y: place.lat.toString(),
+                    place_url: place.place_url as string,
+                    distance: '',
+                  };
+                setSelectedPlace(placeResultItem);
+              }}
+              className="flex w-[169px] h-[42px] items-start gap-[10px]"
+            >
               <div
                 className={`flex w-[24px] h-[24px] justify-center items-center rounded-full text-white font-bold text-[14px] leading-[20px] tracking-[-0.5px] ${
                   idx % 3 === 0
@@ -52,6 +73,7 @@ export default function ScheduleCard() {
                 </span>
               </div>
             </div>
+
             <button
               onClick={() => removePlace(currentDay, place.id)}
               className="flex w-[30px] h-[30px] justify-center items-center rounded-full bg-[var(--white)] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.15)]"

@@ -26,6 +26,8 @@ export default function MakeScheduleItemButton() {
       phoneNumber: selectedPlace.phone,
       lat: +selectedPlace.y,
       lon: +selectedPlace.x,
+      place_url: selectedPlace.place_url,
+      road_address: selectedPlace.road_address_name,
     });
   };
 
