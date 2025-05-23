@@ -5,9 +5,10 @@ import { motion } from 'framer-motion';
 
 import { UseFunnelResults } from '@use-funnel/browser';
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
-import { BoardRegisterTypes } from '@/types/boardRegister';
+
 import { slideFadeVariants } from '@/utils/motionVariants';
 import { useTransitionStore } from '@/store/transitionStore';
+import { BoardRegisterSteps } from '@/types/boardRegister';
 
 const cities = [
   { id: 1, emoji: '🗼', name: '서울' },
@@ -33,8 +34,8 @@ const cities = [
 
 interface DestinationFunnel {
   funnel: UseFunnelResults<
-    BoardRegisterTypes,
-    BoardRegisterTypes['destinationStep']
+    BoardRegisterSteps,
+    BoardRegisterSteps['destinationStep']
   >;
 }
 

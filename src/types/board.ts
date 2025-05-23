@@ -1,13 +1,25 @@
-import type { StaticImageData } from 'next/image';
+import { StaticImageData } from 'next/image';
 
-export interface BoardType {
+export interface BoardData {
   id: number;
+  title: string;
   destination: string;
   period: string;
-  mainTitle: string;
-  subTitle: string;
+  gender: string;
+  ageRange: string[];
+  expense: string;
+  content: string;
+  imageUrl: string;
+  email: string;
+  nickname: string;
+  profileUrl: string;
   coverImage: string | StaticImageData;
   profileImage: string | StaticImageData;
-  nickname: string;
   styles: string[];
+}
+
+export interface ScheduleData {
+  id: number;
+  dayNumber: number;
+  feedId: number;
 }

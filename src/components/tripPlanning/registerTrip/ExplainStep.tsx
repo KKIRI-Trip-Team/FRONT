@@ -9,27 +9,31 @@ import { slideFadeVariants } from '@/utils/motionVariants';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { UseFunnelResults } from '@use-funnel/browser';
-import { BoardRegisterTypes } from '@/types/boardRegister';
+
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 import { useTransitionStore } from '@/store/transitionStore';
 import { uploadImageToServer } from '../imageUpload/ImageUpload';
 import { useApi } from '@/hooks/useApi';
+import { useSubmitTrip } from '@/hooks/useSubmitTrip';
+import { BoardRegisterSteps } from '@/types/boardRegister';
 
 interface ExplainFunnel {
   funnel: UseFunnelResults<
-    BoardRegisterTypes,
-    BoardRegisterTypes['explainStep']
+    BoardRegisterSteps,
+    BoardRegisterSteps['explainStep']
   >;
 }
 
 export default function ExplainStep({ funnel }: ExplainFunnel) {
   const router = useRouter();
-  const { trip, stepIndex, setContext, setStepIndex } = useTripFunnelStore();
+  const { trip, stepIndex, setContext, setStepIndex, daysPlan } =
+    useTripFunnelStore();
   const { direction } = useTransitionStore();
+
   const { post } = useApi();
   const [image, setImage] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const { submitSchedule } = useSubmitTrip();
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
@@ -80,9 +84,20 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
   };
 
   const makeDetailTrip = () => {
-    setContext({ explain: { title, subTitle, image } });
-    router.push('/tripPlanning/tripDetail');
+    const updatedContext = {
+      ...trip,
+      explain: {
+        title,
+        subTitle,
+        image,
+      },
+    };
+
+    setContext({ explain: updatedContext.explain }); // 상태 저장
+    router.push('/tripPlanning/register-trip');
   };
+
+  const isSelected = title && subTitle;
 
   return (
     <motion.div
@@ -118,7 +133,7 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
               src={`https://trebuddy-s3-bucket.s3.ap-northeast-2.amazonaws.com/${image}`}
               alt={'boardImage'}
               width={1160}
-              height={670}
+              height={650}
             />
           ) : (
             <ICON />
@@ -181,11 +196,20 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
         </button>
       </div>
 
-      <div
-        className={`flex h-[54px] w-full px-[0px] py-[16px] justify-center items-center shrink-0 self-stretch bg-[#F1F1F2]`}
+      <button
+        disabled={!isSelected}
+        onClick={() => {
+          // context 업데이트 + 최종 제출
+          setContext({ explain: { title, subTitle, image } });
+          submitSchedule();
+        }}
+        className={`flex h-[54px] px-[0px] py-[16px] justify-center items-center shrink-0 text-center w-full text-[16px] font-bold leading-[22px] ${
+          isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
+        } ${isSelected ? 'bg-[#5938DB]' : 'bg-[#F1F1F2]'}
+          disabled:cursor-not-allowed disabled:opacity-50`}
       >
-        <button>다음</button>
-      </div>
+        게시글 작성
+      </button>
     </motion.div>
   );
 }

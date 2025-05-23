@@ -1,13 +1,27 @@
 'use client';
 
+import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 
 export default function CreateTripButton() {
+  const { user, setUser } = useAuthStore();
   const router = useRouter();
+
+  const handleMakeTrip = () => {
+    // if (!user) {
+    //   alert('로그인이 필요한 서비스입니다.');
+    //   router.push('/login/form');
+    // } else {
+    //   router.push('/tripPlanning');
+    // }
+
+    router.push('/tripPlanning');
+  };
+
   return (
     <section className="flex px-[20px] py-[40px] flex-col justify-center items-center gap-[10px] flex-[1_0_0] font-[Pretendard]">
       <button
-        onClick={() => router.push('/tripPlanning')}
+        onClick={handleMakeTrip}
         className="flex px-[20px] py-[10px] justify-center items-center gap-[10px] rounded-[100px] bg-[var(--PrimaryLight)] "
       >
         <span className="text-[14px] font-bold leading-[20px] tracking-[-0.5px] text-[var(--white)]">

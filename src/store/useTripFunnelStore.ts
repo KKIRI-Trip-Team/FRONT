@@ -3,14 +3,16 @@ import { persist } from 'zustand/middleware';
 
 export type ScheduleItem = {
   id: string;
-  name: string;
-  address: string;
-  category: string;
-  phoneNumber: string;
-  lat: number;
-  lon: number;
-  place_url?: string;
-  road_address?: string;
+  place_name: string;
+  address_name: string;
+  road_address_name: string;
+  category_name: string;
+  category_group_name: string;
+  phone: string;
+  x: string;
+  y: string;
+  place_url: string;
+  distance: string;
 };
 
 // 상세일정 작성 시 각 요일별 마커 타입
@@ -32,6 +34,7 @@ type TripContext = {
     subTitle: string;
     image: string;
   };
+  boardId?: string;
 };
 
 interface TripFunnelStore {
@@ -52,6 +55,9 @@ interface TripFunnelStore {
   setDayPlans: (plans: DayPlan[]) => void;
 
   resetAll: () => void;
+
+  mode: 'create' | 'edit';
+  setMode: (mode: 'create' | 'edit') => void;
 }
 
 export const useTripFunnelStore = create<TripFunnelStore>()(
@@ -73,6 +79,7 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
       currentDay: 1,
       stepIndex: 1,
       daysPlan: [],
+      mode: 'create',
 
       setCurrentDay: (day) => set({ currentDay: day }),
 
@@ -87,6 +94,8 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
       setStepIndex: (index) => set({ stepIndex: index }),
 
       setDayPlans: (plans) => set({ daysPlan: plans }),
+
+      setMode: (mode) => set({ mode }),
 
       addPlaceToDay: (day, place) =>
         set((state) => {
@@ -166,6 +175,7 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
           },
           stepIndex: 1,
           daysPlan: [],
+          mode: 'create',
         });
         localStorage.removeItem('trip-storage');
       },
@@ -176,6 +186,7 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
       partialize: (state) => ({
         trip: state.trip,
         daysPlan: state.daysPlan,
+        mode: state.mode,
       }),
     },
   ),

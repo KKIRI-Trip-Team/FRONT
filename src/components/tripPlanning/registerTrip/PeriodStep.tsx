@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
-import { BoardRegisterTypes } from '@/types/boardRegister';
+
 import { UseFunnelResults } from '@use-funnel/browser';
 import { slideFadeVariants } from '@/utils/motionVariants';
 import { useTransitionStore } from '@/store/transitionStore';
+import { BoardRegisterSteps } from '@/types/boardRegister';
 
 const periods = [
   { id: 1, name: '아무때나' },
@@ -22,8 +23,8 @@ const periods = [
 
 interface PeriodFunnel {
   funnel: UseFunnelResults<
-    BoardRegisterTypes,
-    BoardRegisterTypes['periodStep']
+    BoardRegisterSteps,
+    BoardRegisterSteps['periodStep']
   >;
 }
 

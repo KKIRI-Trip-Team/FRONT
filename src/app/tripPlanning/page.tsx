@@ -4,8 +4,8 @@ import dynamic from 'next/dynamic';
 
 import { useFunnel } from '@use-funnel/browser';
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
-import { BoardRegisterTypes } from '@/types/boardRegister';
 import { useFunnelDirection } from '@/hooks/useFunnelDirection';
+import { BoardRegisterSteps } from '@/types/boardRegister';
 
 const DestinationStep = dynamic(
   () => import('@/components/tripPlanning/registerTrip/DestinationStep'),
@@ -24,10 +24,12 @@ const MateStep = dynamic(
 
 const StyleStep = dynamic(
   () => import('@/components/tripPlanning/registerTrip/StyleStep'),
+  { ssr: false },
 );
 
 const ExpenseStep = dynamic(
   () => import('@/components/tripPlanning/registerTrip/ExpenseStep'),
+  { ssr: false },
 );
 
 const ExplainStep = dynamic(
@@ -38,7 +40,7 @@ const ExplainStep = dynamic(
 export default function Page() {
   const { trip } = useTripFunnelStore();
 
-  const funnel = useFunnel<BoardRegisterTypes>({
+  const funnel = useFunnel<BoardRegisterSteps>({
     id: 'register-trip',
     initial: {
       step: 'destinationStep',
@@ -61,5 +63,7 @@ export default function Page() {
       return <ExpenseStep funnel={funnel} />;
     case 'explainStep':
       return <ExplainStep funnel={funnel} />;
+    default:
+      return null;
   }
 }

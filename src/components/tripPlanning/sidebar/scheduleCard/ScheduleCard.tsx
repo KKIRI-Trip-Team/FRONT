@@ -33,14 +33,14 @@ export default function ScheduleCard() {
                 const placeResultItem: kakao.maps.services.PlacesSearchResultItem =
                   {
                     id: place.id,
-                    place_name: place.name,
-                    address_name: place.address,
-                    road_address_name: place.road_address as string,
-                    category_name: place.category,
+                    place_name: place.place_name,
+                    address_name: place.address_name,
+                    road_address_name: place.road_address_name as string,
+                    category_name: place.category_name,
                     category_group_name: '',
-                    phone: place.phoneNumber,
-                    x: place.lon.toString(),
-                    y: place.lat.toString(),
+                    phone: place.phone,
+                    x: place.x,
+                    y: place.y,
                     place_url: place.place_url as string,
                     distance: '',
                   };
@@ -61,15 +61,13 @@ export default function ScheduleCard() {
               </div>
               <div className="flex flex-col items-start gap-[4px] flex-1">
                 <span className="line-clamp-1 text-[14px] font-bold text-[var(--Gray900)] font-[Pretendard]">
-                  {place.name} ({place.category})
+                  {place.place_name} ({place.category_name})
                 </span>
                 <span className="line-clamp-1 text-[12px] text-[var(--Gray600)]">
-                  {place.address}
+                  {place.address_name}
                 </span>
                 <span className="line-clamp-1 text-[12px] text-[var(--Gray600)]">
-                  {place.phoneNumber
-                    ? place.phoneNumber
-                    : '등록된 전화번호가 없습니다'}
+                  {place.phone ? place.phone : '등록된 전화번호가 없습니다'}
                 </span>
               </div>
             </div>

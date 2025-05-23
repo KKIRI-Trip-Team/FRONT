@@ -4,15 +4,16 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
-import { BoardRegisterTypes } from '@/types/boardRegister';
+
 import { UseFunnelResults } from '@use-funnel/browser';
 import { slideFadeVariants } from '@/utils/motionVariants';
 import { useTransitionStore } from '@/store/transitionStore';
+import { BoardRegisterSteps } from '@/types/boardRegister';
 
 interface ExpenseFunnel {
   funnel: UseFunnelResults<
-    BoardRegisterTypes,
-    BoardRegisterTypes['expenseStep']
+    BoardRegisterSteps,
+    BoardRegisterSteps['expenseStep']
   >;
 }
 

@@ -1,3 +1,5 @@
+'use client';
+
 import DetailStep from '@/components/tripPlanning/registerTrip/DetailStep';
 
 export default function Page() {

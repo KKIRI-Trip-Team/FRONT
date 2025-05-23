@@ -26,7 +26,7 @@ export default function RootLayoutClient({
   const isAuthRoute =
     pathname?.startsWith('/login') || pathname?.startsWith('/register');
 
-  const isTripDetailPage = pathname.startsWith('/tripPlanning/tripDetail');
+  const isTripDetailPage = pathname.startsWith('/tripPlanning/register-trip');
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>

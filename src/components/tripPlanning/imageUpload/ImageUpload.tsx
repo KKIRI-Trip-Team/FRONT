@@ -1,4 +1,3 @@
-// utils/uploadImageToServer.ts (훅 없이 사용 가능한 형태로)
 import { ENDPOINTS } from '@/constants/endpoints';
 import { ImageUploadResponseData } from '@/types/api';
 

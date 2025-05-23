@@ -1,37 +1,32 @@
-export type BoardRegisterTypes = {
+export type BoardRegisterSteps = {
   destinationStep: {
     destination: string;
   };
-
   periodStep: {
     destination: string;
-    period?: string;
+    period: string;
   };
-
   mateStep: {
     destination: string;
     period: string;
-    gender?: string;
-    ageRange?: string[];
+    gender: string;
+    ageRange: string[];
   };
-
   styleStep: {
     destination: string;
     period: string;
     gender: string;
     ageRange: string[];
-    styles?: string[];
+    styles: string[];
   };
-
   expenseStep: {
     destination: string;
     period: string;
     gender: string;
     ageRange: string[];
     styles: string[];
-    expense?: number;
+    expense: number;
   };
-
   explainStep: {
     destination: string;
     period: string;
@@ -39,7 +34,20 @@ export type BoardRegisterTypes = {
     ageRange: string[];
     styles: string[];
     expense: number;
-    explain?: {
+    explain: {
+      title: string;
+      subTitle: string;
+      image: string;
+    };
+  };
+  detailStep: {
+    destination: string;
+    period: string;
+    gender: string;
+    ageRange: string[];
+    styles: string[];
+    expense: number;
+    explain: {
       title: string;
       subTitle: string;
       image: string;

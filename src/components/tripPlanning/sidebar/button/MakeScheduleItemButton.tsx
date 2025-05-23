@@ -20,14 +20,16 @@ export default function MakeScheduleItemButton() {
 
     addPlaceToDay(currentDay, {
       id: selectedPlace.id,
-      name: selectedPlace.place_name,
-      address: selectedPlace.road_address_name || selectedPlace.address_name,
-      category: lastIdxCategory as string,
-      phoneNumber: selectedPlace.phone,
-      lat: +selectedPlace.y,
-      lon: +selectedPlace.x,
+      place_name: selectedPlace.place_name,
+      road_address_name: selectedPlace.road_address_name,
+      address_name: selectedPlace.address_name,
+      category_name: lastIdxCategory as string,
+      category_group_name: selectedPlace.category_group_name,
+      phone: selectedPlace.phone,
+      x: selectedPlace.x,
+      y: selectedPlace.y,
       place_url: selectedPlace.place_url,
-      road_address: selectedPlace.road_address_name,
+      distance: selectedPlace.distance,
     });
   };
 

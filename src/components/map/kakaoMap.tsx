@@ -81,6 +81,7 @@ function DisplayPlaceInfo({ places, onClose }: PlaceOverlayProps) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [onClose]);
+
   if (!places) {
     console.log('데이터와 일치하는 항목이 없습니다.');
   }
@@ -185,14 +186,14 @@ export default function KakaoMap() {
         const mapInstance = new kakao.maps.Map(
           mapRef.current as HTMLDivElement,
           {
-            center: new kakao.maps.LatLng(coordinate.lat, coordinate.lon),
+            center: new kakao.maps.LatLng(coordinate.y, coordinate.x),
             level: 7,
           },
         );
         setMap(mapInstance);
         placesServiceRef.current = new kakao.maps.services.Places(mapInstance);
       } else {
-        map.setCenter(new kakao.maps.LatLng(coordinate.lat, coordinate.lon));
+        map.setCenter(new kakao.maps.LatLng(coordinate.y, coordinate.x));
       }
     });
   }, [scriptLoaded, coordinate]);
@@ -205,7 +206,7 @@ export default function KakaoMap() {
   }, [markers]);
 
   useEffect(() => {
-    // daysPlane 이 있다면은 초기접속시에 그 일정에 추가한 x,y좌표를 기준으로 마커 UI렌더링 표시
+    // daysPlane 이 있다면은 초기접속시에 그 일정에 추가한 날짜별 마커를 x,y좌표를 기준으로 마커 UI렌더링 표시
     if (!map) return;
 
     const { kakao } = window;
@@ -214,22 +215,36 @@ export default function KakaoMap() {
 
     // 마커 초기화
     markers.forEach((m) => m.setMap(null));
+
     // 오버레이 있을시 없앰
     if (placeOverlay) placeOverlay.setMap(null);
 
     setMarkers([]);
 
-    // 새 마커 추가
     const newMarkers = currentPlaces.map((place) => {
-      const position = new kakao.maps.LatLng(+place.lat, +place.lon);
+      const position = new kakao.maps.LatLng(+place.y, +place.x);
       const marker = new kakao.maps.Marker({ position });
       marker.setMap(map);
 
+      console.log(position, marker);
+
+      kakao.maps.event.addListener(marker, 'click', () => {
+        const container = document.createElement('div');
+        overlayRef.current = container;
+
+        const overlay = new kakao.maps.CustomOverlay({
+          content: container,
+          position: marker.getPosition(),
+        });
+
+        setSelectedPlace(place);
+        setPlaceOverlay(overlay);
+        overlay.setMap(map);
+      });
       return marker;
     });
 
     setMarkers(newMarkers);
-    setCurrentCategory(undefined);
   }, [currentDay, map, daysPlan]);
 
   useEffect(() => {

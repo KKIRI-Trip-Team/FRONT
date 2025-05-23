@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
-import { BoardRegisterTypes } from '@/types/boardRegister';
+
 import { UseFunnelResults } from '@use-funnel/browser';
 import { slideFadeVariants } from '@/utils/motionVariants';
 import { useTransitionStore } from '@/store/transitionStore';
+import { BoardRegisterSteps } from '@/types/boardRegister';
 
 const genders = [
   { id: 1, name: '👩 여성' },
@@ -24,7 +25,7 @@ const ages = [
 ];
 
 interface MateFunnel {
-  funnel: UseFunnelResults<BoardRegisterTypes, BoardRegisterTypes['mateStep']>;
+  funnel: UseFunnelResults<BoardRegisterSteps, BoardRegisterSteps['mateStep']>;
 }
 
 export default function MateStep({ funnel }: MateFunnel) {

@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 import { useTripFunnelStore } from '@/store/useTripFunnelStore';
-import { BoardRegisterTypes } from '@/types/boardRegister';
+
 import { UseFunnelResults } from '@use-funnel/browser';
 import { slideFadeVariants } from '@/utils/motionVariants';
 import { useTransitionStore } from '@/store/transitionStore';
+import { BoardRegisterSteps } from '@/types/boardRegister';
 
 const styles = [
   { id: 1, name: '휴식 🧘🍵' },
@@ -30,7 +31,7 @@ const styles = [
 ];
 
 interface StyleFunnel {
-  funnel: UseFunnelResults<BoardRegisterTypes, BoardRegisterTypes['styleStep']>;
+  funnel: UseFunnelResults<BoardRegisterSteps, BoardRegisterSteps['styleStep']>;
 }
 
 export default function StyleStep({ funnel }: StyleFunnel) {
