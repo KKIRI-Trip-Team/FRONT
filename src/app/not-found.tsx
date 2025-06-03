@@ -1,12 +1,12 @@
-// 404.tsx
-import type { NextPage } from 'next';
+// app/not-found.tsx
+import ErrorPageLayout from '@/components/common/ErrorPageLayout';
 
-const Custom404: NextPage = () => {
+export default function NotFound() {
   return (
-    <>
-      <div>404 - 페이지를 찾을 수 없습니다</div>
-    </>
+    <ErrorPageLayout
+      title="앗!"
+      subtitle="404-NOT-FOUND"
+      description="잘못된 접근입니다."
+    />
   );
-};
-
-export default Custom404;
+}
