@@ -38,7 +38,7 @@ export function useApi<T>() {
           error:
             error instanceof Error
               ? error.message
-              : ERROR_MESSAGES.UNKNOWN_ERROR,
+              : ERROR_MESSAGES.UNKNOWN_ERROR.title,
           isSuccess: false,
         });
         throw error;
@@ -63,7 +63,9 @@ export function useApi<T>() {
         data: null,
         isLoading: false,
         error:
-          error instanceof Error ? error.message : ERROR_MESSAGES.UNKNOWN_ERROR,
+          error instanceof Error
+            ? error.message
+            : ERROR_MESSAGES.UNKNOWN_ERROR.title,
         isSuccess: false,
       });
       throw error;
@@ -86,7 +88,9 @@ export function useApi<T>() {
         data: null,
         isLoading: false,
         error:
-          error instanceof Error ? error.message : ERROR_MESSAGES.UNKNOWN_ERROR,
+          error instanceof Error
+            ? error.message
+            : ERROR_MESSAGES.UNKNOWN_ERROR.title,
         isSuccess: false,
       });
       throw error;
@@ -109,7 +113,9 @@ export function useApi<T>() {
         data: null,
         isLoading: false,
         error:
-          error instanceof Error ? error.message : ERROR_MESSAGES.UNKNOWN_ERROR,
+          error instanceof Error
+            ? error.message
+            : ERROR_MESSAGES.UNKNOWN_ERROR.title,
         isSuccess: false,
       });
       throw error;
@@ -132,7 +138,9 @@ export function useApi<T>() {
         data: null,
         isLoading: false,
         error:
-          error instanceof Error ? error.message : ERROR_MESSAGES.UNKNOWN_ERROR,
+          error instanceof Error
+            ? error.message
+            : ERROR_MESSAGES.UNKNOWN_ERROR.title,
         isSuccess: false,
       });
       throw error;
@@ -155,7 +163,9 @@ export function useApi<T>() {
         data: null,
         isLoading: false,
         error:
-          error instanceof Error ? error.message : ERROR_MESSAGES.UNKNOWN_ERROR,
+          error instanceof Error
+            ? error.message
+            : ERROR_MESSAGES.UNKNOWN_ERROR.title,
         isSuccess: false,
       });
       throw error;

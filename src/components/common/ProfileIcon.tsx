@@ -33,7 +33,8 @@ export default function ProfileIcon({
           alt={'userProfileImage'}
           width={60}
           height={60}
-          className="w-10 h-10 rounded-full pc:w-[60px] pc:h-[60px]"
+          className="w-10 h-10 rounded-full pc:w-[60px] pc:h-[60px] object-cover"
+          priority
         />
       ) : (
         <>

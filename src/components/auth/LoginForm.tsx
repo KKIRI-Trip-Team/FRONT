@@ -15,7 +15,7 @@ import { User } from '@/types/user';
 export default function LoginForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const authStore = useAuthStore();
+  const { setUser, setAuthenticated, setLoading } = useAuthStore();
 
   const {
     register,
@@ -49,9 +49,9 @@ export default function LoginForm() {
 
         setToken(data.accessToken);
 
-        authStore.setUser(userData);
-        authStore.setAuthenticated(true);
-        authStore.setLoading(false);
+        setUser(userData);
+        setAuthenticated(true);
+        setLoading(false);
 
         router.push('/');
         router.refresh();
