@@ -136,10 +136,6 @@ export const theme = {
         },
       ],
     },
-    backgroundImage: {
-      'temporary-img': "url('@/public/images/exampleBusan.png')",
-      'detail-image': "url('@/public/images/boardDetailImage.png')",
-    },
   },
 };
 export const plugins = [];

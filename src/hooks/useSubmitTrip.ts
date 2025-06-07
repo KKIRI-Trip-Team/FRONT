@@ -1,92 +1,71 @@
 'use client';
 
-import { useTripFunnelStore } from '@/store/useTripFunnelStore';
+import { TripContext, useTripFunnelStore } from '@/store/tripFunnelStore';
 import { useApi } from './useApi';
-import { useAuthStore } from '@/store/authStore';
-import { BoardData, ScheduleData } from '@/types/board';
+
 import { useRouter } from 'next/navigation';
 
 export function useSubmitTrip() {
-  const { trip, daysPlan, resetAll } = useTripFunnelStore.getState();
-  const { post } = useApi();
+  const { trip, mode, resetAll } = useTripFunnelStore.getState();
+  const { post, patch } = useApi();
   const router = useRouter();
-  const user = useAuthStore((s) => s.user);
-  //게시글 post
+  const id = trip.boardId;
 
-  const submitSchedule = async () => {
-    const title = trip.explain.title.trim() || '';
-    const content = trip.explain.subTitle.trim() || '';
+  const submitSchedule = async (update?: Partial<TripContext>) => {
+    const funnelData = {
+      ...trip,
+      ...update,
+      explain: {
+        ...trip.explain,
+        ...(update?.explain ?? {}),
+      },
+    };
 
-    console.log('전송 바디:', { title, content });
+    const payload = {
+      title: funnelData.explain.title,
+      content: funnelData.explain.subTitle,
+      // coverImageUrl: funnelData.explain.coverImageUrl,
+      region: funnelData.region,
+      period: funnelData.period,
+      gender: funnelData.gender,
+      ageGroup: funnelData.ageGroup,
+      cost: funnelData.cost,
+      tripStyles: funnelData.tripStyles,
+    };
+    console.log('전송 직전 ', funnelData);
+
     try {
-      const feedRes = await post('feeds', {
-        // destination: trip.destination, // 목적지
-        // ageRange: trip.ageRange, // 나이대
-        // gender: trip.gender, // 성별
-        // expense: trip.expense, // 지출
-        // period: trip.period, // 기간
+      console.log('🚀 최종 전송 payload:', payload);
 
-        title: title, // 제목
-        content: content, // 내용
-        // imageUrl: trip.explain.image, // 게시글 coverImage
-        // email: user?.email, // 유저 이메일
-        // nickname: user?.nickname,
-        // profileImage: user?.profileUrl,
-      });
+      if (mode === 'create') {
+        const res = await post('feeds', payload);
 
-      const feedData = feedRes.data as { id: number };
-      const feedId = feedData?.id;
+        if (!res?.data) {
+          throw new Error('서버로부터 유효한 응답을 받지 못했습니다.');
+        }
 
-      console.log('응답:', feedRes);
-      if (!feedId) {
-        throw new Error('feedId 생성 실패');
+        alert('여행 일정이 등록되었습니다.');
+        resetAll();
+        router.push('/');
       }
 
-      // // N일차 일정 생성
-      // const scheduleIds: number[] = [];
-      // for (const day of daysPlan) {
-      //   const scheduleRes = await post(`feeds/${feedId}/schedules`, {
-      //     id: 0,
-      //     dayNumber: day.day,
-      //     feedId,
-      //   });
+      if (mode === 'edit') {
+        if (!id) {
+          alert('해당 게시글이 존재하지 않습니다.');
+          return;
+        }
 
-      //   const scheduleData = scheduleRes.data as ScheduleData;
-      //   const scheduleId = scheduleData.id;
-      //   if (!scheduleId) {
-      //     throw new Error('ScheduleId 생성 실패');
-      //   }
-      // }
-
-      // // 일정 아이템
-      // for (let i = 0; i < scheduleIds.length; i++) {
-      //   const scheduleId = scheduleIds[i];
-      //   const places = daysPlan[i].places;
-
-      //   for (let j = 0; j < places.length; j++) {
-      //     const place = places[j];
-      //     await post(`feeds/${feedId}/schedules/${scheduleId}/scheduleItems`, {
-      //       itemOrder: j + 1,
-      //       scheduleId,
-      //       id: place.id,
-      //       place_name: place.place_name,
-      //       address_name: place.address_name,
-      //       road_address_name: place.road_address_name,
-      //       place_url: place.place_url,
-      //       category_name: place.category_name,
-      //       phone: place.phone,
-      //       x: place.x,
-      //       y: place.y,
-      //     });
-      //   }
-      // }
-
-      alert('여행 일정이 성공적으로 등록되었습니다');
-      resetAll();
-      router.push('/');
-    } catch (error) {
-      console.log(`에러 발생 :${error}`);
-      alert('일정 등록 중 문제가 발생하였습니다.');
+        await patch(`feeds/${id}`, payload);
+        console.log('✏️ 수정된 payload:', payload);
+        alert('게시글이 수정되었습니다.');
+        resetAll();
+        router.push(`/board/${id}`);
+      }
+    } catch (error: any) {
+      console.error(
+        '❌ 게시글 저장 오류:',
+        error?.response?.data || error.message,
+      );
     }
   };
 

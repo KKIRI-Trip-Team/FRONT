@@ -5,6 +5,11 @@ import dynamic from 'next/dynamic';
 import { useFunnel } from '@use-funnel/browser';
 
 import { useFunnelDirection } from '@/hooks/useFunnelDirection';
+
+import { useParams, useRouter } from 'next/navigation';
+import { useApi } from '@/hooks/useApi';
+import { useEffect } from 'react';
+import { BoardData } from '@/types/board';
 import { BoardRegisterSteps } from '@/types/boardFunnel';
 import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
@@ -39,6 +44,42 @@ const ExplainStep = dynamic(
 );
 
 export default function Page() {
+  const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+
+  const { setContext, setMode } = useTripFunnelStore();
+  const { get } = useApi();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await get(`feeds/${id}`);
+        const data = res.data as BoardData;
+
+        setMode('edit');
+        setContext({
+          region: data.region,
+          period: data.period,
+          gender: data.gender,
+          ageGroup: data.ageGroup,
+          tripStyles: data.tripStyles,
+          cost: data.cost,
+          explain: {
+            title: data.title,
+            subTitle: data.content,
+            coverImageUrl: data.coverImageUrl,
+          },
+          boardId: data.id,
+        });
+      } catch (error) {
+        console.error('❌ 게시글 로딩 오류:', error);
+        alert('게시글 데이터를 불러오지 못했습니다.');
+        router.push('/');
+      }
+    };
+
+    fetchData();
+  }, [id]);
   const { trip } = useTripFunnelStore();
 
   const funnel = useFunnel<BoardRegisterSteps>({

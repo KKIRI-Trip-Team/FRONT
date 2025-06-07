@@ -1,21 +1,20 @@
 'use client';
 
-import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 
+import { useAuthStore } from '@/store/authStore';
+
 export default function CreateTripButton() {
-  const { user, setUser } = useAuthStore();
+  const { user } = useAuthStore();
   const router = useRouter();
 
   const handleMakeTrip = () => {
-    // if (!user) {
-    //   alert('로그인이 필요한 서비스입니다.');
-    //   router.push('/login/form');
-    // } else {
-    //   router.push('/tripPlanning');
-    // }
-
-    router.push('/tripPlanning');
+    if (!user) {
+      alert('로그인이 필요한 서비스입니다.');
+      return;
+    } else {
+      router.push('/tripPlanning');
+    }
   };
 
   return (

@@ -4,12 +4,11 @@ import SAVEICON from '@/public/icons/save-icon.svg';
 import LEFTARROWICON from '@/public/icons/left-arrow-icon.svg';
 
 import { useRouter } from 'next/navigation';
-import { useTripFunnelStore } from '@/store/useTripFunnelStore';
-import { useFunnel, UseFunnelResults } from '@use-funnel/browser';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
 export default function DetailTripHeader() {
   const router = useRouter();
-  const { daysPlan } = useTripFunnelStore(); // ✅ trip 추가
+  const { daysPlan } = useTripFunnelStore();
   const places = daysPlan.map((place) => place.places);
   const days = daysPlan.map((day) => day.day);
 

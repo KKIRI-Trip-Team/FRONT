@@ -3,12 +3,11 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
-import { useTripFunnelStore } from '@/store/useTripFunnelStore';
-
 import { UseFunnelResults } from '@use-funnel/browser';
 import { slideFadeVariants } from '@/utils/motionVariants';
 import { useTransitionStore } from '@/store/transitionStore';
-import { BoardRegisterSteps } from '@/types/boardRegister';
+import { BoardRegisterSteps } from '@/types/boardFunnel';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
 interface ExpenseFunnel {
   funnel: UseFunnelResults<
@@ -26,8 +25,8 @@ export default function ExpenseStep({ funnel }: ExpenseFunnel) {
 
   useEffect(() => {
     setStepIndex(5);
-    if (trip.expense) {
-      setMoneyValid(trip.expense.toLocaleString());
+    if (trip.cost) {
+      setMoneyValid(trip.cost.toLocaleString());
       setIsValid(true);
     }
   }, []);
@@ -47,8 +46,8 @@ export default function ExpenseStep({ funnel }: ExpenseFunnel) {
   const handleNextClick = () => {
     if (!isValidMoney) return;
 
-    const nextContext = { ...trip, expense: parsedValue };
-    setContext({ expense: parsedValue });
+    const nextContext = { ...trip, cost: parsedValue };
+    setContext({ cost: parsedValue });
     funnel.history.push('explainStep', nextContext);
   };
 

@@ -4,11 +4,9 @@ import RightArrowIcon from '@/public/icons/right-arrow-icon-lightV.svg';
 import LeftArrowIcon from '@/public/icons/left-arrow-icon-lightV.svg';
 import UpArrowIcon from '@/public/icons/up-arrow-icon.svg';
 import DownArrowIcon from '@/public/icons/down-arrow-icon.svg';
-
 import TrashIcon from '@/public/icons/trash-icon.svg';
-
-import { useTripFunnelStore } from '@/store/useTripFunnelStore';
-import { useMapStore } from '@/store/useMapstore';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
+import { useMapStore } from '@/store/mapStore';
 
 export default function ScheduleCard() {
   const daysPlan = useTripFunnelStore((s) => s.daysPlan);
@@ -37,12 +35,12 @@ export default function ScheduleCard() {
                     address_name: place.address_name,
                     road_address_name: place.road_address_name as string,
                     category_name: place.category_name,
-                    category_group_name: '',
+                    category_group_name: place.category_group_name,
                     phone: place.phone,
                     x: place.x,
                     y: place.y,
                     place_url: place.place_url as string,
-                    distance: '',
+                    distance: place.distance,
                   };
                 setSelectedPlace(placeResultItem);
               }}
@@ -59,7 +57,7 @@ export default function ScheduleCard() {
               >
                 {idx + 1}
               </div>
-              <div className="flex flex-col items-start gap-[4px] flex-1">
+              <div className="flex flex-col items-start gap-[4px] flex-1 cursor-pointer">
                 <span className="line-clamp-1 text-[14px] font-bold text-[var(--Gray900)] font-[Pretendard]">
                   {place.place_name} ({place.category_name})
                 </span>

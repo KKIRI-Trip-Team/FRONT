@@ -1,56 +1,62 @@
 export type BoardRegisterSteps = {
   destinationStep: {
-    destination: string;
+    region: string;
   };
+
   periodStep: {
-    destination: string;
+    region: string;
     period: string;
   };
+
   mateStep: {
-    destination: string;
+    region: string;
     period: string;
     gender: string;
-    ageRange: string[];
+    ageGroup: string;
   };
+
   styleStep: {
-    destination: string;
+    region: string;
     period: string;
     gender: string;
-    ageRange: string[];
-    styles: string[];
+    ageGroup: string;
+    tripStyles: string[];
   };
+
   expenseStep: {
-    destination: string;
+    region: string;
     period: string;
     gender: string;
-    ageRange: string[];
-    styles: string[];
-    expense: number;
+    ageGroup: string;
+    tripStyles: string[];
+    cost: number;
   };
+
   explainStep: {
-    destination: string;
+    region: string;
     period: string;
     gender: string;
-    ageRange: string[];
-    styles: string[];
-    expense: number;
+    ageGroup: string;
+    tripStyles: string[];
+    cost: number;
     explain: {
       title: string;
       subTitle: string;
-      image: string;
+      coverImageUrl: string;
     };
   };
+
   detailStep: {
-    destination: string;
+    region: string;
     period: string;
     gender: string;
-    ageRange: string[];
-    styles: string[];
-    expense: number;
+    ageGroup: string;
+    tripStyles: string[];
+    cost: number;
     explain: {
       title: string;
       subTitle: string;
-      image: string;
+      coverImageUrl: string;
     };
   };
 };

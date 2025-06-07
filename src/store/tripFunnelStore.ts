@@ -1,19 +1,6 @@
+import { ScheduleItem } from '@/types/board';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
-export type ScheduleItem = {
-  id: string;
-  place_name: string;
-  address_name: string;
-  road_address_name: string;
-  category_name: string;
-  category_group_name: string;
-  phone: string;
-  x: string;
-  y: string;
-  place_url: string;
-  distance: string;
-};
 
 // 상세일정 작성 시 각 요일별 마커 타입
 type DayPlan = {
@@ -22,19 +9,19 @@ type DayPlan = {
 };
 
 // 퍼넬 단계별 상태
-type TripContext = {
-  destination: string;
+export type TripContext = {
+  region: string;
   period: string;
   gender: string;
-  ageRange: string[];
-  styles: string[];
-  expense: number;
+  ageGroup: string;
+  tripStyles: string[];
+  cost: number;
   explain: {
     title: string;
     subTitle: string;
-    image: string;
+    coverImageUrl: string;
   };
-  boardId?: string;
+  boardId?: number;
 };
 
 interface TripFunnelStore {
@@ -64,16 +51,16 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
   persist(
     (set) => ({
       trip: {
-        destination: '',
+        region: '',
         period: '',
         gender: '',
-        ageRange: [],
-        expense: 0,
-        styles: [],
+        ageGroup: '',
+        cost: 0,
+        tripStyles: [],
         explain: {
           title: '',
           subTitle: '',
-          image: '',
+          coverImageUrl: '',
         },
       },
       currentDay: 1,
@@ -88,6 +75,10 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
           trip: {
             ...state.trip,
             ...updated,
+            explain: {
+              ...state.trip.explain,
+              ...(updated.explain ?? {}),
+            },
           },
         })),
 
@@ -114,10 +105,6 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
             targetDay.places.push(place);
           } else {
             updatedPlans.push({ day, places: [place] });
-          }
-
-          if (targetDay?.places.length === 20) {
-            alert('하루에 최대 20개까지 선택가능합니다.');
           }
 
           return { daysPlan: updatedPlans };
@@ -161,16 +148,16 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
       resetAll: () => {
         set({
           trip: {
-            destination: '',
+            region: '',
             period: '',
             gender: '',
-            ageRange: [],
-            expense: 0,
-            styles: [],
+            ageGroup: '',
+            cost: 0,
+            tripStyles: [],
             explain: {
               title: '',
               subTitle: '',
-              image: '',
+              coverImageUrl: '',
             },
           },
           stepIndex: 1,

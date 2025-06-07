@@ -3,8 +3,8 @@
 import NoScheduleItemText from '../text/NoScheduleItemText';
 import MakeScheduleItemButton from '../button/MakeScheduleItemButton';
 
-import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 import ScheduleCard from '../scheduleCard/ScheduleCard';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
 export default function TabletScheduleList() {
   const daysPlan = useTripFunnelStore((s) => s.daysPlan);

@@ -3,19 +3,19 @@
 import ICON from '@/public/icons/trip-make-icon.svg';
 import Image from 'next/image';
 
-import { motion } from 'framer-motion';
-import { slideFadeVariants } from '@/utils/motionVariants';
-
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+
+import { slideFadeVariants } from '@/utils/motionVariants';
 import { UseFunnelResults } from '@use-funnel/browser';
 
-import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 import { useTransitionStore } from '@/store/transitionStore';
 import { uploadImageToServer } from '../imageUpload/ImageUpload';
 import { useApi } from '@/hooks/useApi';
 import { useSubmitTrip } from '@/hooks/useSubmitTrip';
-import { BoardRegisterSteps } from '@/types/boardRegister';
+import { BoardRegisterSteps } from '@/types/boardFunnel';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
 interface ExplainFunnel {
   funnel: UseFunnelResults<
@@ -26,29 +26,31 @@ interface ExplainFunnel {
 
 export default function ExplainStep({ funnel }: ExplainFunnel) {
   const router = useRouter();
-  const { trip, stepIndex, setContext, setStepIndex, daysPlan } =
+  const { trip, stepIndex, mode, daysPlan, setContext, setStepIndex } =
     useTripFunnelStore();
   const { direction } = useTransitionStore();
 
   const { post } = useApi();
-  const [image, setImage] = useState('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [coverImageUrl, setCoverImageUrl] = useState('');
   const { submitSchedule } = useSubmitTrip();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
       return;
     }
-    console.log('📦 선택된 파일:', file);
+    console.log('선택된 파일:', file);
 
     try {
       const key = await uploadImageToServer(file, post);
-      setImage(key); // 이미지 키를 저장
-      console.log('✅ 이미지 키:', key);
+      setCoverImageUrl(key); // 이미지 키를 저장
+      console.log('이미지 키:', key);
     } catch (err) {
-      console.log('❌ 이미지 업로드 실패:', err);
+      console.log('이미지 업로드 실패:', err);
     }
   };
+
   // 전역 context
   const [title, setTitle] = useState('');
   const [subTitle, setSubTitle] = useState('');
@@ -58,20 +60,20 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
   const [subTitleLength, setSubTitleLength] = useState(0);
 
   useEffect(() => {
-    const { title, subTitle, image } = trip.explain;
+    const { title, subTitle, coverImageUrl } = trip.explain;
     setStepIndex(6);
     if (title) {
-      setTitle(title);
+      setTitle(title.trim());
     }
     if (subTitle) {
-      setSubTitle(subTitle);
+      setSubTitle(subTitle.trim());
     }
-    if (image) {
-      setImage(image);
+    if (coverImageUrl) {
+      setCoverImageUrl(coverImageUrl);
     }
-  }, [title, subTitle, image]);
+  }, [trip.explain]);
 
-  const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeTitleLength = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
     setTitleLength(e.currentTarget.value.length);
   };
@@ -83,21 +85,16 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
     setSubTitleLength(e.currentTarget.value.length);
   };
 
-  const makeDetailTrip = () => {
-    const updatedContext = {
-      ...trip,
-      explain: {
-        title,
-        subTitle,
-        image,
-      },
-    };
-
-    setContext({ explain: updatedContext.explain }); // 상태 저장
+  const makeScheduleItem = () => {
     router.push('/tripPlanning/register-trip');
   };
 
-  const isSelected = title && subTitle;
+  const isSelected = title.trim() !== '' && subTitle.trim() !== '';
+
+  // const canSubmit =
+  //   isSelected &&
+  //   daysPlan.length > 0 &&
+  //   daysPlan.every((d) => d.places.length > 0);
 
   return (
     <motion.div
@@ -107,7 +104,7 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
       animate="animate"
       exit="exit"
       variants={slideFadeVariants}
-      className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] pb-[40px] pl-[20px] pr-[20px] pt-[20px]  gap-[40px] bg-white  shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]"
+      className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] p-[20px_20px_40px_20px]  gap-[40px] bg-white  shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]"
     >
       <div className="flex flex-col items-center self-stretch">
         <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">
@@ -123,17 +120,17 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
         </span>
       </div>
 
-      <div className="pc:w-[1160px] pc:h-[670px] tb:w-[728px] tb:h-[335px] bg-[var(--Gray200)] flex items-center justify-center">
+      <div className="pc:w-[1160px] pc:h-[670px] tb:w-[728px] tb:h-[335px] bg-[var(--Gray200)] flex items-center justify-center relative">
         <label
           htmlFor="imageUpload"
           className="cursor-pointer w-full h-full flex justify-center items-center"
         >
-          {image ? (
+          {coverImageUrl ? (
             <Image
-              src={`https://trebuddy-s3-bucket.s3.ap-northeast-2.amazonaws.com/${image}`}
+              src={`https://trebuddy-s3-bucket.s3.ap-northeast-2.amazonaws.com/${coverImageUrl}`}
               alt={'boardImage'}
-              width={1160}
-              height={650}
+              fill
+              style={{ objectFit: 'cover' }}
             />
           ) : (
             <ICON />
@@ -155,7 +152,7 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
             type="text"
             placeholder="여행 제목"
             value={title}
-            onChange={onChangeTitle}
+            onChange={onChangeTitleLength}
             maxLength={30}
             className="flex-1 text-[24px] font-normal leading-[34px] tracking-[-0.5px]  placeholder:text-[#CCC] outline-none pb-[10px]"
           />
@@ -190,7 +187,7 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
       <div className="flex flex-col px-[20px] py-[16px] justify-center items-center gap-[10px] self-stretch rounded-[100px] bg-[var(--Gray900)]">
         <button
           className="text-[var(--white)] text-[14px] font-bold leading-[20px] tracking-[-0.5px] "
-          onClick={makeDetailTrip}
+          onClick={makeScheduleItem}
         >
           상세일정 만들기
         </button>
@@ -199,16 +196,27 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
       <button
         disabled={!isSelected}
         onClick={() => {
-          // context 업데이트 + 최종 제출
-          setContext({ explain: { title, subTitle, image } });
-          submitSchedule();
+          const newData = {
+            title,
+            subTitle,
+            coverImageUrl,
+          };
+
+          const fullTripUpdate = {
+            explain: newData,
+          };
+
+          console.log(`수정된 데이터, ${fullTripUpdate}`);
+
+          setContext(fullTripUpdate);
+          submitSchedule(fullTripUpdate);
         }}
         className={`flex h-[54px] px-[0px] py-[16px] justify-center items-center shrink-0 text-center w-full text-[16px] font-bold leading-[22px] ${
           isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
         } ${isSelected ? 'bg-[#5938DB]' : 'bg-[#F1F1F2]'}
           disabled:cursor-not-allowed disabled:opacity-50`}
       >
-        게시글 작성
+        {mode === 'create' ? '게시글 작성' : '게시글 수정'}
       </button>
     </motion.div>
   );

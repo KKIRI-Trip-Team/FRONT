@@ -3,23 +3,12 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
-import { useTripFunnelStore } from '@/store/useTripFunnelStore';
-
 import { UseFunnelResults } from '@use-funnel/browser';
 import { slideFadeVariants } from '@/utils/motionVariants';
 import { useTransitionStore } from '@/store/transitionStore';
-import { BoardRegisterSteps } from '@/types/boardRegister';
-
-const periods = [
-  { id: 1, name: '아무때나' },
-  { id: 2, name: '당일치기' },
-  { id: 3, name: '1박 2일' },
-  { id: 4, name: '2박 3일' },
-  { id: 5, name: '3박 4일' },
-  { id: 6, name: '4박 5일' },
-  { id: 7, name: '5박 6일' },
-  { id: 8, name: '7일 이상' },
-];
+import { BoardRegisterSteps } from '@/types/boardFunnel';
+import { periodMap } from '@/types/board';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
 interface PeriodFunnel {
   funnel: UseFunnelResults<
@@ -32,7 +21,6 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
   const { stepIndex, trip, setContext, setStepIndex } = useTripFunnelStore();
   const { direction } = useTransitionStore();
   const [selectedPeriod, setSelectedPeriod] = useState('');
-  const [periodId, setPeriodId] = useState<number | null>(null);
 
   useEffect(() => {
     setStepIndex(2);
@@ -41,13 +29,11 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
     }
   }, [trip.period]);
 
-  const handlePeriodToggle = (period: string, id: number) => {
-    if (selectedPeriod === period) {
+  const handlePeriodToggle = (value: string) => {
+    if (selectedPeriod === value) {
       setSelectedPeriod('');
-      setPeriodId(null);
     } else {
-      setSelectedPeriod(period);
-      setPeriodId(id);
+      setSelectedPeriod(value);
     }
   };
 
@@ -89,13 +75,13 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
       </div>
 
       <div className="flex justify-center items-start content-start flex-wrap gap-x-[18px] gap-y-[16px] flex-[1_0_0] self-stretch">
-        {periods.map((period) => (
+        {Object.entries(periodMap).map(([value, { name }]) => (
           <button
-            key={period.id}
-            onClick={() => handlePeriodToggle(period.name, period.id)}
-            className={`w-[80px] h-[60px] rounded-[10px] flex flex-col items-center justify-center transition text-center text-[14px] font-bold leading-[20px] ${getButtonStyle(selectedPeriod === period.name)}`}
+            key={`${value}-${name}`}
+            onClick={() => handlePeriodToggle(value)}
+            className={`w-[80px] h-[60px] rounded-[10px] flex flex-col items-center justify-center transition text-center text-[14px] font-bold leading-[20px] ${getButtonStyle(selectedPeriod === value)}`}
           >
-            {period.name}
+            {name}
           </button>
         ))}
       </div>

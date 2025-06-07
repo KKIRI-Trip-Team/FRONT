@@ -11,13 +11,13 @@ import SearchIcon from '@/public/icons/search-icon.svg';
 import XIcon from '@/public/icons/x-icon.svg';
 import Menu from './Menu';
 import ProfileIcon from '@/components/common/ProfileIcon';
-import { useTripFunnelStore } from '@/store/useTripFunnelStore';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const resetAll = useTripFunnelStore((state) => state.resetAll);
+  const { resetAll } = useTripFunnelStore();
 
   const handleMenuOpen = () => {
     setMenuOpen((prev) => !prev);

@@ -4,33 +4,12 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 import { UseFunnelResults } from '@use-funnel/browser';
-import { useTripFunnelStore } from '@/store/useTripFunnelStore';
 
 import { slideFadeVariants } from '@/utils/motionVariants';
 import { useTransitionStore } from '@/store/transitionStore';
-import { BoardRegisterSteps } from '@/types/boardRegister';
-
-const cities = [
-  { id: 1, emoji: '🗼', name: '서울' },
-  { id: 2, emoji: '🌊', name: '부산' },
-  { id: 3, emoji: '🌞', name: '대구' },
-  { id: 4, emoji: '🛫', name: '인천' },
-  { id: 5, emoji: '💪', name: '광주' },
-  { id: 6, emoji: '🪷', name: '경주' },
-  { id: 7, emoji: '🥯', name: '대전' },
-  { id: 8, emoji: '🌅', name: '울산' },
-  { id: 9, emoji: '🏛️', name: '세종' },
-  { id: 10, emoji: '🏙️', name: '경기' },
-  { id: 11, emoji: '🐠', name: '강원' },
-  { id: 12, emoji: '🎍', name: '충북' },
-  { id: 13, emoji: '🌰', name: '충남' },
-  { id: 14, emoji: '🏔️', name: '경북' },
-  { id: 15, emoji: '🦆', name: '경남' },
-  { id: 16, emoji: '🍱', name: '전북' },
-  { id: 17, emoji: '🏯', name: '전주' },
-  { id: 18, emoji: '🌾', name: '전남' },
-  { id: 19, emoji: '🏝', name: '제주' },
-];
+import { BoardRegisterSteps } from '@/types/boardFunnel';
+import { cityMap } from '@/types/board';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
 interface DestinationFunnel {
   funnel: UseFunnelResults<
@@ -44,16 +23,15 @@ export default function DestinationStep({ funnel }: DestinationFunnel) {
   const { direction } = useTransitionStore();
   const [selectedCity, setSelectedCity] = useState('');
 
-  // 기존 저장된 값이 있다면 초기값 반영
   useEffect(() => {
     setStepIndex(1);
-    if (trip.destination) {
-      setSelectedCity(trip.destination);
+    if (trip.region) {
+      setSelectedCity(trip.region);
     }
-  }, [trip.destination]);
+  }, [trip.region]);
 
-  const handleCityToggle = (cityName: string) => {
-    setSelectedCity((prev) => (prev === cityName ? '' : cityName));
+  const handleCityToggle = (value: string) => {
+    setSelectedCity((prev) => (prev === value ? '' : value));
   };
 
   const isSelected = selectedCity !== '';
@@ -64,8 +42,8 @@ export default function DestinationStep({ funnel }: DestinationFunnel) {
       : 'bg-[#F8F8F8]';
 
   const handleNext = () => {
-    const nextContext = { ...trip, destination: selectedCity };
-    setContext({ destination: selectedCity });
+    const nextContext = { ...trip, region: selectedCity };
+    setContext({ region: selectedCity });
     funnel.history.push('periodStep', nextContext);
   };
 
@@ -94,20 +72,18 @@ export default function DestinationStep({ funnel }: DestinationFunnel) {
       </div>
 
       <div className="flex items-start content-start flex-wrap gap-x-[18px] gap-y-[16px] flex-[1_0_0] self-stretch">
-        {cities.map((city) => (
+        {Object.entries(cityMap).map(([value, { name, emoji }]) => (
           <button
-            key={city.id}
-            onClick={() => handleCityToggle(city.name)}
+            key={`${value}-${name}`}
+            onClick={() => handleCityToggle(value)}
             className={`w-[80px] h-[80px] rounded-[10px] flex flex-col items-center justify-center ${getCityButtonStyle(
-              selectedCity === city.name,
+              selectedCity === value,
             )}`}
           >
             <span className="text-[16px] font-bold leading-[22px]">
-              {city.emoji}
+              {emoji}
             </span>
-            <div className="text-[14px] font-bold leading-[20px]">
-              {city.name}
-            </div>
+            <div className="text-[14px] font-bold leading-[20px]">{name}</div>
           </button>
         ))}
       </div>

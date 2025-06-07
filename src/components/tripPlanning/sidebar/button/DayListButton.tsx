@@ -1,12 +1,14 @@
 'use client';
 
-import { useTripFunnelStore } from '@/store/useTripFunnelStore';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
+import { periodMap } from '@/types/board';
 
 export default function DayListButton() {
   const { trip } = useTripFunnelStore();
 
-  const period = trip.period;
-  const daysMatch = period.match(/^\d+/);
+  const periodInfo = trip.period;
+  const daysName = periodMap[periodInfo]?.name;
+  const daysMatch = daysName?.match(/^\d+/);
   const days = daysMatch ? parseInt(daysMatch[0], 10) : 1;
 
   const currentDay = useTripFunnelStore((s) => s.currentDay);

@@ -1,29 +1,40 @@
 'use client';
 
 import FindPlaceIcon from '@/public/icons/find-place-icon.svg';
-
-import { useMapStore } from '@/store/useMapstore';
-import { useTripFunnelStore } from '@/store/useTripFunnelStore';
+import { useMapStore } from '@/store/mapStore';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
 export default function MakeScheduleItemButton() {
   const currentDay = useTripFunnelStore((s) => s.currentDay);
   const selectedPlace = useMapStore((s) => s.selectedPlace);
+  const daysPlan = useTripFunnelStore((s) => s.daysPlan);
+
   const addPlaceToDay = useTripFunnelStore((s) => s.addPlaceToDay);
 
   const handleRegister = () => {
     if (!selectedPlace) return;
 
-    const lastIdxCategory = selectedPlace.category_name
+    // 현재 날짜의 장소 개수 확인
+    const currentDayPlaces =
+      daysPlan.find((day) => day.day === currentDay)?.places || [];
+    if (currentDayPlaces.length >= 20) {
+      alert('각 날짜에는 최대 20개의 장소만 등록할 수 있습니다.');
+      return;
+    }
+
+    // 카테고리가 카카오는 음식 > 중식 > 이런식으로 되어있어서 그 카테고리에서 마지막 사용
+    const lastCategoryName = selectedPlace.category_name
       .split('>')
       .pop()
       ?.trim();
 
+    // 장소 추가시 포함 될 내용들
     addPlaceToDay(currentDay, {
       id: selectedPlace.id,
       place_name: selectedPlace.place_name,
       road_address_name: selectedPlace.road_address_name,
       address_name: selectedPlace.address_name,
-      category_name: lastIdxCategory as string,
+      category_name: lastCategoryName as string,
       category_group_name: selectedPlace.category_group_name,
       phone: selectedPlace.phone,
       x: selectedPlace.x,

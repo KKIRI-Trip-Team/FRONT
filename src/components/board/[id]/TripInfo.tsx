@@ -1,6 +1,12 @@
 import ScheduleItem from '../schedule.tsx/ScheduleItem';
 
-export default function TripInfo() {
+export default function TripInfo({
+  feedId,
+  scheduleId,
+}: {
+  feedId: number;
+  scheduleId: number;
+}) {
   return (
     <section className="flex flex-col items-start gap-[20px] pt-[20px] self-stretch font-[Pretendard] bg-[var(--white)]">
       {/* 일정 */}
