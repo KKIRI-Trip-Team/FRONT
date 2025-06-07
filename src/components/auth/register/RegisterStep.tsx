@@ -9,6 +9,9 @@ import { useApi } from '@/hooks/useApi';
 import { ENDPOINTS } from '@/constants/endpoints';
 import AuthInput from '@/components/auth/AuthInput';
 import { RegisterStepProps } from '@/types/funnel';
+import { motion } from 'framer-motion';
+import { slideFadeVariants } from '@/utils/motionVariants';
+import { useTransitionStore } from '@/store/transitionStore';
 
 export default function RegisterStepPage({ funnel }: RegisterStepProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,14 +20,17 @@ export default function RegisterStepPage({ funnel }: RegisterStepProps) {
 
   const { post } = useApi();
 
+  const { direction } = useTransitionStore();
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, dirtyFields },
     watch,
     clearErrors,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
+    mode: 'onChange',
     defaultValues: {
       email: '',
       password: '',
@@ -53,7 +59,6 @@ export default function RegisterStepPage({ funnel }: RegisterStepProps) {
     console.log('회원가입 요청');
     try {
       setIsLoading(true);
-      // 회원가입 요청
       const response = await post(ENDPOINTS.USER.REGISTER, {
         email: data.email,
         password: data.password,
@@ -62,8 +67,6 @@ export default function RegisterStepPage({ funnel }: RegisterStepProps) {
 
       if (response.statusCode === 201) {
         console.log('회원가입 성공:', response);
-
-        // 로그인 성공 후 프로필 설정으로 이동 + context에 email,password 추가
         funnel.history.push('profileStep', {
           email: data.email,
           password: data.password,
@@ -78,63 +81,80 @@ export default function RegisterStepPage({ funnel }: RegisterStepProps) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="flex w-full max-w-[1200px] min-h-screen pc:min-h-[934px] tb:h-full mb:h-full pt-[60px] tb:pt-[40px] mb:pt-[30px] px-5 flex-col items-center pc:justify-start tb:justify-between mb:justify-between gap-[60px] tb:gap-[40px] mb:gap-[30px] shrink-0 bg-white"
+    <motion.div
+      key="registerStep"
+      custom={direction}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={slideFadeVariants}
+      className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-white shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]"
     >
-      <div className="flex flex-col w-full pc:gap-[60px] tb:gap-[40px] mb:gap-[30px]">
-        <h1 className="self-stretch text-gary-900 font-[Pretendard] text-2xl font-normal leading-[34px] tracking-[-0.5px]">
-          이메일로 회원가입
-        </h1>
-
-        {/* 이메일 입력 폼 */}
-        <AuthInput
-          id="email"
-          label="이메일 주소"
-          type="email"
-          placeholder="이메일주소"
-          register={register}
-          errors={errors}
-          clearErrors={clearErrors}
-        />
-
-        <div>
-          {/* 비밀번호 입력 폼 */}
-          <AuthInput
-            id="password"
-            label="비밀번호 입력"
-            type="password"
-            placeholder="비밀번호"
-            register={register}
-            errors={errors}
-            clearErrors={clearErrors}
-            showPassword={showPassword}
-            handlePasswordVisibility={handlePasswordVisibility}
-            regexMessage="공백없이 영문, 숫자, 특수문자 조합을 8자 이상 20자 이하로 입력해주세요"
-          />
-
-          {/* 비밀번호 확인 입력 폼 */}
-          <AuthInput
-            id="passwordConfirm"
-            label=""
-            type="password"
-            placeholder="비밀번호 확인"
-            register={register}
-            errors={errors}
-            clearErrors={clearErrors}
-            showPassword={showPasswordConfirm}
-            handlePasswordVisibility={handlePasswordConfirmVisibility}
-          />
-        </div>
-      </div>
-
-      <button
-        type="submit"
-        disabled={!isFormFilled || isLoading}
-        className={`flex h-[54px] py-4 justify-center items-center flex-shrink-0 self-stretch mb-[30px] ${isFormFilled ? 'bg-[#5938DB] text-white' : 'bg-gray-200 text-gray-400'}`}
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex w-full max-w-[1200px] min-h-screen pc:min-h-[934px] tb:h-full mb:h-full pt-[60px] tb:pt-[40px] mb:pt-[30px] px-5 flex-col items-center pc:justify-start tb:justify-between mb:justify-between gap-[60px] tb:gap-[40px] mb:gap-[30px] shrink-0 bg-white"
       >
-        {isLoading ? '회원가입 중...' : isFormFilled ? '회원가입' : '확인'}
-      </button>
-    </form>
+        <div className="flex flex-col w-full pc:gap-[60px] tb:gap-[40px] mb:gap-[30px]">
+          <h1 className="self-stretch text-gary-900 font-[Pretendard] text-2xl font-normal leading-[34px] tracking-[-0.5px]">
+            이메일로 회원가입
+          </h1>
+
+          {/* 이메일 입력 폼 */}
+          <AuthInput
+            id="email"
+            label="이메일 주소"
+            type="email"
+            placeholder="이메일주소"
+            register={register}
+            errors={errors}
+            clearErrors={clearErrors}
+            isDirty={dirtyFields.email}
+          />
+
+          <div>
+            {/* 비밀번호 입력 폼 */}
+            <AuthInput
+              id="password"
+              label="비밀번호 입력"
+              type="password"
+              placeholder="비밀번호"
+              register={register}
+              errors={errors}
+              clearErrors={clearErrors}
+              showPassword={showPassword}
+              handlePasswordVisibility={handlePasswordVisibility}
+              regexMessage="공백없이 영문, 숫자, 특수문자 조합을 8자 이상 20자 이하로 입력해주세요"
+              isDirty={dirtyFields.password}
+            />
+
+            {/* 비밀번호 확인 입력 폼 */}
+            <AuthInput
+              id="passwordConfirm"
+              label=""
+              type="password"
+              placeholder="비밀번호 확인"
+              register={register}
+              errors={errors}
+              clearErrors={clearErrors}
+              showPassword={showPasswordConfirm}
+              handlePasswordVisibility={handlePasswordConfirmVisibility}
+              isDirty={dirtyFields.passwordConfirm}
+            />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={!isFormFilled || isLoading}
+          className={`flex h-[54px] py-4 justify-center items-center flex-shrink-0 self-stretch mb-[30px] ${
+            isFormFilled
+              ? 'bg-[#5938DB] text-white'
+              : 'bg-gray-200 text-gray-400'
+          }`}
+        >
+          {isLoading ? '회원가입 중...' : isFormFilled ? '회원가입' : '확인'}
+        </button>
+      </form>
+    </motion.div>
   );
 }

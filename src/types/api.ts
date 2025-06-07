@@ -44,7 +44,7 @@ export interface ApiResponse<T> {
  * API 요청 옵션
  */
 export interface ApiOptions {
-  withCredentials?: boolean;
+  credentials?: string;
   headers?: Record<string, string>;
   timeout?: number;
 }

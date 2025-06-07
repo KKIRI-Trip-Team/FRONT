@@ -17,6 +17,8 @@ export const ENDPOINTS = {
     INFO: 'user/information/',
     DELETE: 'user',
     ME: 'user/me',
+    ME_FEEDS: 'user/me/feeds',
+    ME_DASHBOARD: 'user/me/dashboard',
   },
 
   // 이미지

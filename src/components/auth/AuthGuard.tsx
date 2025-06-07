@@ -26,9 +26,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
     ) {
       console.log('로그인이 필요한 페이지입니다');
       alert('로그인이 필요한 페이지입니다');
-      router.push(
-        `/login/form?redirect=${encodeURIComponent(pathname || '/')}`,
-      );
+      router.push(`/login?redirect=${encodeURIComponent(pathname || '/')}`);
     }
   }, [isAuthenticated, isLoading, pathname, router]);
 

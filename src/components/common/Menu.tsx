@@ -1,21 +1,28 @@
-// components/Menu.tsx
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import RightArrowIcon from '@/public/icons/right-arrow-icon.svg';
 import Link from 'next/link';
 import { useMemo } from 'react';
 import ProfileIcon from '@/components/common/ProfileIcon';
 import { useAuthStore } from '@/store/authStore';
+import { useAuthContext } from '@/providers/AuthProvider';
 
 const Menu = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const { isAuthenticated } = useAuthStore();
+  const { logout, isLogoutLoading } = useAuthContext();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   const mainMenuList = useMemo(
     () => [
       { href: '/', label: '탐색' },
-      { href: '/', label: '만들기' },
+      { href: '/tripPlanning', label: '만들기' },
       { href: '/mypage', label: '마이페이지' },
     ],
     [],
@@ -40,25 +47,36 @@ const Menu = () => {
         {/* 시작 메뉴 */}
         <div className="flex flex-col items-start gap-[20px] p-5 bg-white">
           <ProfileIcon linkEnabled={false} />
-          {isAuthenticated ? (
-            <Link href="/mypage">
-              <button className="flex items-center">
-                <span className="text-[var(--Gray900,#222)] text-subtitle1">
-                  마이페이지로 이동하기
-                </span>
-                <RightArrowIcon />
-              </button>
-            </Link>
-          ) : (
-            <Link href="/login">
-              <button className="flex items-center">
-                <span className="text-[var(--Gray900,#222)] text-subtitle1">
-                  트레버디를 시작하세요
-                </span>
-                <RightArrowIcon />
-              </button>
-            </Link>
-          )}
+          <div className="flex justify-between w-full">
+            {isAuthenticated ? (
+              <>
+                <Link href="/mypage">
+                  <button className="flex items-center">
+                    <span className="text-[var(--Gray900,#222)] text-subtitle1">
+                      마이페이지로 이동하기
+                    </span>
+                    <RightArrowIcon />
+                  </button>
+                </Link>
+                <button
+                  className="tracking-tight text-center text-gray-500 underline underline-offset-2 text-caption3 decoration-solid decoration-gray-500"
+                  onClick={handleLogout}
+                  disabled={isLogoutLoading}
+                >
+                  {isLogoutLoading ? '로그아웃 중...' : '로그아웃'}
+                </button>
+              </>
+            ) : (
+              <Link href="/login" className="w-auto">
+                <button className="flex items-center">
+                  <span className="text-[var(--Gray900,#222)] text-subtitle1">
+                    트레버디를 시작하세요
+                  </span>
+                  <RightArrowIcon />
+                </button>
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* 메인 메뉴 */}
