@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#ssl
+localhost.pem
+localhost-key.pem
+localhost.crt
+localhost.key
