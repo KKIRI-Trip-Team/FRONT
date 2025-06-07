@@ -8,9 +8,13 @@ import Image from 'next/image';
 
 interface ProfileImageUploaderProps {
   onImageChange: (file: File | null) => void;
+  initialImage?: string;
 }
 
-const ProfileImageUploader = ({ onImageChange }: ProfileImageUploaderProps) => {
+const ProfileImageUploader = ({
+  onImageChange,
+  initialImage,
+}: ProfileImageUploaderProps) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -33,17 +37,24 @@ const ProfileImageUploader = ({ onImageChange }: ProfileImageUploaderProps) => {
     fileInputRef.current?.click();
   };
 
+  const profileImageSrc = imagePreview
+    ? imagePreview
+    : initialImage
+      ? `https://trebuddy-s3-bucket.s3.ap-northeast-2.amazonaws.com/${initialImage}`
+      : null;
+
   return (
     <div className="flex flex-col items-center">
       <div className="relative">
         <div className="flex items-center justify-center w-[100px] h-[100px] overflow-hidden rounded-[40px]">
-          {imagePreview ? (
+          {profileImageSrc ? (
             <Image
-              src={imagePreview}
-              alt="Profile preview"
+              src={profileImageSrc}
+              alt="User profile image"
               width={100}
               height={100}
               className="object-cover w-full h-full"
+              priority
             />
           ) : (
             <DefaultProfileAuthEditIcon className="w-full h-full" />

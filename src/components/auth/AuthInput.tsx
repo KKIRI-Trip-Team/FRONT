@@ -1,6 +1,6 @@
 // components/AuthInput.tsx
 import React from 'react';
-import { UseFormRegister, Path, FieldValues } from 'react-hook-form'; // 추가된 import
+import { UseFormRegister, Path, FieldValues } from 'react-hook-form';
 import { LoginFormData, RegisterFormData } from '@/utils/schema';
 import PasswordCloseEyeIcon from '@/public/icons/password-close-eye-icon.svg';
 import PasswordOpenEyeIcon from '@/public/icons/password-open-eye-icon.svg';
@@ -20,12 +20,16 @@ interface AuthInputProps<T extends FieldValues> {
     onMouseLeave: () => void;
   };
   regexMessage?: string;
+  successMessage?: string;
+  isDirty?: boolean;
 }
 
 const baseInputClasses =
-  'flex h-12 items-center gap-2.5 self-stretch border-b-[0.6px] focus:outline-none w-full';
-const errorInputClasses = 'border-red focus:border-red';
-const normalInputClasses = 'border-[#CCC] focus:border-[black]';
+  'flex h-12 items-center gap-2.5 self-stretch border-b-[0.6px] focus:outline-none w-full transition-colors duration-200';
+const errorInputClasses = 'border-b-[var(--red)]';
+const validInputClasses = 'border-b-[var(--green)]';
+const normalInputClasses =
+  'border-b-[var(--Gray400)] focus:border-b-[var(--Gray900)]';
 
 const AuthInput = <T extends FieldValues>({
   id,
@@ -38,11 +42,18 @@ const AuthInput = <T extends FieldValues>({
   showPassword,
   handlePasswordVisibility,
   regexMessage,
+  successMessage,
+  isDirty = false,
 }: AuthInputProps<T>) => {
   const inputType = type === 'password' && showPassword ? 'text' : type;
+  const hasError = !!errors[id];
+  const isValid = isDirty && !hasError;
 
-  const getInputClassNames = (hasError: boolean) =>
-    `${baseInputClasses} ${hasError ? errorInputClasses : normalInputClasses}`;
+  const getInputClassNames = () => {
+    if (hasError) return `${baseInputClasses} ${errorInputClasses}`;
+    if (isValid) return `${baseInputClasses} ${validInputClasses}`;
+    return `${baseInputClasses} ${normalInputClasses}`;
+  };
 
   return (
     <div className="flex flex-col items-start gap-[10px] self-stretch">
@@ -56,8 +67,8 @@ const AuthInput = <T extends FieldValues>({
           {...register(id, {
             onChange: () => errors[id] && clearErrors(id),
           })}
-          aria-invalid={errors[id] ? 'true' : 'false'}
-          className={`${getInputClassNames(!!errors[id])} placeholder:text-gray-400 placeholder:text-2xl placeholder:font-normal placeholder:leading-[34px] placeholder:tracking-[-0.5px]`}
+          aria-invalid={hasError ? 'true' : 'false'}
+          className={`${getInputClassNames()} placeholder:text-gray-400 placeholder:text-2xl placeholder:font-normal placeholder:leading-[34px] placeholder:tracking-[-0.5px]`}
           placeholder={placeholder}
         />
         {type === 'password' && handlePasswordVisibility && (
@@ -68,13 +79,23 @@ const AuthInput = <T extends FieldValues>({
             {showPassword ? <PasswordOpenEyeIcon /> : <PasswordCloseEyeIcon />}
           </div>
         )}
-        {regexMessage && (
-          <p className="text-gray-500 text-caption3 mt-[4px]">{regexMessage}</p>
+        {hasError ? (
+          <p className="mt-1 text-sm text-[var(--red)]">{errors[id].message}</p>
+        ) : (
+          <>
+            {isValid && successMessage && (
+              <p className="mt-1 text-sm text-[var(--green)]">
+                {successMessage}
+              </p>
+            )}
+            {!isValid && regexMessage && (
+              <p className="mt-1 text-sm text-[var(--Gray500)]">
+                {regexMessage}
+              </p>
+            )}
+          </>
         )}
       </div>
-      {errors[id] && (
-        <p className="mt-1 text-sm text-red">{errors[id].message}</p>
-      )}
     </div>
   );
 };

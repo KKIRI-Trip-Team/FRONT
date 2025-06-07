@@ -2,28 +2,17 @@
 
 import ky from '@toss/ky';
 import { ApiResponse, ApiOptions } from '@/types/api';
-import { getToken } from '@/utils/auth';
 
 /**
  * API 클라이언트 설정
  */
-const defaultOptions: ApiOptions = {
-  withCredentials: true,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-};
-
 /**
  * API 클라이언트 인스턴스 생성
  */
 const createApiClient = (baseUrl: string, options: ApiOptions = {}) => {
   const mergedOptions = {
-    ...defaultOptions,
     ...options,
     headers: {
-      ...defaultOptions.headers,
       ...options.headers,
     },
   };
@@ -47,7 +36,6 @@ const createApiClient = (baseUrl: string, options: ApiOptions = {}) => {
 
   interface KyOptions {
     prefixUrl: string;
-    credentials: RequestCredentials;
     timeout: number;
     headers: Record<string, string>;
     hooks: KyHooks;
@@ -55,21 +43,13 @@ const createApiClient = (baseUrl: string, options: ApiOptions = {}) => {
 
   const client = ky.create({
     prefixUrl: baseUrl,
-    credentials: 'include', // 쿠키를 포함하기 위해 필요
-    timeout: mergedOptions.timeout,
-    headers: mergedOptions.headers,
+    credentials: 'include',
+    timeout: 10 * 1000,
+    headers: {
+      'content-type': 'application/json',
+    },
     hooks: {
-      beforeRequest: [
-        (request) => {
-          if (typeof document !== 'undefined') {
-            const accessToken = getToken();
-
-            if (accessToken) {
-              request.headers.set('Authorization', `Bearer ${accessToken}`);
-            }
-          }
-        },
-      ],
+      beforeRequest: [],
       afterResponse: [
         async (
           _request: Request,
@@ -77,9 +57,10 @@ const createApiClient = (baseUrl: string, options: ApiOptions = {}) => {
           response: Response,
         ) => {
           // 응답 헤더에서 쿠키 정보 확인 (디버깅 용도)
-          if (process.env.NODE_ENV === 'development') {
-            console.log('Response headers:', response.headers);
-          }
+          // if (process.env.NODE_ENV === 'development') {
+          //   console.log('Response headers:', response.headers);
+          //   console.log('개발 디버깅');
+          // }
 
           // // 401 Unauthorized 응답 처리
           // if (response.status === 401) {
@@ -102,7 +83,14 @@ const createApiClient = (baseUrl: string, options: ApiOptions = {}) => {
         },
       ],
     },
-  } as KyOptions);
+    // retry: {
+    //   // 재시도 요청
+    //   limit: 5, // 재시도 횟수
+    //   statusCodes: [401], // 401 에러일 때 재시도
+    //   methods: ['get', 'post', 'put', 'delete', 'patch'], // 재시도를 적용할 HTTP 메서드
+    //   backoffLimit: 3 * 1000, // 재시도 간격의 최댓값
+    // },
+  });
 
   return {
     /**

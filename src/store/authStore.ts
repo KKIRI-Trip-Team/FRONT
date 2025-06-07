@@ -12,7 +12,15 @@ export const useAuthStore = create<UserState>()(
       setUser: (user) => set({ user }),
       setAuthenticated: (isAuthenticated) => set({ isAuthenticated }),
       setLoading: (isLoading) => set({ isLoading }),
-      logout: () => set({ user: null, isAuthenticated: false }),
+      logout: () => {
+        set({ user: null, isAuthenticated: false });
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('accessToken');
+        }
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('trebuddy-user-storage');
+        }
+      },
     }),
     {
       name: 'trebuddy-user-storage',

@@ -30,8 +30,12 @@ export function useAuth() {
     mutationFn: (credentials: LoginCredentials) => login(credentials),
     onSuccess: (data) => {
       console.log(data);
+
+      // Zustand store 업데이트
       setUser(data.data);
       setAuthenticated(true);
+
+      // React Query 캐시 업데이트
       queryClient.setQueryData(['user'], data);
     },
   });

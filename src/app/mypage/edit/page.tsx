@@ -1,70 +1,55 @@
-// components/auth/LoginForm.tsx
 'use client';
-
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import { loginSchema, LoginFormData } from '@/utils/schema';
+import { useState, useEffect } from 'react';
+import { profileFormData, profileSchema } from '@/utils/schema';
 import { useRouter } from 'next/navigation';
 import AuthInput from '@/components/auth/AuthInput';
-import { login } from '@/api/auth';
 import { useAuthStore } from '@/store/authStore';
-import { setToken } from '@/utils/auth';
-import { User } from '@/types/user';
+import ProfileImageUploader from '@/components/common/ProfileIconUploader';
 
-export default function LoginForm() {
+const page = () => {
+  const { user, isAuthenticated } = useAuthStore();
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+
   const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
-  const { setUser, setAuthenticated, setLoading } = useAuthStore();
+  const { setUser, setLoading } = useAuthStore();
 
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors, isSubmitted },
     clearErrors,
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<profileFormData>({
+    resolver: zodResolver(profileSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: user?.email || '',
+      nickname: user?.nickname || '',
     },
   });
 
-  const email = watch('email');
-  const password = watch('password');
-  const isFormFilled = email && password;
-
-  const onSubmit = async (formData: LoginFormData) => {
-    try {
-      const response = await login(formData);
-
-      if (response.statusCode === 200) {
-        const { data } = response;
-        const userData: User = {
-          email: data.email,
-          nickname: data.nickname,
-          profileUrl: data.profileUrl,
-        };
-
-        setToken(data.accessToken);
-
-        setUser(userData);
-        setAuthenticated(true);
-        setLoading(false);
-
-        router.push('/');
-        router.refresh();
-      }
-    } catch (error) {
-      console.error('로그인 에러 : ', error);
+  // user 정보가 변경되면 form을 reset하여 새로운 기본값으로 업데이트
+  useEffect(() => {
+    if (user) {
+      reset({
+        email: user.email || '',
+        nickname: user.nickname || '',
+      });
     }
-  };
+  }, [user, reset]);
 
-  const handlePasswordVisibility = {
-    onMouseDown: () => setShowPassword(true),
-    onMouseUp: () => setShowPassword(false),
-    onMouseLeave: () => setShowPassword(false),
+  const email = watch('email');
+  const nickname = watch('nickname');
+  const isFormFilled = email && nickname;
+
+  const onSubmit = async (formData: profileFormData) => {
+    try {
+      console.log('프로필 수정', formData);
+    } catch (error) {
+      console.error('프로필 수정 에러 : ', error);
+    }
   };
 
   // Button style classes
@@ -77,6 +62,10 @@ export default function LoginForm() {
     ? buttonEnabledClasses
     : buttonDisabledClasses;
 
+  const handleImageChange = (file: File | null) => {
+    setProfileImage(file);
+  };
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -84,31 +73,34 @@ export default function LoginForm() {
     >
       <div className="flex flex-col w-full pc:gap-[60px] tb:gap-[40px] mb:gap-[30px]">
         <h1 className="self-stretch text-gary-900 font-[Pretendard] text-2xl font-normal leading-[34px] tracking-[-0.5px]">
-          이메일로 로그인
+          내 정보 수정
         </h1>
+
+        <ProfileImageUploader
+          onImageChange={handleImageChange}
+          initialImage={user?.profileUrl}
+        />
 
         {/* Email input form */}
         <AuthInput
           id="email"
-          label="이메일 주소"
+          label="이메일"
           type="email"
-          placeholder="이메일주소"
+          placeholder="이메일"
           register={register}
           errors={isSubmitted ? errors : {}}
           clearErrors={clearErrors}
         />
 
-        {/* Password input form */}
+        {/* Nickname input form */}
         <AuthInput
-          id="password"
-          label="비밀번호 입력"
-          type="password"
-          placeholder="비밀번호"
+          id="nickname"
+          label="닉네임"
+          type="nickname"
+          placeholder="닉네임"
           register={register}
           errors={isSubmitted ? errors : {}}
           clearErrors={clearErrors}
-          showPassword={showPassword}
-          handlePasswordVisibility={handlePasswordVisibility}
         />
       </div>
 
@@ -118,8 +110,10 @@ export default function LoginForm() {
         disabled={!isFormFilled}
         className={`${buttonBaseClasses} ${buttonColorClass}`}
       >
-        {isFormFilled ? '로그인' : '확인'}
+        내 정보 수정
       </button>
     </form>
   );
-}
+};
+
+export default page;

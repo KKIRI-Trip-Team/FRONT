@@ -28,20 +28,14 @@ export const registerSchema = z
       )
       .trim(),
 
-    passwordConfirm: z
-      .string()
-      .regex(
-        /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,20}$/,
-        '공백없이 영문, 숫자, 특수문자 조합을 8자 이상 20자 이하로 입력해주세요',
-      )
-      .trim(),
+    passwordConfirm: z.string().min(1, '비밀번호 확인을 입력해주세요').trim(),
   })
   .refine((data) => data.password === data.passwordConfirm, {
     message: '비밀번호가 일치하지 않습니다',
     path: ['passwordConfirm'],
   });
 
-export const nicknameSchema = z.object({
+export const profileSchema = z.object({
   email: z.string().email('이메일 형식이 아닙니다.'),
 
   nickname: z
@@ -78,5 +72,5 @@ export const postSchema = z.object({
 
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
-export type NicknameFormData = z.infer<typeof nicknameSchema>;
+export type profileFormData = z.infer<typeof profileSchema>;
 export type PostFormData = z.infer<typeof postSchema>;

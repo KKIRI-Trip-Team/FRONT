@@ -1,4 +1,4 @@
-// contexts/AuthProvider.tsx
+// providers/AuthProvider.tsx
 import { createContext, ReactNode, useContext, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { User } from '@/types/user';
