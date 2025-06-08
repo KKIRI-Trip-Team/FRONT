@@ -3,50 +3,40 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
-import { useTripFunnelStore } from '@/store/useTripFunnelStore';
-import { BoardRegisterTypes } from '@/types/boardRegister';
 import { UseFunnelResults } from '@use-funnel/browser';
 import { slideFadeVariants } from '@/utils/motionVariants';
 import { useTransitionStore } from '@/store/transitionStore';
-
-const genders = [
-  { id: 1, name: '👩 여성' },
-  { id: 2, name: '👱‍♂️ 남성' },
-  { id: 3, name: '상관없음' },
-];
-
-const ages = [
-  { id: 1, name: '20대' },
-  { id: 2, name: '30대' },
-  { id: 3, name: '40대' },
-  { id: 4, name: '50대' },
-  { id: 5, name: '상관없음' },
-];
+import { BoardRegisterSteps } from '@/types/boardFunnel';
+import { ageGroupMap, genderMap } from '@/types/board';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
 interface MateFunnel {
-  funnel: UseFunnelResults<BoardRegisterTypes, BoardRegisterTypes['mateStep']>;
+  funnel: UseFunnelResults<BoardRegisterSteps, BoardRegisterSteps['mateStep']>;
 }
 
 export default function MateStep({ funnel }: MateFunnel) {
-  const { stepIndex, context, setContext, setStepIndex } = useTripFunnelStore();
+  const { stepIndex, trip, setContext, setStepIndex } = useTripFunnelStore();
   const { direction } = useTransitionStore();
+
   const [selectedGender, setSelectedGender] = useState('');
-  const [selectedAges, setSelectedAges] = useState<string[]>([]);
+  const [selectedAges, setSelectedAges] = useState('');
 
   useEffect(() => {
     setStepIndex(3);
-    if (context.gender) setSelectedGender(context.gender);
-    if (context.ageRange?.length > 0) setSelectedAges(context.ageRange);
-  }, [context.gender, context.ageRange]);
+    setSelectedGender(trip.gender || '');
+    setSelectedAges(trip.ageGroup || '');
+  }, []);
 
-  const toggleGender = (gender: string) => {
-    setSelectedGender((prev) => (prev === gender ? '' : gender));
+  const toggleGender = (value: string) => {
+    setSelectedGender((prev) => (prev === value ? '' : value));
   };
 
-  const toggleAge = (age: string) => {
-    setSelectedAges((prev) =>
-      prev.includes(age) ? prev.filter((a) => a !== age) : [...prev, age],
-    );
+  const toggleAge = (value: string) => {
+    // setSelectedAges((prev) =>
+    //   prev.includes(value) ? prev.filter((a) => a !== value) : [...prev, value],
+    // );
+
+    setSelectedAges((prev) => (prev === value ? '' : value));
   };
 
   const isSelected = selectedGender !== '' && selectedAges.length > 0;
@@ -57,13 +47,12 @@ export default function MateStep({ funnel }: MateFunnel) {
       : 'bg-[#F8F8F8]';
 
   const handleNext = () => {
-    const nextContext = {
-      ...context,
+    setContext({ gender: selectedGender, ageGroup: selectedAges });
+    funnel.history.push('styleStep', {
+      ...trip,
       gender: selectedGender,
-      ageRange: selectedAges,
-    };
-    setContext({ gender: selectedGender, ageRange: selectedAges });
-    funnel.history.push('styleStep', nextContext);
+      ageGroup: selectedAges,
+    });
   };
 
   return (
@@ -95,16 +84,16 @@ export default function MateStep({ funnel }: MateFunnel) {
         <section className="flex flex-col gap-[20px]">
           <h1 className="text-[20px] font-bold">성별</h1>
           <div className="flex gap-[16px] flex-wrap">
-            {genders.map((gender) => (
+            {Object.entries(genderMap).map(([value, { name, emoji }]) => (
               <button
-                key={gender.id}
-                onClick={() => toggleGender(gender.name)}
+                key={`${value}-${name}`}
+                onClick={() => toggleGender(value)}
                 className={`px-[16px] py-[8px] rounded-[100px] ${getSelectedStyle(
-                  selectedGender === gender.name,
+                  selectedGender === value,
                 )}`}
               >
                 <span className="text-[14px] font-bold text-[var(--Gray900)]">
-                  {gender.name}
+                  {emoji} {name}
                 </span>
               </button>
             ))}
@@ -117,24 +106,24 @@ export default function MateStep({ funnel }: MateFunnel) {
             <h1 className="text-[16px] font-bold text-[var(--Gray900)]">
               연령대
             </h1>
-            <h3 className="text-[12px] text-[var(--Gray600)] font-bold">
+            {/* <h3 className="text-[12px] text-[var(--Gray600)] font-bold">
               중복 선택 가능
-            </h3>
+            </h3> */}
           </div>
 
           <div className="flex flex-wrap gap-[16px]">
-            {ages.map((age) => (
-              <div
-                key={age.id}
-                onClick={() => toggleAge(age.name)}
+            {Object.entries(ageGroupMap).map(([value, { name }]) => (
+              <button
+                key={`${value}-${name}`}
+                onClick={() => toggleAge(value)}
                 className={`px-[16px] py-[8px] rounded-[100px] cursor-pointer ${getSelectedStyle(
-                  selectedAges.includes(age.name),
+                  selectedAges.includes(value),
                 )}`}
               >
-                <label className="text-[14px] font-bold text-[var(--Gray900)]">
-                  {age.name}
-                </label>
-              </div>
+                <span className="text-[14px] font-bold text-[var(--Gray900)]">
+                  {name}
+                </span>
+              </button>
             ))}
           </div>
         </section>

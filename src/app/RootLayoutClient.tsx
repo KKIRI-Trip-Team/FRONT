@@ -15,6 +15,7 @@ const queryClient = new QueryClient({
     },
   },
 });
+import DetailTripHeader from '@/components/tripPlanning/TripDetailHeader';
 
 export default function RootLayoutClient({
   children,
@@ -25,6 +26,7 @@ export default function RootLayoutClient({
   const isAuthRoute =
     pathname?.startsWith('/login') || pathname?.startsWith('/register');
 
+  const isTripDetailPage = pathname.startsWith('/tripPlanning/register-trip');
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -34,7 +36,7 @@ export default function RootLayoutClient({
           tb:max-w-[768px] 
           mb:max-w-[375px]"
         >
-          {!isAuthRoute && <Header />}
+          {isTripDetailPage ? <DetailTripHeader /> : !isAuthRoute && <Header />}
           <main className="w-full">{children}</main>
           <Footer />
         </div>

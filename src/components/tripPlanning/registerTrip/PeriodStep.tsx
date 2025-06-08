@@ -3,44 +3,38 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
-import { useTripFunnelStore } from '@/store/useTripFunnelStore';
-import { BoardRegisterTypes } from '@/types/boardRegister';
 import { UseFunnelResults } from '@use-funnel/browser';
 import { slideFadeVariants } from '@/utils/motionVariants';
 import { useTransitionStore } from '@/store/transitionStore';
-
-const periods = [
-  { id: 1, name: '아무때나' },
-  { id: 2, name: '당일치기' },
-  { id: 3, name: '1박 2일' },
-  { id: 4, name: '2박 3일' },
-  { id: 5, name: '3박 4일' },
-  { id: 6, name: '4박 5일' },
-  { id: 7, name: '5박 6일' },
-  { id: 8, name: '7일 이상' },
-];
+import { BoardRegisterSteps } from '@/types/boardFunnel';
+import { periodMap } from '@/types/board';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
 interface PeriodFunnel {
   funnel: UseFunnelResults<
-    BoardRegisterTypes,
-    BoardRegisterTypes['periodStep']
+    BoardRegisterSteps,
+    BoardRegisterSteps['periodStep']
   >;
 }
 
 export default function PeriodStep({ funnel }: PeriodFunnel) {
-  const { stepIndex, context, setContext, setStepIndex } = useTripFunnelStore();
+  const { stepIndex, trip, setContext, setStepIndex } = useTripFunnelStore();
   const { direction } = useTransitionStore();
   const [selectedPeriod, setSelectedPeriod] = useState('');
 
   useEffect(() => {
     setStepIndex(2);
-    if (context.period) {
-      setSelectedPeriod(context.period);
+    if (trip.period) {
+      setSelectedPeriod(trip.period);
     }
-  }, [context.period]);
+  }, [trip.period]);
 
-  const handlePeriodToggle = (period: string) => {
-    setSelectedPeriod((prev) => (prev === period ? '' : period));
+  const handlePeriodToggle = (value: string) => {
+    if (selectedPeriod === value) {
+      setSelectedPeriod('');
+    } else {
+      setSelectedPeriod(value);
+    }
   };
 
   const isSelected = selectedPeriod !== '';
@@ -51,7 +45,7 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
       : 'bg-[#F8F8F8]';
 
   const handleNext = () => {
-    const nextContext = { ...context, period: selectedPeriod };
+    const nextContext = { ...trip, period: selectedPeriod };
     setContext({ period: selectedPeriod });
     funnel.history.push('mateStep', nextContext);
   };
@@ -81,13 +75,13 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
       </div>
 
       <div className="flex justify-center items-start content-start flex-wrap gap-x-[18px] gap-y-[16px] flex-[1_0_0] self-stretch">
-        {periods.map((period) => (
+        {Object.entries(periodMap).map(([value, { name }]) => (
           <button
-            key={period.id}
-            onClick={() => handlePeriodToggle(period.name)}
-            className={`w-[80px] h-[60px] rounded-[10px] flex flex-col items-center justify-center transition text-center text-[14px] font-bold leading-[20px] ${getButtonStyle(selectedPeriod === period.name)}`}
+            key={`${value}-${name}`}
+            onClick={() => handlePeriodToggle(value)}
+            className={`w-[80px] h-[60px] rounded-[10px] flex flex-col items-center justify-center transition text-center text-[14px] font-bold leading-[20px] ${getButtonStyle(selectedPeriod === value)}`}
           >
-            {period.name}
+            {name}
           </button>
         ))}
       </div>

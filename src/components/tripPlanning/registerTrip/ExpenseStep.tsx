@@ -3,21 +3,21 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
-import { useTripFunnelStore } from '@/store/useTripFunnelStore';
-import { BoardRegisterTypes } from '@/types/boardRegister';
 import { UseFunnelResults } from '@use-funnel/browser';
 import { slideFadeVariants } from '@/utils/motionVariants';
 import { useTransitionStore } from '@/store/transitionStore';
+import { BoardRegisterSteps } from '@/types/boardFunnel';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
 interface ExpenseFunnel {
   funnel: UseFunnelResults<
-    BoardRegisterTypes,
-    BoardRegisterTypes['expenseStep']
+    BoardRegisterSteps,
+    BoardRegisterSteps['expenseStep']
   >;
 }
 
 export default function ExpenseStep({ funnel }: ExpenseFunnel) {
-  const { stepIndex, context, setContext, setStepIndex } = useTripFunnelStore();
+  const { stepIndex, trip, setContext, setStepIndex } = useTripFunnelStore();
   const { direction } = useTransitionStore();
 
   const [moneyValid, setMoneyValid] = useState('');
@@ -25,8 +25,8 @@ export default function ExpenseStep({ funnel }: ExpenseFunnel) {
 
   useEffect(() => {
     setStepIndex(5);
-    if (context.expense) {
-      setMoneyValid(context.expense.toLocaleString());
+    if (trip.cost) {
+      setMoneyValid(trip.cost.toLocaleString());
       setIsValid(true);
     }
   }, []);
@@ -35,7 +35,7 @@ export default function ExpenseStep({ funnel }: ExpenseFunnel) {
   const parsedValue = rawInput ? parseInt(rawInput, 10) : 0;
 
   const isValidMoney =
-    !isNaN(parsedValue) && parsedValue >= 5000 && parsedValue <= 5000000;
+    !isNaN(parsedValue) && parsedValue >= 5000 && parsedValue <= 100000000;
 
   const onChangeMoney = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value.replace(/[^0-9]/g, '');
@@ -46,8 +46,8 @@ export default function ExpenseStep({ funnel }: ExpenseFunnel) {
   const handleNextClick = () => {
     if (!isValidMoney) return;
 
-    const nextContext = { ...context, expense: parsedValue };
-    setContext({ expense: parsedValue });
+    const nextContext = { ...trip, cost: parsedValue };
+    setContext({ cost: parsedValue });
     funnel.history.push('explainStep', nextContext);
   };
 
@@ -90,7 +90,7 @@ export default function ExpenseStep({ funnel }: ExpenseFunnel) {
             placeholder="예상 비용"
             value={moneyValid}
             onChange={onChangeMoney}
-            maxLength={10}
+            maxLength={12}
             className="flex-1 h-[48px] outline-none text-black placeholder:text-[24px] font-normal leading-[34px] tracking-[-0.5px] text-[var(--Gray400)]"
           />
           <span className="ml-2 text-[24px] font-normal leading-[34px] tracking-[-0.5px] text-[var(--Gray900)]">
@@ -109,7 +109,7 @@ export default function ExpenseStep({ funnel }: ExpenseFunnel) {
         >
           {isValidMoney
             ? ''
-            : '최소 5,000원 ~ 최대 5,000,000원까지 입력이 가능합니다'}
+            : '최소 5,000원 ~ 최대 100,000,000원까지 입력이 가능합니다'}
         </p>
       </div>
 
