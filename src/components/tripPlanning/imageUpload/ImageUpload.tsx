@@ -28,8 +28,9 @@ export const uploadImageToServer = async (
       body: file,
     });
 
-    if (uploadToS3.status !== 200) {
-      throw new Error('S3에 이미지 업로드 실패');
+    if (uploadToS3.status === 200) {
+      console.log('S3에 이미지 등록 성공');
+      console.log(uploadToS3);
     }
 
     return key;

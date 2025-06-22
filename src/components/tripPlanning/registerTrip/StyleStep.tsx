@@ -32,7 +32,7 @@ export default function StyleStep({ funnel }: StyleFunnel) {
     );
   };
 
-  const isSelectedEnough = selectedStyles.length >= 2;
+  const isSelectedEnough = selectedStyles.length >= 3;
 
   const getStyleButtonStyle = (isActive: boolean) =>
     isActive
@@ -40,12 +40,9 @@ export default function StyleStep({ funnel }: StyleFunnel) {
       : 'bg-[#F8F8F8]';
 
   const handleNext = () => {
+    const nextContext = { ...trip, tripStyles: selectedStyles };
     setContext({ tripStyles: selectedStyles });
-    funnel.history.push('expenseStep', {
-      ...trip,
-      tripStyles: selectedStyles,
-    });
-    console.log(`전송된 데이터 ${selectedStyles}`);
+    funnel.history.push('expenseStep', () => nextContext);
   };
 
   return (

@@ -8,16 +8,18 @@ import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
 export default function DetailTripHeader() {
   const router = useRouter();
-  const { daysPlan } = useTripFunnelStore();
-  const places = daysPlan.map((place) => place.places);
-  const days = daysPlan.map((day) => day.day);
+  const { mode } = useTripFunnelStore();
+  const daysPlan = useTripFunnelStore((s) => s.daysPlan);
 
   const handleDaysPlan = () => {
     if (daysPlan.length === 0 || daysPlan.some((d) => d.places.length === 0)) {
       alert('모든 날짜에 최소 하나 이상의 장소를 등록해주세요');
       return;
     }
-
+    console.log(
+      '[DEBUG][작성완료 클릭 시 daysPlan]',
+      JSON.stringify(daysPlan, null, 2),
+    );
     router.back();
   };
 
@@ -37,7 +39,7 @@ export default function DetailTripHeader() {
             className="font-[Pretendard] text-[14px] font-bold leading-[20px] tracking-[-0.5px] text-[var(--Primary)]"
             onClick={handleDaysPlan}
           >
-            작성완료
+            {mode === 'edit' ? '수정완료' : '작성완료'}
           </button>
         </div>
       </header>

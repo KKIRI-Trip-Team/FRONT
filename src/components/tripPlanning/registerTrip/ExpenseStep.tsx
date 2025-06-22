@@ -48,7 +48,7 @@ export default function ExpenseStep({ funnel }: ExpenseFunnel) {
 
     const nextContext = { ...trip, cost: parsedValue };
     setContext({ cost: parsedValue });
-    funnel.history.push('explainStep', nextContext);
+    funnel.history.push('explainStep', () => nextContext);
   };
 
   return (

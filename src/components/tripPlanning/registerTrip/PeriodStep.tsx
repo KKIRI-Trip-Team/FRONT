@@ -9,6 +9,8 @@ import { useTransitionStore } from '@/store/transitionStore';
 import { BoardRegisterSteps } from '@/types/boardFunnel';
 import { periodMap } from '@/types/board';
 import { useTripFunnelStore } from '@/store/tripFunnelStore';
+import { select } from 'motion/react-client';
+import { deleteTripItems } from '@/hooks/useTrip';
 
 interface PeriodFunnel {
   funnel: UseFunnelResults<
@@ -18,10 +20,11 @@ interface PeriodFunnel {
 }
 
 export default function PeriodStep({ funnel }: PeriodFunnel) {
-  const { stepIndex, trip, setContext, setStepIndex } = useTripFunnelStore();
+  const { stepIndex, trip, daysPlan, setContext, setStepIndex, setDayPlans } =
+    useTripFunnelStore();
   const { direction } = useTransitionStore();
   const [selectedPeriod, setSelectedPeriod] = useState('');
-
+  const { deleteSchedule } = deleteTripItems();
   useEffect(() => {
     setStepIndex(2);
     if (trip.period) {
@@ -44,10 +47,26 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
       ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
       : 'bg-[#F8F8F8]';
 
-  const handleNext = () => {
-    const nextContext = { ...trip, period: selectedPeriod };
+  const handleNext = async () => {
+    if (trip.period !== selectedPeriod) {
+      // 기존 상세 일정 모두 삭제
+      for (const d of daysPlan) {
+        if (d.id) {
+          try {
+            await deleteSchedule(trip.boardId!, d.id);
+          } catch (err) {
+            console.error('스케줄 삭제 실패', err);
+          }
+        }
+      }
+      setDayPlans([]);
+    }
+
     setContext({ period: selectedPeriod });
-    funnel.history.push('mateStep', nextContext);
+    funnel.history.push('mateStep', () => ({
+      ...trip,
+      period: selectedPeriod,
+    }));
   };
 
   return (

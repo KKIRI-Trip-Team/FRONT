@@ -13,9 +13,10 @@ import { UseFunnelResults } from '@use-funnel/browser';
 import { useTransitionStore } from '@/store/transitionStore';
 import { uploadImageToServer } from '../imageUpload/ImageUpload';
 import { useApi } from '@/hooks/useApi';
-import { useSubmitTrip } from '@/hooks/useSubmitTrip';
+
 import { BoardRegisterSteps } from '@/types/boardFunnel';
 import { useTripFunnelStore } from '@/store/tripFunnelStore';
+import { useTrip } from '@/hooks/useTrip';
 
 interface ExplainFunnel {
   funnel: UseFunnelResults<
@@ -25,14 +26,13 @@ interface ExplainFunnel {
 }
 
 export default function ExplainStep({ funnel }: ExplainFunnel) {
-  const router = useRouter();
   const { trip, stepIndex, mode, daysPlan, setContext, setStepIndex } =
     useTripFunnelStore();
   const { direction } = useTransitionStore();
 
   const { post } = useApi();
   const [coverImageUrl, setCoverImageUrl] = useState('');
-  const { submitSchedule } = useSubmitTrip();
+  const { submitSchedule } = useTrip();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,6 +44,7 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
 
     try {
       const key = await uploadImageToServer(file, post);
+
       setCoverImageUrl(key); // 이미지 키를 저장
       console.log('이미지 키:', key);
     } catch (err) {
@@ -86,15 +87,23 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
   };
 
   const makeScheduleItem = () => {
-    router.push('/tripPlanning/register-trip');
+    const nextContext = {
+      ...trip,
+      explain: { title, subTitle, coverImageUrl },
+      daysPlan,
+    };
+
+    setContext({ explain: { title, subTitle, coverImageUrl } });
+
+    funnel.history.push('detailStep', () => nextContext);
   };
 
   const isSelected = title.trim() !== '' && subTitle.trim() !== '';
 
-  // const canSubmit =
-  //   isSelected &&
-  //   daysPlan.length > 0 &&
-  //   daysPlan.every((d) => d.places.length > 0);
+  const canSubmit =
+    isSelected &&
+    daysPlan.length > 0 &&
+    daysPlan.every((d) => d.places.length > 0);
 
   return (
     <motion.div
@@ -186,15 +195,15 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
 
       <div className="flex flex-col px-[20px] py-[16px] justify-center items-center gap-[10px] self-stretch rounded-[100px] bg-[var(--Gray900)]">
         <button
-          className="text-[var(--white)] text-[14px] font-bold leading-[20px] tracking-[-0.5px] "
+          className="text-[var(--white)] text-[14px] font-bold leading-[20px] tracking-[-0.5px]"
           onClick={makeScheduleItem}
         >
-          상세일정 만들기
+          {mode === 'edit' ? '상세일정 수정하기' : '상세일정 만들기'}
         </button>
       </div>
 
       <button
-        disabled={!isSelected}
+        disabled={!canSubmit}
         onClick={() => {
           const newData = {
             title,
@@ -212,8 +221,8 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
           submitSchedule(fullTripUpdate);
         }}
         className={`flex h-[54px] px-[0px] py-[16px] justify-center items-center shrink-0 text-center w-full text-[16px] font-bold leading-[22px] ${
-          isSelected ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
-        } ${isSelected ? 'bg-[#5938DB]' : 'bg-[#F1F1F2]'}
+          canSubmit ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
+        } ${canSubmit ? 'bg-[#5938DB]' : 'bg-[#F1F1F2]'}
           disabled:cursor-not-allowed disabled:opacity-50`}
       >
         {mode === 'create' ? '게시글 작성' : '게시글 수정'}

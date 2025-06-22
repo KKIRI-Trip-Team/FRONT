@@ -8,8 +8,8 @@ import { useFunnelDirection } from '@/hooks/useFunnelDirection';
 import { BoardRegisterSteps } from '@/types/boardFunnel';
 import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
-const DestinationStep = dynamic(
-  () => import('@/components/tripPlanning/registerTrip/DestinationStep'),
+const RegionStep = dynamic(
+  () => import('@/components/tripPlanning/registerTrip/RegionStep'),
   { ssr: false },
 );
 
@@ -38,13 +38,17 @@ const ExplainStep = dynamic(
   { ssr: false },
 );
 
+const DetailStep = dynamic(
+  () => import('@/components/tripPlanning/registerTrip/DetailStep'),
+);
+
 export default function Page() {
   const { trip } = useTripFunnelStore();
 
   const funnel = useFunnel<BoardRegisterSteps>({
     id: 'register-trip',
     initial: {
-      step: 'destinationStep',
+      step: 'regionStep',
       context: trip,
     },
   });
@@ -52,8 +56,8 @@ export default function Page() {
   useFunnelDirection(funnel.step);
 
   switch (funnel.step) {
-    case 'destinationStep':
-      return <DestinationStep funnel={funnel} />;
+    case 'regionStep':
+      return <RegionStep funnel={funnel} />;
     case 'periodStep':
       return <PeriodStep funnel={funnel} />;
     case 'mateStep':
@@ -64,6 +68,8 @@ export default function Page() {
       return <ExpenseStep funnel={funnel} />;
     case 'explainStep':
       return <ExplainStep funnel={funnel} />;
+    case 'detailStep':
+      return <DetailStep funnel={funnel} />;
     default:
       return null;
   }

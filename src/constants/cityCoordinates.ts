@@ -2,11 +2,11 @@
 type coordinate = Record<string, { y: number; x: number }>;
 
 export const cityCoordinates: coordinate = {
-  SEOUL: { y: 37.5729, x: 126.9794 },
-  BUSAN: { y: 35.1068, x: 129.0312 },
+  SEOUL: { y: 37.5665, x: 126.9784 },
+  BUSAN: { y: 35.1795, x: 129.075 },
   DAEGU: { y: 35.8683, x: 128.5988 },
-  INCHEON: { y: 37.4643, x: 126.5904 },
-  CWANGJU: { y: 35.173, x: 126.889 },
+  INCHEON: { y: 37.456, x: 126.7053 },
+  GWANGJU: { y: 35.173, x: 126.889 },
   GYEONJU: { y: 35.8562, x: 129.2247 },
   DAEJEON: { y: 36.3515, x: 127.4239 },
   ULSAN: { y: 35.5664, x: 129.319 },

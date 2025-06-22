@@ -1,14 +1,7 @@
-import { ScheduleItem } from '@/types/board';
+import { DayPlan, ScheduleItem } from '@/types/board';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-// 상세일정 작성 시 각 요일별 마커 타입
-type DayPlan = {
-  day: number;
-  places: ScheduleItem[];
-};
-
-// 퍼넬 단계별 상태
 export type TripContext = {
   region: string;
   period: string;
@@ -28,28 +21,26 @@ interface TripFunnelStore {
   trip: TripContext;
   stepIndex: number;
   daysPlan: DayPlan[];
-
   currentDay: number;
-  setCurrentDay: (day: number) => void;
+  mode: 'create' | 'edit';
 
-  addPlaceToDay: (day: number, place: ScheduleItem) => void;
+  setCurrentDay: (day: number) => void;
+  setContext: (updated: Partial<TripContext>) => void;
+  setStepIndex: (index: number) => void;
+  setDayPlans: (plans: DayPlan[]) => void;
+  setMode: (mode: 'create' | 'edit') => void;
+
+  addPlaceToDay: (day: number, place: ScheduleItem) => boolean;
   removePlaceFromDay: (day: number, id: string) => void;
   movePlaceUp: (day: number, index: number) => void;
   movePlaceDown: (day: number, index: number) => void;
 
-  setContext: (updated: Partial<TripContext>) => void;
-  setStepIndex: (index: number) => void;
-  setDayPlans: (plans: DayPlan[]) => void;
-
   resetAll: () => void;
-
-  mode: 'create' | 'edit';
-  setMode: (mode: 'create' | 'edit') => void;
 }
 
 export const useTripFunnelStore = create<TripFunnelStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       trip: {
         region: '',
         period: '',
@@ -69,7 +60,6 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
       mode: 'create',
 
       setCurrentDay: (day) => set({ currentDay: day }),
-
       setContext: (updated) =>
         set((state) => ({
           trip: {
@@ -81,35 +71,54 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
             },
           },
         })),
-
       setStepIndex: (index) => set({ stepIndex: index }),
-
-      setDayPlans: (plans) => set({ daysPlan: plans }),
-
       setMode: (mode) => set({ mode }),
 
-      addPlaceToDay: (day, place) =>
-        set((state) => {
-          const updatedPlans = [...state.daysPlan];
-          const targetDay = updatedPlans.find((d) => d.day === day);
-
-          if (targetDay) {
-            const isDuplicatePlace = targetDay.places.some(
-              (p) => p.id === place.id,
-            );
-            if (isDuplicatePlace) {
-              alert('이미 선택한 장소입니다.');
-              return state;
-            }
-
-            targetDay.places.push(place);
-          } else {
-            updatedPlans.push({ day, places: [place] });
-          }
-
-          return { daysPlan: updatedPlans };
+      setDayPlans: (plans) =>
+        set({
+          daysPlan: plans.map((d) => ({
+            ...d,
+            places: d.places.map((p) => ({
+              ...p,
+              kakaoPlaceId: p.kakaoPlaceId || p.id,
+            })),
+          })),
         }),
 
+      // 장소 추가 -----------------
+
+      addPlaceToDay: (day, place) => {
+        set((state) => {
+          const dayPlan = state.daysPlan.find((d) => d.day === day);
+
+          // 중복 체크: id(서버 placeId) 또는 kakaoPlaceId(카카오 원본 ID) 기준
+          const isDuplicate = dayPlan?.places.some(
+            (p) =>
+              p.id === place.id ||
+              p.kakaoPlaceId === place.id ||
+              p.kakaoPlaceId === place.kakaoPlaceId,
+          );
+          if (isDuplicate) {
+            console.warn('[DEBUG][addPlaceToDay] 중복 추가 시도:', place);
+            return {};
+          }
+          // kakaoPlaceId를 반드시 유지
+          const newPlace: ScheduleItem = {
+            ...place,
+            kakaoPlaceId: place.kakaoPlaceId ?? place.id,
+          };
+
+          const updatedDaysPlan = dayPlan
+            ? state.daysPlan.map((d) =>
+                d.day === day ? { ...d, places: [...d.places, newPlace] } : d,
+              )
+            : [...state.daysPlan, { day, places: [newPlace] }];
+          return { daysPlan: updatedDaysPlan };
+        });
+        return true;
+      },
+
+      // 장소 제거 -----------------
       removePlaceFromDay: (day, id) =>
         set((state) => ({
           daysPlan: state.daysPlan.map((d) =>
@@ -119,6 +128,7 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
           ),
         })),
 
+      // 순서 이동 -----------------
       movePlaceUp: (day, index) =>
         set((state) => ({
           daysPlan: state.daysPlan.map((d) => {
@@ -145,6 +155,7 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
           }),
         })),
 
+      // 전체 리셋 -----------------
       resetAll: () => {
         set({
           trip: {
@@ -169,7 +180,6 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
     }),
     {
       name: 'trip-storage',
-
       partialize: (state) => ({
         trip: state.trip,
         daysPlan: state.daysPlan,

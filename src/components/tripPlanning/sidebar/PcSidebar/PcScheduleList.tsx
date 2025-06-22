@@ -16,7 +16,7 @@ export default function PcScheduleList() {
       {schedule.length === 0 ? (
         <NoScheduleItemText />
       ) : (
-        <div className="w-full flex flex-col  gap-[12px] px-[20px] py-[0px] items-center overflow-y-scroll ">
+        <div className="w-full flex flex-col  gap-[12px] p-[20px] items-center overflow-y-scroll ">
           <ScheduleCard />
         </div>
       )}

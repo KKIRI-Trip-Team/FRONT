@@ -1,3 +1,15 @@
+// 상세일정 작성 시 각 요일별 마커 타입
+export type DayPlan = {
+  id?: number;
+  day: number;
+  places: ScheduleItem[];
+};
+
+export interface BoardOwner {
+  id: number;
+  nickname: string;
+  profileUrl: string;
+}
 export interface BoardData {
   id: number;
 
@@ -9,22 +21,18 @@ export interface BoardData {
   title: string;
   content: string;
   tripStyles: string[];
-  coverImageUrl: string;
+  imageUrls: string[];
 
-  email: string;
-  nickname: string;
-  profileUrl: string;
-  profileImage: string;
+  owner: BoardOwner;
 }
 
-export interface ScheduleData {
-  feedId: number;
-  scheduleId: number;
-  places: ScheduleItem[];
-}
-
+// 카카오맵 API에서 제공되는 장소 타입
+// API 명세서 /api/places 반환 타입
 export type ScheduleItem = {
-  id: string;
+  scheduleItemId?: number; // 서버의 일정아이템 PK
+  kakaoPlaceId: string;
+  id: string; // id값은 필수로 필요함 <- 수정필요 x
+
   place_name: string;
   address_name: string;
   road_address_name: string;
@@ -90,17 +98,17 @@ export const tripStyleMap: Record<string, { name: string; emoji: string }> = {
   EXPERIENCE: { name: '체험', emoji: '🤿' },
   ACTIVITY: { name: '액티비티', emoji: '🏃' },
   SHOPPING: { name: '쇼핑', emoji: '🛒🛍' },
-  BROADEN_HORIZONS: { name: '견문넓히기', emoji: '🏛🖼' },
+  KNOWLEDGE: { name: '견문넓히기', emoji: '🏛🖼' },
   GOURMET: { name: '식도락', emoji: '🍕🍖' },
-  EMOTIONAL_TOUR: { name: '감성투어', emoji: '🌆' },
+  EMOTIONAL: { name: '감성투어', emoji: '🌆' },
   COST_EFFECTIVE: { name: '가성비', emoji: '💸' },
   FLEX: { name: '플랙스', emoji: '🤑' },
-  METICULOUS_PLANNING: { name: '꼼꼼한계획', emoji: '✍️⏱️' },
+  PLANNER: { name: '꼼꼼한계획', emoji: '✍️⏱️' },
   SPONTANEOUS: { name: '즉흥', emoji: '🤹‍♀️' },
   NATURE_FRIENDLY: { name: '자연친화', emoji: '🌳' },
   RELAXED: { name: '여유', emoji: '⏳' },
-  MUST_TAKE_PHOTO: { name: '인생샷필수', emoji: '📸' },
+  PHOTO_SPOT: { name: '인생샷필수', emoji: '📸' },
   HOT_PLACE: { name: '핫플', emoji: '🎪✨' },
   WAITING_OK: { name: '웨이팅가능', emoji: '📋' },
-  ANY_NEARBY_RESTAURANT: { name: '근처아무식당', emoji: '🍽️' },
+  RANDOM_FOOD: { name: '근처아무식당', emoji: '🍽️' },
 };

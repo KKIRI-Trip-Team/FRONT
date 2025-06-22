@@ -10,6 +10,9 @@ import { cityCoordinates } from '@/constants/cityCoordinates';
 import { KakaoCategory } from '@/constants/kakaoCategory';
 import { useMapStore } from '@/store/mapStore';
 import { useTripFunnelStore } from '@/store/tripFunnelStore';
+import { useKakaoMap } from '@/providers/KakaoMapProvider';
+import { UseFunnelResults } from '@use-funnel/browser';
+import { BoardRegisterSteps } from '@/types/boardFunnel';
 
 interface KakaoCategoryItem {
   id: KakaoCategory;
@@ -26,6 +29,12 @@ interface CategorySelectProps {
   onChange: (category: KakaoCategory | undefined) => void;
 }
 
+interface KakaoMapProps {
+  funnel: UseFunnelResults<
+    BoardRegisterSteps,
+    BoardRegisterSteps['detailStep']
+  >;
+}
 // 카테고리 목록
 const kakaoCategoryList: KakaoCategoryItem[] = [
   { id: 'MT1', label: '대형마트' },
@@ -92,13 +101,6 @@ function DisplayPlaceInfo({ places, onClose }: PlaceOverlayProps) {
       ref={containerRef}
       className="relative placeinfo w-full bg-white p-2 rounded-lg shadow-lg text-sm flex flex-col font-[Pretendard]"
     >
-      {/* <button
-        onClick={onClose}
-        className="absolute top-3 right-2 text-xs text-gray-500 hover:text-black"
-      >
-        ✕
-      </button> */}
-
       <a
         className="flex justify-between text-[var(--PrimaryLight)] font-bold mb-1 items-center text-center"
         href={places.place_url}
@@ -124,92 +126,46 @@ function DisplayPlaceInfo({ places, onClose }: PlaceOverlayProps) {
   );
 }
 
-export default function KakaoMap() {
-  const { trip, daysPlan } = useTripFunnelStore();
-  const [scriptLoaded, setScriptLoaded] = useState(false);
-
+export default function KakaoMap({ funnel }: KakaoMapProps) {
+  // Zustand 등 외부 상태
+  const { daysPlan } = useTripFunnelStore();
+  const placeFromScheduleItem = useMapStore((s) => s.selectedPlace);
+  const currentDay = useTripFunnelStore((s) => s.currentDay);
   const setMapSelectedPlace = useMapStore((s) => s.setSelectedPlace);
 
-  // 카카오맵 지도 띄우는 변수들
-  const mapRef = useRef<HTMLDivElement>(null);
-  const [map, setMap] = useState<kakao.maps.Map | null>(null);
-  const [markers, setMarkers] = useState<kakao.maps.Marker[]>([]);
+  // Provider에서 받아옴
+  const { mapRef, map, scriptLoaded } = useKakaoMap();
 
-  // 마커 클릭시 장소에관한 정보 오버레이 변수들
-  const overlayRef = useRef<HTMLDivElement>(null);
+  // 내부 UI 상태
+  const [markers, setMarkers] = useState<kakao.maps.Marker[]>([]);
   const [selectedPlace, setSelectedPlace] =
     useState<kakao.maps.services.PlacesSearchResultItem | null>(null);
   const [placeOverlay, setPlaceOverlay] =
     useState<kakao.maps.CustomOverlay | null>(null);
-
-  // 카카오맵 API 카테고리 변수들 / 검색 결과 변수들
   const [currentCategory, setCurrentCategory] = useState<KakaoCategory>();
+
   const placesServiceRef = useRef<kakao.maps.services.Places | undefined>(
     undefined,
   );
+  const overlayRef = useRef<HTMLDivElement>(null);
   const categoryRef = useRef<KakaoCategory | undefined>(undefined);
   const searchPlacesRef = useRef<() => void | undefined>(undefined);
   const [keyword, setKeyword] = useState('');
 
-  // 사용자가 지정한 목적지 기반 카카오 UI렌더링 변수들
-  const city = trip.region;
-  console.log(city);
-
-  const coordinate = cityCoordinates[city];
-
-  const placeFromScheduleItem = useMapStore((s) => s.selectedPlace);
-  const currentDay = useTripFunnelStore((s) => s.currentDay);
-
-  // Kakao Maps 스크립트 로드
+  // 서비스 초기화
   useEffect(() => {
-    if (!coordinate) return;
-
-    const script = document.createElement('script');
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_API_KAKAO_API_KEY}&libraries=services&autoload=false`;
-    script.async = true;
-
-    const handleLoad = () => setScriptLoaded(true);
-    script.onload = handleLoad;
-    document.head.appendChild(script);
-
-    return () => {
-      script.onload = null;
-      document.head.removeChild(script);
-    };
-  }, [coordinate]);
-
-  // 지도 초기화 및 재사용
-  useEffect(() => {
-    if (!scriptLoaded || !mapRef.current || !coordinate) return;
-
-    const { kakao } = window;
-
-    kakao.maps.load(() => {
-      if (!map) {
-        const mapInstance = new kakao.maps.Map(
-          mapRef.current as HTMLDivElement,
-          {
-            center: new kakao.maps.LatLng(coordinate.y, coordinate.x), // 좌표값 기준 중심
-            level: 7,
-          },
-        );
-
-        setMap(mapInstance);
-        placesServiceRef.current = new kakao.maps.services.Places(mapInstance);
-      } else {
-        map.setCenter(new kakao.maps.LatLng(coordinate.y, coordinate.x));
-      }
-    });
-  }, [scriptLoaded, coordinate]);
-
-  useEffect(() => {
-    if (!map) {
-      return;
+    if (map && scriptLoaded) {
+      placesServiceRef.current = new window.kakao.maps.services.Places(map);
     }
-    const mapTypeControl = new kakao.maps.MapTypeControl();
-    const zoomControl = new kakao.maps.ZoomControl();
-    map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
-    map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+  }, [map, scriptLoaded]);
+
+  // 지도 컨트롤 추가
+  useEffect(() => {
+    if (!map) return;
+    const mapTypeControl = new window.kakao.maps.MapTypeControl();
+    const zoomControl = new window.kakao.maps.ZoomControl();
+    map.addControl(mapTypeControl, window.kakao.maps.ControlPosition.TOPRIGHT);
+    map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
   }, [map]);
 
   // 마커 정리
@@ -445,7 +401,6 @@ export default function KakaoMap() {
             handleCategoryChange(selected);
           }}
         />
-
         <div className="flex gap-[2px]">
           <input
             type="text"
@@ -472,7 +427,7 @@ export default function KakaoMap() {
               if (placeOverlay) {
                 placeOverlay.setMap(null);
                 setPlaceOverlay(null);
-                setSelectedPlace(null); // 이게 전체 마커를 다시 그리게 트리거!
+                setSelectedPlace(null);
               }
             }}
           />,

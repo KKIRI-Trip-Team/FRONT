@@ -10,18 +10,21 @@ import { useTransitionStore } from '@/store/transitionStore';
 import { BoardRegisterSteps } from '@/types/boardFunnel';
 import { cityMap } from '@/types/board';
 import { useTripFunnelStore } from '@/store/tripFunnelStore';
+import { deleteTripItems, useTrip } from '@/hooks/useTrip';
 
-interface DestinationFunnel {
+interface RegionFunnel {
   funnel: UseFunnelResults<
     BoardRegisterSteps,
-    BoardRegisterSteps['destinationStep']
+    BoardRegisterSteps['regionStep']
   >;
 }
 
-export default function DestinationStep({ funnel }: DestinationFunnel) {
-  const { stepIndex, trip, setContext, setStepIndex } = useTripFunnelStore();
+export default function RegionStep({ funnel }: RegionFunnel) {
+  const { stepIndex, trip, daysPlan, setContext, setStepIndex, setDayPlans } =
+    useTripFunnelStore();
   const { direction } = useTransitionStore();
   const [selectedCity, setSelectedCity] = useState('');
+  const { deleteSchedule } = deleteTripItems();
 
   useEffect(() => {
     setStepIndex(1);
@@ -41,15 +44,35 @@ export default function DestinationStep({ funnel }: DestinationFunnel) {
       ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
       : 'bg-[#F8F8F8]';
 
-  const handleNext = () => {
-    const nextContext = { ...trip, region: selectedCity };
+  const handleNext = async () => {
+    // 목적지가 바뀌었으면 서버 스케줄 삭제
+    if (trip.region !== selectedCity) {
+      // 기존 상세 일정 모두 삭제
+      for (const d of daysPlan) {
+        if (d.id) {
+          try {
+            await deleteSchedule(trip.boardId!, d.id);
+          } catch (err) {
+            // 삭제 실패 시 개별 알림 또는 콘솔
+            console.error('스케줄 삭제 실패', err);
+          }
+        }
+      }
+      // 클라이언트 상태 초기화
+      setDayPlans([]);
+    }
+
+    // trip context 반영 및 다음 스텝 이동
     setContext({ region: selectedCity });
-    funnel.history.push('periodStep', nextContext);
+    funnel.history.push('periodStep', () => ({
+      ...trip,
+      region: selectedCity,
+    }));
   };
 
   return (
     <motion.div
-      key="destinationStep"
+      key="regionStep"
       custom={direction}
       initial="initial"
       animate="animate"

@@ -47,12 +47,13 @@ export default function MateStep({ funnel }: MateFunnel) {
       : 'bg-[#F8F8F8]';
 
   const handleNext = () => {
-    setContext({ gender: selectedGender, ageGroup: selectedAges });
-    funnel.history.push('styleStep', {
+    const nextContext = {
       ...trip,
       gender: selectedGender,
       ageGroup: selectedAges,
-    });
+    };
+    setContext({ gender: selectedGender, ageGroup: selectedAges });
+    funnel.history.push('styleStep', () => nextContext);
   };
 
   return (

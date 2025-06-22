@@ -2,22 +2,17 @@
 
 import { useRouter } from 'next/navigation';
 
-import { useAuthStore } from '@/store/authStore';
+import { AuthGuard } from '../auth/AuthGuard';
 
 export default function CreateTripButton() {
-  const { user } = useAuthStore();
   const router = useRouter();
 
   const handleMakeTrip = () => {
-    if (!user) {
-      alert('로그인이 필요한 서비스입니다.');
-      return;
-    } else {
-      router.push('/tripPlanning');
-    }
+    router.push('/tripPlanning');
   };
 
   return (
+    // <AuthGuard>
     <section className="flex px-[20px] py-[40px] flex-col justify-center items-center gap-[10px] flex-[1_0_0] font-[Pretendard]">
       <button
         onClick={handleMakeTrip}
@@ -32,5 +27,6 @@ export default function CreateTripButton() {
         <h1>직접 여행일정을 만들어보세요!</h1>
       </div>
     </section>
+    // </AuthGuard>
   );
 }
