@@ -1,6 +1,7 @@
-export interface BoardData {
+// Board
+// 기존 BoardData와 MyBoardContent를 하나의 통합 타입으로 재정의
+export interface UnifiedBoardData {
   id: number;
-
   region: string;
   period: string;
   gender: string;
@@ -9,14 +10,32 @@ export interface BoardData {
   title: string;
   content: string;
   tripStyles: string[];
+  // 공통 필드 (필수)
   coverImageUrl: string;
-
-  email: string;
-  nickname: string;
-  profileUrl: string;
-  profileImage: string;
+  // 옵셔널 필드 (마이페이지 응답에 없는 경우)
+  email?: string;
+  nickname?: string;
+  profileUrl?: string;
+  profileImage?: string;
+  // 마이페이지 전용 필드
+  owner?: any | null;
+  imageUrls?: string[];
 }
 
+export interface MyBoardData {
+  content: UnifiedBoardData[];
+  pageInfo: {
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+    totalPages: number;
+    totalElements: number;
+    currentPage: number;
+    size: number;
+  };
+}
+
+export type BoardApiResponse = UnifiedBoardData[] | MyBoardData;
+// Schedule
 export interface ScheduleData {
   feedId: number;
   scheduleId: number;

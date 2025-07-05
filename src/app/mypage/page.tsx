@@ -10,6 +10,8 @@ import { UserData } from '@/types/user';
 import { useRouter } from 'next/navigation';
 import { api } from '@/libs/api-client';
 import { ENDPOINTS } from '@/constants/endpoints';
+import MainBoard from '@/components/board/MainBoard';
+import MyBoard from '@/components/mypage/MyBoard';
 
 const page = () => {
   const router = useRouter();
@@ -169,7 +171,7 @@ const page = () => {
 
           {/* 홈에있는 컴포넌트 불러오기 */}
           <div className={`${activeTab === 'myTrip' ? 'block' : 'hidden'}`}>
-            <div>내가 쓴 여행글</div>
+            <MyBoard />
           </div>
         </div>
       </div>
