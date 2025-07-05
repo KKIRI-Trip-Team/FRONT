@@ -1,19 +1,7 @@
-// 상세일정 작성 시 각 요일별 마커 타입
-export type DayPlan = {
-  id?: number;
-  day: number;
-  places: ScheduleItem[];
-};
-
-export interface BoardOwner {
+// Board
+// 기존 BoardData와 MyBoardContent를 하나의 통합 타입으로 재정의
+export interface UnifiedBoardData {
   id: number;
-  nickname: string;
-  profileUrl: string;
-}
-
-export interface BoardData {
-  id: number;
-
   region: string;
   period: string;
   gender: string;
@@ -22,9 +10,36 @@ export interface BoardData {
   title: string;
   content: string;
   tripStyles: string[];
-  imageUrls: string[];
+  // 공통 필드 (필수)
+  coverImageUrl: string;
+  // 옵셔널 필드 (마이페이지 응답에 없는 경우)
+  email?: string;
+  nickname?: string;
+  profileUrl?: string;
+  profileImage?: string;
+  // 마이페이지 전용 필드
+  owner?: any | null;
+  imageUrls?: string[];
+}
 
-  owner: BoardOwner;
+export interface MyBoardData {
+  content: UnifiedBoardData[];
+  pageInfo: {
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+    totalPages: number;
+    totalElements: number;
+    currentPage: number;
+    size: number;
+  };
+}
+
+export type BoardApiResponse = UnifiedBoardData[] | MyBoardData;
+// Schedule
+export interface ScheduleData {
+  feedId: number;
+  scheduleId: number;
+  places: ScheduleItem[];
 }
 
 // 카카오맵 API에서 제공되는 장소 타입

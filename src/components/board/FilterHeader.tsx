@@ -9,7 +9,7 @@ export default function FilterHeader() {
   };
 
   return (
-    <section className="flex w-[1200px] max-w-[1200px] p-[20px] flex-col items-start gap-[10px] font-[Pretendard]">
+    <section className="flex max-w-[1200px] p-[20px] flex-col items-start gap-[10px] font-[Pretendard]">
       <button
         onClick={handleFilterClick}
         className="flex px-[8px] py-[4px] justify-center items-center gap-[4px] rounded-[4px] bg-[var(--Gray100)] cursor-pointer"
