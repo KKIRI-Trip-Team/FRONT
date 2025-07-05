@@ -1,7 +1,7 @@
 // app/RootLayoutClient.tsx
 'use client';
 
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
 import { AuthProvider } from '@/providers/AuthProvider';
@@ -26,6 +26,7 @@ export default function RootLayoutClient({
   const pathname = usePathname();
   const isAuthRoute =
     pathname?.startsWith('/login') || pathname?.startsWith('/register');
+
   const stepIndex = useTripFunnelStore((s) => s.stepIndex);
   const isDetailStep = stepIndex === 7;
 

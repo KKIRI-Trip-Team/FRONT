@@ -4,7 +4,6 @@ import CircleIcon from '@/public/icons/circle-icon.svg';
 import DefaultProfileAuthPcIcon from '@/public/icons/default-profile-auth-icon-pc.svg';
 import DefaultProfileAuthMobileIcon from '@/public/icons/default-profile-auth-icon-mobile.svg';
 
-import { useAuthStore } from '@/store/authStore';
 import { BoardData, cityMap, periodMap, tripStyleMap } from '@/types/board';
 
 export default function BoardCard({
@@ -24,7 +23,7 @@ export default function BoardCard({
 
   return (
     <Link href={`board/${id}`}>
-      <div className="flex pc:w-[373px] tb:w-[354px] mb:w-[275px] flex-col justify-center items-start font-[Pretendard]">
+      <div className="flex pc:w-[373px] tb:w-[354px] mb:w-full flex-col justify-center items-start font-[Pretendard]">
         {coverImage && (
           <Image
             className="pc:w-[373px] tb:w-[354px] h-[275px] self-stretch"

@@ -1,9 +1,9 @@
 'use client';
 
+import Link from 'next/link';
+
 import { useApi } from '@/hooks/useApi';
 import { ScheduleItem } from '@/types/board';
-
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function ScheduleInfoItem({
@@ -18,9 +18,7 @@ export default function ScheduleInfoItem({
 
   useEffect(() => {
     const fetchPlace = async () => {
-      // placeId로 place 상세 가져오기 (API 엔드포인트에 맞게 수정)
       const res = await get(`places/${placeId}`);
-
       setPlace(res.data);
     };
     fetchPlace();

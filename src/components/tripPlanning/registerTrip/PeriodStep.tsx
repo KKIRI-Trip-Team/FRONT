@@ -1,15 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 import { UseFunnelResults } from '@use-funnel/browser';
+
 import { slideFadeVariants } from '@/utils/motionVariants';
+
 import { useTransitionStore } from '@/store/transitionStore';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
+
 import { BoardRegisterSteps } from '@/types/boardFunnel';
 import { periodMap } from '@/types/board';
-import { useTripFunnelStore } from '@/store/tripFunnelStore';
-import { select } from 'motion/react-client';
 import { deleteTripItems } from '@/hooks/useTrip';
 
 interface PeriodFunnel {
@@ -25,6 +27,15 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
   const { direction } = useTransitionStore();
   const [selectedPeriod, setSelectedPeriod] = useState('');
   const { deleteSchedule } = deleteTripItems();
+  const divRef = useRef<HTMLDivElement>(null);
+
+  // 컴포넌트가 마운트되면 포커스 설정
+  useEffect(() => {
+    if (divRef.current) {
+      divRef.current.focus();
+    }
+  }, []);
+
   useEffect(() => {
     setStepIndex(2);
     if (trip.period) {
@@ -69,15 +80,25 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
     }));
   };
 
+  // 엔터키 입력 헨들러
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && isSelected) {
+      handleNext();
+    }
+  };
+
   return (
     <motion.div
+      ref={divRef}
       key="periodStep"
       custom={direction}
+      tabIndex={0}
       initial="initial"
       animate="animate"
       exit="exit"
       variants={slideFadeVariants}
-      className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-[var(--white)] shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]"
+      onKeyDown={handleKeyDown}
+      className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-[var(--white)] shrink-0 font-[Pretendard] not-italic tracking-[-0.5px] focus:outline-none"
     >
       <div className="flex flex-col items-center self-stretch">
         <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">

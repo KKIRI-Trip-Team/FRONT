@@ -22,7 +22,8 @@ export function AuthGuard({ children }: AuthGuardProps) {
     if (
       !isAuthenticated &&
       !pathname?.startsWith('/login') &&
-      !pathname?.startsWith('/register')
+      !pathname?.startsWith('/register') &&
+      !pathname?.startsWith('/tripPlanning')
     ) {
       console.log('로그인이 필요한 페이지입니다');
       alert('로그인이 필요한 페이지입니다');
@@ -43,7 +44,8 @@ export function AuthGuard({ children }: AuthGuardProps) {
   if (
     !isAuthenticated &&
     !pathname?.startsWith('/login') &&
-    !pathname?.startsWith('/register')
+    !pathname?.startsWith('/register') &&
+    !pathname?.startsWith('/tripPlanning')
   ) {
     return null;
   }

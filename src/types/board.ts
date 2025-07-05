@@ -10,6 +10,7 @@ export interface BoardOwner {
   nickname: string;
   profileUrl: string;
 }
+
 export interface BoardData {
   id: number;
 
@@ -31,7 +32,9 @@ export interface BoardData {
 export type ScheduleItem = {
   scheduleItemId?: number; // 서버의 일정아이템 PK
   kakaoPlaceId: string;
-  id: string; // id값은 필수로 필요함 <- 수정필요 x
+  itemOrder?: number;
+
+  id: string; // id값은 필수로 필요함
 
   place_name: string;
   address_name: string;
@@ -68,15 +71,18 @@ export const cityMap: Record<string, { name: string; emoji: string }> = {
   JEJU: { name: '제주', emoji: '🏝' },
 };
 
-export const periodMap: Record<string, { name: string; id?: number }> = {
-  ANYTIME: { name: '아무떄나', id: 1 },
-  DAY_TRIP: { name: '당일치기', id: 2 },
-  ONE_NIGHT: { name: '1박 2일', id: 3 },
-  TWO_NIGHT: { name: '2박 3일', id: 4 },
-  THREE_NIGHT: { name: '3박 4일', id: 5 },
-  FOUR_NIGHT: { name: '4박 5일', id: 6 },
-  FIVE_NIGHT: { name: '5박 6일', id: 7 },
-  OVER_SEVEN: { name: '7일 이상', id: 8 },
+export const periodMap: Record<
+  string,
+  { name: string; days: number; id?: number }
+> = {
+  ANYTIME: { name: '아무때나', days: 1, id: 1 },
+  DAY_TRIP: { name: '당일치기', days: 1, id: 2 },
+  ONE_NIGHT: { name: '1박 2일', days: 2, id: 3 },
+  TWO_NIGHT: { name: '2박 3일', days: 3, id: 4 },
+  THREE_NIGHT: { name: '3박 4일', days: 4, id: 5 },
+  FOUR_NIGHT: { name: '4박 5일', days: 5, id: 6 },
+  FIVE_NIGHT: { name: '5박 6일', days: 6, id: 7 },
+  OVER_SEVEN: { name: '7일 이상', days: 7, id: 8 },
 };
 
 export const genderMap: Record<string, { name: string; emoji?: string }> = {

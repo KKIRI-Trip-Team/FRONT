@@ -1,9 +1,8 @@
 'use client';
 
-import Link from 'next/link';
-
 import LeftArrowIcon from '@/public/icons/left-arrow-icon.svg';
 import SearchIcon from '@/public/icons/search-icon.svg';
+import Link from 'next/link';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -36,9 +35,10 @@ export default function SearchBar() {
       onSearchClick();
     }
   };
+
   return (
     <section className="flex h-[60px] px-[20px] justify-between items-center shrink-0  font-[Pretendard]">
-      <Link href={'/'}>
+      <Link href={'/search'}>
         <LeftArrowIcon />
       </Link>
 
@@ -51,9 +51,10 @@ export default function SearchBar() {
           placeholder="떠나고 싶은 지역이 있나요?"
           className="flex w-full h-[44px] px-[20px] items-center flex-[1_0_0] rounded-[100px] border-[0.8px] border-[var(--Gray400)] focus:outline-none focus:border-[var(--Gray900)] placeholder:text-[14px] placeholder:font-normal placeholder:leading-[20px] placeholder:tracking-[-0.5px]"
         />
+
         <button
           onClick={onSearchClick}
-          className="absolute w-[24px] h-[24px] top-[10px] right-5"
+          className="absolute w-[24px] h-[24px] top-[10px] right-5 var(--Gray400)"
         >
           <SearchIcon />
         </button>

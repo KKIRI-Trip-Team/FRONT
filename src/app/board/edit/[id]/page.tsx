@@ -58,23 +58,7 @@ export default function Page() {
     setHydrated(true);
   }, []);
 
-  // **모든 daysPlan 변화 추적용 콘솔**
   useEffect(() => {
-    console.log('[DEBUG][STORE] daysPlan 상태 변화:', daysPlan);
-  }, [daysPlan]);
-
-  useEffect(() => {
-    // (1) hydration 확인
-    if (!hydrated) {
-      console.log('[DEBUG] 아직 hydrate 중...');
-      return;
-    }
-
-    // (2) 최초 진입 시에만 초기화/데이터 패치
-    if (isInitialized.current) {
-      console.log('[DEBUG] 이미 초기화됨 - fetchData 스킵');
-      return;
-    }
     const fetchData = async () => {
       setIsLoading(true);
       resetAll(); // 상태 완전 초기화 (더 안전한 접근)
@@ -144,12 +128,7 @@ export default function Page() {
 
         // 편집(EDIT) 진입 시, daysPlan이 비었을 때만 set!
         if (useTripFunnelStore.getState().daysPlan.length === 0) {
-          console.log('[DEBUG] 최초 daysPlan 세팅:', daysPlan);
           setDayPlans(daysPlan);
-        } else {
-          console.log(
-            '[DEBUG] daysPlan이 이미 존재 - 서버 값으로 덮어쓰기 생략',
-          );
         }
       } catch (error) {
         console.error('❌ 게시글 로딩 오류:', error);

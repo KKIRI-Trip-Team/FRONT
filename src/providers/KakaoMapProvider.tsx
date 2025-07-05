@@ -1,5 +1,3 @@
-// 카카오맵 전역 Provider
-'use client';
 import React, {
   createContext,
   useContext,
@@ -13,22 +11,11 @@ interface KakaoMapContextValue {
   mapRef: React.RefObject<HTMLDivElement | null>;
   scriptLoaded: boolean;
 }
-
 const KakaoMapContext = createContext<KakaoMapContextValue | undefined>(
   undefined,
 );
 
-interface KakaoMapProviderProps {
-  center: { lat: number; lng: number };
-  level?: number;
-  children: React.ReactNode;
-}
-
-export function KakaoMapProvider({
-  center,
-  level = 6,
-  children,
-}: KakaoMapProviderProps) {
+export function KakaoMapProvider({ center, level = 4, children }: any) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
   const [scriptLoaded, setScriptLoaded] = useState(false);
@@ -38,13 +25,10 @@ export function KakaoMapProvider({
       setScriptLoaded(true);
       return;
     }
-
     const script = document.createElement('script');
     script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_API_KAKAO_API_KEY}&libraries=services&autoload=false`;
     script.async = true;
-
-    const handleLoad = () => setScriptLoaded(true);
-    script.onload = handleLoad;
+    script.onload = () => setScriptLoaded(true);
     document.head.appendChild(script);
 
     return () => {
@@ -62,7 +46,7 @@ export function KakaoMapProvider({
       });
       setMap(mapInstance);
     });
-  }, [scriptLoaded, center, level]);
+  }, [scriptLoaded, center.lat, center.lng, level]);
 
   return (
     <KakaoMapContext.Provider value={{ map, mapRef, scriptLoaded }}>
@@ -73,8 +57,6 @@ export function KakaoMapProvider({
 
 export function useKakaoMap() {
   const context = useContext(KakaoMapContext);
-  if (!context) {
-    throw new Error('useKakaoMap must be used within KakaoMapProvider');
-  }
+  if (!context) throw new Error('KaKaoMapProvider로 감싸주세요!!');
   return context;
 }

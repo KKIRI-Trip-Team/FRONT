@@ -1,12 +1,13 @@
 'use client';
 
-import KakaoMap from '@/components/kakaoMap/KakaoMap';
+import KakaoPlanMap from '@/components/kakaoMap/KakaoPlanMap';
 import DetailStepLayout from './DetailStepLayout';
+
+import { UseFunnelResults } from '@use-funnel/browser';
 
 import { KakaoMapProvider } from '@/providers/KakaoMapProvider';
 import { cityCoordinates } from '@/constants/cityCoordinates';
 import { useTripFunnelStore } from '@/store/tripFunnelStore';
-import { UseFunnelResults } from '@use-funnel/browser';
 import { BoardRegisterSteps } from '@/types/boardFunnel';
 import { useEffect } from 'react';
 
@@ -28,7 +29,7 @@ export default function DetailStep({ funnel }: DetailFunnel) {
   return (
     <DetailStepLayout>
       <KakaoMapProvider center={{ lat: coordinate.y, lng: coordinate.x }}>
-        <KakaoMap funnel={funnel} />
+        <KakaoPlanMap funnel={funnel} />
       </KakaoMapProvider>
     </DetailStepLayout>
   );

@@ -5,6 +5,7 @@ import LeftArrowIcon from '@/public/icons/left-arrow-icon-lightV.svg';
 import UpArrowIcon from '@/public/icons/up-arrow-icon.svg';
 import DownArrowIcon from '@/public/icons/down-arrow-icon.svg';
 import TrashIcon from '@/public/icons/trash-icon.svg';
+
 import { useTripFunnelStore } from '@/store/tripFunnelStore';
 import { useMapStore } from '@/store/mapStore';
 import { deleteTripItems } from '@/hooks/useTrip';
@@ -83,9 +84,9 @@ export default function ScheduleCard() {
 
               <button
                 onClick={async () => {
-                  // 안전 체크 (id들 다 있는지!)
+                  removePlace(currentDay, place.id);
+
                   if (!feedId || !scheduleId || !scheduleItemId) {
-                    alert('삭제 정보를 찾을 수 없습니다.');
                     return;
                   }
                   try {
@@ -95,8 +96,6 @@ export default function ScheduleCard() {
                       scheduleItemId,
                       placeId,
                     );
-                    removePlace(currentDay, place.id); // zustand에서도 동기화
-                    alert('삭제되었습니다.');
                   } catch (e) {
                     alert('삭제 실패! 다시 시도해 주세요.');
                   }

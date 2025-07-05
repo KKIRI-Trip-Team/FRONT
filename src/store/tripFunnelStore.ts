@@ -40,7 +40,7 @@ interface TripFunnelStore {
 
 export const useTripFunnelStore = create<TripFunnelStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       trip: {
         region: '',
         period: '',
@@ -99,9 +99,10 @@ export const useTripFunnelStore = create<TripFunnelStore>()(
               p.kakaoPlaceId === place.kakaoPlaceId,
           );
           if (isDuplicate) {
-            console.warn('[DEBUG][addPlaceToDay] 중복 추가 시도:', place);
+            alert('이미 등록한 장소입니다');
             return {};
           }
+
           // kakaoPlaceId를 반드시 유지
           const newPlace: ScheduleItem = {
             ...place,

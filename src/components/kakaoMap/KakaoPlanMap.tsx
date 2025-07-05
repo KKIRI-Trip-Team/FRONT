@@ -6,7 +6,6 @@ import { createPortal } from 'react-dom';
 
 import { useEffect, useRef, useState } from 'react';
 
-import { cityCoordinates } from '@/constants/cityCoordinates';
 import { KakaoCategory } from '@/constants/kakaoCategory';
 import { useMapStore } from '@/store/mapStore';
 import { useTripFunnelStore } from '@/store/tripFunnelStore';
@@ -92,10 +91,6 @@ function DisplayPlaceInfo({ places, onClose }: PlaceOverlayProps) {
     };
   }, [onClose]);
 
-  if (!places) {
-    console.log('데이터와 일치하는 항목이 없습니다.');
-  }
-
   return (
     <div
       ref={containerRef}
@@ -126,12 +121,17 @@ function DisplayPlaceInfo({ places, onClose }: PlaceOverlayProps) {
   );
 }
 
-export default function KakaoMap({ funnel }: KakaoMapProps) {
-  // Zustand 등 외부 상태
-  const { daysPlan } = useTripFunnelStore();
-  const placeFromScheduleItem = useMapStore((s) => s.selectedPlace);
+// 여행 게시글 생성시 사용되는 카카오맵 컴포넌트
+
+export default function KakaoPlanMap({ funnel }: KakaoMapProps) {
+  // 클라이언트 상태 관리
+  const { daysPlan, trip } = useTripFunnelStore();
+  const region = trip.region;
   const currentDay = useTripFunnelStore((s) => s.currentDay);
+  const placeFromScheduleItem = useMapStore((s) => s.selectedPlace);
+
   const setMapSelectedPlace = useMapStore((s) => s.setSelectedPlace);
+  const clearSelectedPlace = useMapStore((s) => s.clearSelectedPlace);
 
   // Provider에서 받아옴
   const { mapRef, map, scriptLoaded } = useKakaoMap();
@@ -152,15 +152,17 @@ export default function KakaoMap({ funnel }: KakaoMapProps) {
   const searchPlacesRef = useRef<() => void | undefined>(undefined);
   const [keyword, setKeyword] = useState('');
 
-  // 서비스 초기화
+  // 카카오맵 PlacesService 인스턴스 생성
   useEffect(() => {
+    // [목적] map과 스크립트가 모두 준비되면, 카카오 PlacesService를 초기화 (장소검색 API 사용 위해)
     if (map && scriptLoaded) {
       placesServiceRef.current = new window.kakao.maps.services.Places(map);
     }
   }, [map, scriptLoaded]);
 
-  // 지도 컨트롤 추가
+  // 지도에 컨트롤(지도/줌) 추가 (최초 1회)
   useEffect(() => {
+    // [목적] 지도 타입/줌 컨트롤을 최초 map 마운트 시 1회만 추가
     if (!map) return;
     const mapTypeControl = new window.kakao.maps.MapTypeControl();
     const zoomControl = new window.kakao.maps.ZoomControl();
@@ -168,71 +170,91 @@ export default function KakaoMap({ funnel }: KakaoMapProps) {
     map.addControl(zoomControl, window.kakao.maps.ControlPosition.RIGHT);
   }, [map]);
 
-  // 마커 정리
+  // markers 배열이 변할 때마다 이전 마커들 정리
   useEffect(() => {
+    // markers가 변경될 때, 이전 마커들을 지도에서 제거해 메모리릭 방지
     return () => {
       markers.forEach((marker) => marker.setMap(null));
     };
   }, [markers]);
 
+  // region(여행 지역)이 바뀔 때 모든 상태/마커/오버레이 초기화
   useEffect(() => {
-    if (!map) return;
-
-    // 포커싱 상태가 아닐 때만 전체 마커 다시 렌더
-    if (selectedPlace === null) {
-      const { kakao } = window;
-      const currentPlaces =
-        daysPlan.find((d) => d.day === currentDay)?.places || [];
-
-      // 기존 마커 모두 제거
-      markers.forEach((m) => m.setMap(null));
-      setMarkers([]);
-
-      // 새로운 마커 생성
-      const newMarkers = currentPlaces.map((place) => {
-        const position = new kakao.maps.LatLng(+place.y, +place.x);
-        const marker = new kakao.maps.Marker({ position });
-        marker.setMap(map);
-
-        kakao.maps.event.addListener(marker, 'click', () => {
-          // 이 부분은 기존대로, 포커싱으로 들어감
-          const container = document.createElement('div');
-          overlayRef.current = container;
-
-          const overlay = new kakao.maps.CustomOverlay({
-            content: container,
-            position: marker.getPosition(),
-          });
-
-          setSelectedPlace(place);
-          setPlaceOverlay(overlay);
-          overlay.setMap(map);
-        });
-        return marker;
-      });
-
-      setMarkers(newMarkers);
+    // 사용자가 여행 지역(region)을 변경하면
+    //  - 이전 지역의 마커, 오버레이, 선택상태, 카테고리/검색어 모두 초기화
+    markers.forEach((marker) => marker.setMap(null));
+    setMarkers([]);
+    if (placeOverlay) {
+      placeOverlay.setMap(null);
+      setPlaceOverlay(null);
     }
+    setSelectedPlace(null);
+    overlayRef.current = null;
+
+    setCurrentCategory(undefined);
+    setKeyword('');
+    clearSelectedPlace(); // zustand 스토어도 초기화
+  }, [region]);
+
+  // 요일(currentDay)이나 일정(daysPlan)이 바뀔 때 마커 갱신
+  useEffect(() => {
+    // 날짜(요일) 또는 일정 데이터가 바뀔 때
+    //  - 포커싱된 오버레이가 없을 때만, 해당 날짜의 장소 리스트로 마커들 다시 그리기
+    if (!map) return;
+    if (selectedPlace !== null) return; // 오버레이가 열려있으면 렌더링 안함
+
+    // 기존 마커 제거
+    markers.forEach((m) => m.setMap(null));
+    setMarkers([]);
+
+    // 새로운 마커 생성 및 지도에 추가
+    const currentPlaces =
+      daysPlan.find((d) => d.day === currentDay)?.places || [];
+    const newMarkers = currentPlaces.map((place) => {
+      const position = new kakao.maps.LatLng(+place.y, +place.x);
+      const marker = new kakao.maps.Marker({ position });
+      marker.setMap(map);
+
+      // 마커 클릭 시 오버레이 띄우기
+      kakao.maps.event.addListener(marker, 'click', () => {
+        const container = document.createElement('div');
+        overlayRef.current = container;
+
+        const overlay = new kakao.maps.CustomOverlay({
+          content: container,
+          position: marker.getPosition(),
+        });
+
+        setSelectedPlace(place);
+        setPlaceOverlay(overlay);
+        overlay.setMap(map);
+      });
+      return marker;
+    });
+
+    setMarkers(newMarkers);
   }, [currentDay, map, daysPlan, selectedPlace]);
 
+  // placeFromScheduleItem(특정 장소 포커스) 변경 시 단일 마커+오버레이 띄우기
   useEffect(() => {
+    // 상세 일정 클릭 등으로 특정 장소를 포커스할 때,
+    //  - 기존 마커/오버레이를 모두 지우고, 해당 장소에 단일 마커와 오버레이만 띄움
     if (!map || !placeFromScheduleItem) return;
 
     const { kakao } = window;
     const { x, y } = placeFromScheduleItem;
-
     const position = new kakao.maps.LatLng(+y, +x);
 
     markers.forEach((marker) => marker.setMap(null));
     if (placeOverlay) placeOverlay.setMap(null);
 
+    // 포커스된 장소에만 마커/오버레이 생성
     const marker = new kakao.maps.Marker({ position });
     marker.setMap(map);
     setMarkers([marker]);
 
     const container = document.createElement('div');
     overlayRef.current = container;
-
     const overlay = new kakao.maps.CustomOverlay({
       content: container,
       position: marker.getPosition(),
@@ -308,15 +330,6 @@ export default function KakaoMap({ funnel }: KakaoMapProps) {
             });
 
             setMarkers(newMarkers);
-
-            console.log(
-              '📍 검색된 장소:',
-              data.map((p) => ({
-                name: p.place_name,
-                address: p.address_name,
-                category: p.category_name,
-              })),
-            );
           }
         },
         { useMapBounds: true },

@@ -48,6 +48,7 @@ export function deleteTripItems() {
   const { delete: deleteRequest } = useApi<FeedResponse>();
 
   // 상세일정(장소) 삭제
+  // 등록한 장소 삭제시에 필요함
   const deleteScheduleItem = async (
     feedId: number,
     scheduleId: number,
@@ -57,13 +58,14 @@ export function deleteTripItems() {
     await deleteRequest(
       `feeds/${feedId}/schedules/${scheduleId}/scheduleItems/${scheduleItemId}`,
     );
-    // 만약 place도 삭제 필요시
-    if (placeId) {
-      await deleteRequest(`places/${placeId}`);
-    }
+    // 만약 place도 삭제 필요시 <- 필요없음
+    // if (placeId) {
+    //   await deleteRequest(`places/${placeId}`);
+    // }
   };
 
   // 스케줄(1일차 전체) 삭제
+  // 지역 및 기한 변경시에 필요함
   const deleteSchedule = async (feedId: number, scheduleId: number) => {
     await deleteRequest(`feeds/${feedId}/schedules/${scheduleId}`);
   };
@@ -76,9 +78,15 @@ export function useTrip() {
   const router = useRouter();
   const store = useTripFunnelStore;
 
+  // ...생략...
+
   // ----- 일정 생성 -----
   const submitScheduleCreate = async (feedId: number, daysPlan: DayPlan[]) => {
     for (const dayPlan of daysPlan) {
+      dayPlan.places.forEach((place, idx) => {
+        place.itemOrder = idx + 1;
+      });
+
       const scheduleRes = await post(`feeds/${feedId}/schedules`, {
         dayNumber: dayPlan.day,
         feedId,
@@ -89,13 +97,11 @@ export function useTrip() {
         let place = dayPlan.places[i];
         place = toScheduleItemWithKakaoId(place);
 
-        // 1. 카카오 ID만 있고 DB placeId가 없는 경우
         let dbPlaceId = place.id;
         if (!dbPlaceId || dbPlaceId === place.kakaoPlaceId) {
           try {
             const placeRes = await post('places', createPlacePayload(place));
             dbPlaceId = placeRes.data.id.toString();
-            // 상태에 반영
             useTripFunnelStore.setState((state) => ({
               daysPlan: state.daysPlan.map((dp) =>
                 dp.day === dayPlan.day
@@ -111,20 +117,18 @@ export function useTrip() {
               ),
             }));
           } catch (err) {
-            console.error('[ERROR][CREATE][place 등록 실패]', err, place);
             alert('장소 등록 실패: ' + (err as any).message);
             continue;
           }
         }
 
-        // 2. scheduleItem 등록
+        // 2. scheduleItem 등록 (itemOrder를 place.itemOrder로)
         try {
           await post(
             `feeds/${feedId}/schedules/${scheduleId}/scheduleItems`,
-            scheduleItemPayload(i + 1, scheduleId, dbPlaceId!),
+            scheduleItemPayload(place.itemOrder!, scheduleId, dbPlaceId!),
           );
         } catch (err) {
-          console.error('[ERROR][CREATE][scheduleItem 등록 실패]', err, place);
           alert('일정 장소 등록 실패: ' + (err as any).message);
         }
       }
@@ -133,9 +137,12 @@ export function useTrip() {
 
   // ----- 일정 수정 -----
   const submitScheduleEdit = async (feedId: number, daysPlan: DayPlan[]) => {
-    console.log('[EDIT MODE START]', JSON.stringify(daysPlan, null, 2));
     for (const dayPlan of daysPlan) {
-      // 1. 일정 자체 PUT/POST
+      // ✅ 1. 항상 순서대로 itemOrder 부여
+      dayPlan.places.forEach((place, idx) => {
+        place.itemOrder = idx + 1;
+      });
+
       if (dayPlan.id) {
         await put(`feeds/${feedId}/schedules/${dayPlan.id}`, {
           id: dayPlan.id,
@@ -156,18 +163,15 @@ export function useTrip() {
         }));
       }
 
-      // 2. 각 장소 처리
-      let itemOrder = 1;
-      for (let place of dayPlan.places.filter(Boolean)) {
+      for (let i = 0; i < dayPlan.places.length; i++) {
+        let place = dayPlan.places[i];
         place = toScheduleItemWithKakaoId(place);
         let dbPlaceId = place.id;
 
-        // 신규 장소(카카오ID만 있음)라면 먼저 place POST
         if (!dbPlaceId || dbPlaceId === place.kakaoPlaceId) {
           try {
             const placeRes = await post('places', createPlacePayload(place));
             dbPlaceId = placeRes.data.id.toString();
-            // 상태에 반영
             useTripFunnelStore.setState((state) => ({
               daysPlan: state.daysPlan.map((dp) =>
                 dp.day === dayPlan.day
@@ -183,27 +187,23 @@ export function useTrip() {
               ),
             }));
           } catch (err) {
-            console.error('[ERROR][EDIT][place 등록 실패]', err, place);
             alert('장소 등록 실패: ' + (err as any).message);
             continue;
           }
         } else {
-          // 기존 장소는 PATCH
           try {
             await patch(`places/${dbPlaceId}`, createPlacePayload(place));
           } catch (err) {
-            console.error('[ERROR][EDIT][place PATCH 실패]', err, place);
-            // 404면 신경X, 500류만 alert
+            alert('장소 수정 실패: ' + (err as any).message);
           }
         }
 
         // scheduleItem 등록/수정
         if (!place.scheduleItemId) {
-          // 신규 scheduleItem
           try {
             const scheduleItemRes = await post(
               `feeds/${feedId}/schedules/${dayPlan.id}/scheduleItems`,
-              scheduleItemPayload(itemOrder, dayPlan.id!, dbPlaceId!),
+              scheduleItemPayload(place.itemOrder!, dayPlan.id!, dbPlaceId!),
             );
             const scheduleItemId = scheduleItemRes.data.id;
             useTripFunnelStore.setState((state) => ({
@@ -221,39 +221,24 @@ export function useTrip() {
               ),
             }));
           } catch (err) {
-            console.error('[ERROR][EDIT][scheduleItem 등록 실패]', err, place);
             alert('장소 일정 등록 실패: ' + (err as any).message);
           }
         } else {
-          // 기존 scheduleItem 수정
           try {
             await put(
               `feeds/${feedId}/schedules/${dayPlan.id}/scheduleItems/${place.scheduleItemId}`,
               {
                 id: place.scheduleItemId,
-                itemOrder,
+                itemOrder: place.itemOrder!,
                 scheduleId: dayPlan.id,
                 place: dbPlaceId!,
               },
             );
           } catch (err) {
-            console.error('[ERROR][EDIT][scheduleItem PATCH 실패]', err, place);
-            // 보통 무시, 404인 경우만 체크
+            alert('장소 일정 수정 실패: ' + (err as any).message);
           }
         }
-        itemOrder++;
       }
-      // 디버깅
-      console.log(
-        `[EDIT][${dayPlan.day}일차] 처리 후 daysPlan:`,
-        JSON.stringify(
-          useTripFunnelStore
-            .getState()
-            .daysPlan.find((dp) => dp.day === dayPlan.day),
-          null,
-          2,
-        ),
-      );
     }
   };
 
@@ -261,20 +246,6 @@ export function useTrip() {
   const submitSchedule = async (update?: Partial<TripContext>) => {
     const { trip, mode, daysPlan, resetAll } = store.getState();
     const id = trip.boardId;
-
-    // null, id 이상한 곳 체크
-    if (
-      daysPlan.some(
-        (d) => !d.places || d.places.some((p) => !p || !p.place_name),
-      )
-    ) {
-      alert('잘못된 장소 데이터가 포함되어 있습니다.');
-      return;
-    }
-    console.log(
-      '[DEBUG][submitSchedule 진입 시 daysPlan]',
-      JSON.stringify(daysPlan, null, 2),
-    );
 
     const funnelData = {
       ...trip,
@@ -322,7 +293,6 @@ export function useTrip() {
       resetAll();
       router.push('/');
     } catch (err: any) {
-      console.error('❌ submitSchedule 실패:', err);
       alert(err.message || '여행 등록/수정 실패!');
     }
   };

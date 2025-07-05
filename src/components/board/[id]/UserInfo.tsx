@@ -26,17 +26,15 @@ interface UserId extends User {
 }
 
 export default function UserInfo({ boardId }: { boardId: number }) {
+  const dropDownRef = useRef<HTMLDivElement | null>(null);
   const [post, setPost] = useState<BoardData | null>(null);
   const [isOptionOpen, setIsOptionOpen] = useState(false);
-  const dropDownRef = useRef<HTMLDivElement | null>(null);
+  const { delete: deleteRequest, get } = useApi<BoardData>();
 
-  const { delete: deleteRequest, get, error } = useApi<BoardData>();
+  // 현재 로그인한 유저 정보 가져오기
   const user = useAuthStore().user as UserId;
-  const isAuthor = user?.id === post?.owner.id;
   const router = useRouter();
-
-  console.log('로그인된 유저 id:', user?.id);
-  console.log('게시글 owner id:', post?.owner.id);
+  const isAuthor = user?.id === post?.owner.id;
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -63,8 +61,10 @@ export default function UserInfo({ boardId }: { boardId: number }) {
       return;
     }
 
-    const confirmed = confirm('정말 삭제하시겠습니까?');
-    if (!confirmed) return;
+    const deleteConfrim = confirm('게시글을 삭제하시겠습니까?');
+    if (!deleteConfrim) {
+      return;
+    }
 
     try {
       const res = await deleteRequest(`feeds/${boardId}`);
@@ -76,7 +76,6 @@ export default function UserInfo({ boardId }: { boardId: number }) {
       alert('삭제되었습니다.');
       router.push('/');
     } catch (error) {
-      console.error('삭제 실패:', error);
       alert('삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
       // router.push('/') 안 함 -> 현재 페이지 유지
     }
@@ -87,6 +86,7 @@ export default function UserInfo({ boardId }: { boardId: number }) {
   };
 
   useEffect(() => {
+    // 외부 클릭 시 옵션 닫기
     const handleOutsideClick = (e: MouseEvent) => {
       if (
         isOptionOpen &&
@@ -100,11 +100,7 @@ export default function UserInfo({ boardId }: { boardId: number }) {
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, [isOptionOpen]);
 
-  if (error) return <div className="p-4 text-red-500">오류 발생: {error}</div>;
-
-  if (!post) {
-    return <div className="p-4">게시글 불러오는중</div>;
-  }
+  if (!post) return <div className="p-4">게시글을 불러오는 중...</div>;
 
   const {
     imageUrls,
@@ -220,7 +216,7 @@ export default function UserInfo({ boardId }: { boardId: number }) {
                 );
                 return found ? `${found[1].name} ${found[1].emoji}` : style;
               })
-              .join(' ')}
+              .join(', ')}
           />
           <InfoRow label="비용" value={cost.toLocaleString()} />
         </div>
@@ -237,7 +233,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
     <div className="flex items-center gap-[24px] self-stretch">
       <h1 className="w-[80px] text-[16px] text-[var(--Gray700)]">{label}</h1>
       <span className="text-[16px] font-bold text-[var(--Gray900)]">
-        {Array.isArray(value) ? value.join(' ') : value}
+        {value}
       </span>
     </div>
   );

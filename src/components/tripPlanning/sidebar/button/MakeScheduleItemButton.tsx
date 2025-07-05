@@ -1,6 +1,7 @@
 'use client';
 
 import FindPlaceIcon from '@/public/icons/find-place-icon.svg';
+
 import { useMapStore } from '@/store/mapStore';
 import { useTripFunnelStore } from '@/store/tripFunnelStore';
 

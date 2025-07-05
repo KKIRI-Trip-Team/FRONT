@@ -1,9 +1,9 @@
 'use client';
 
+import ScheduleCard from '../scheduleCard/ScheduleCard';
 import NoScheduleItemText from '../text/NoScheduleItemText';
 import MakeScheduleItemButton from '../button/MakeScheduleItemButton';
 
-import ScheduleCard from '../scheduleCard/ScheduleCard';
 import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
 export default function PcScheduleList() {

@@ -1,14 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 import { UseFunnelResults } from '@use-funnel/browser';
+
 import { slideFadeVariants } from '@/utils/motionVariants';
 import { useTransitionStore } from '@/store/transitionStore';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
 import { BoardRegisterSteps } from '@/types/boardFunnel';
 import { tripStyleMap } from '@/types/board';
-import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
 interface StyleFunnel {
   funnel: UseFunnelResults<BoardRegisterSteps, BoardRegisterSteps['styleStep']>;
@@ -17,7 +18,15 @@ interface StyleFunnel {
 export default function StyleStep({ funnel }: StyleFunnel) {
   const { stepIndex, trip, setContext, setStepIndex } = useTripFunnelStore();
   const { direction } = useTransitionStore();
+
+  const divRef = useRef<HTMLDivElement>(null);
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]); // name 기준으로 저장
+
+  useEffect(() => {
+    if (divRef.current) {
+      divRef.current.focus();
+    }
+  }, []);
 
   useEffect(() => {
     setStepIndex(4);
@@ -45,15 +54,25 @@ export default function StyleStep({ funnel }: StyleFunnel) {
     funnel.history.push('expenseStep', () => nextContext);
   };
 
+  // 엔터키 입력 헨들러
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && isSelectedEnough) {
+      handleNext();
+    }
+  };
+
   return (
     <motion.div
+      ref={divRef}
+      tabIndex={0}
       key="styleStep"
       custom={direction}
       initial="initial"
       animate="animate"
       exit="exit"
       variants={slideFadeVariants}
-      className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] p-[20px_20px_40px_20px] gap-[40px] bg-white font-[Pretendard] tracking-[-0.5px]"
+      onKeyDown={handleKeyDown}
+      className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] p-[20px_20px_40px_20px] gap-[40px] bg-white font-[Pretendard] tracking-[-0.5px] focus:outline-none"
     >
       {/* Header */}
       <div className="flex flex-col items-center self-stretch">

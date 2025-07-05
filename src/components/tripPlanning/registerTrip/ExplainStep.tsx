@@ -1,23 +1,22 @@
 'use client';
 
-import ICON from '@/public/icons/trip-make-icon.svg';
+import DefaultNoImageIcon from '@/public/icons/default-no-image-icon.svg';
 import Image from 'next/image';
 
 import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 
-import { slideFadeVariants } from '@/utils/motionVariants';
 import { UseFunnelResults } from '@use-funnel/browser';
 
-import { useTransitionStore } from '@/store/transitionStore';
-import { uploadImageToServer } from '../imageUpload/ImageUpload';
-import { useApi } from '@/hooks/useApi';
-
+import { slideFadeVariants } from '@/utils/motionVariants';
 import { BoardRegisterSteps } from '@/types/boardFunnel';
+
+import { useTransitionStore } from '@/store/transitionStore';
 import { useTripFunnelStore } from '@/store/tripFunnelStore';
+import { useApi } from '@/hooks/useApi';
 import { useTrip } from '@/hooks/useTrip';
 
+import { uploadImageToServer } from '../imageUpload/ImageUpload';
 interface ExplainFunnel {
   funnel: UseFunnelResults<
     BoardRegisterSteps,
@@ -29,11 +28,12 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
   const { trip, stepIndex, mode, daysPlan, setContext, setStepIndex } =
     useTripFunnelStore();
   const { direction } = useTransitionStore();
-
   const { post } = useApi();
-  const [coverImageUrl, setCoverImageUrl] = useState('');
   const { submitSchedule } = useTrip();
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [coverImageUrl, setCoverImageUrl] = useState('');
+  const [isCanSubmit, setIsCanSubmit] = useState(false);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -139,10 +139,10 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
               src={`https://trebuddy-s3-bucket.s3.ap-northeast-2.amazonaws.com/${coverImageUrl}`}
               alt={'boardImage'}
               fill
-              style={{ objectFit: 'cover' }}
+              className="object-fill"
             />
           ) : (
-            <ICON />
+            <DefaultNoImageIcon />
           )}
         </label>
         <input
@@ -193,9 +193,9 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
         </div>
       </section>
 
-      <div className="flex flex-col px-[20px] py-[16px] justify-center items-center gap-[10px] self-stretch rounded-[100px] bg-[var(--Gray900)]">
+      <div className="flex flex-col px-[20px] py-[16px] justify-center items-center gap-[10px] self-stretch rounded-[100px] bg-[var(--Gray900)] w-full">
         <button
-          className="text-[var(--white)] text-[14px] font-bold leading-[20px] tracking-[-0.5px]"
+          className="text-[var(--white)] text-[14px] font-bold leading-[20px] tracking-[-0.5px] w-full"
           onClick={makeScheduleItem}
         >
           {mode === 'edit' ? '상세일정 수정하기' : '상세일정 만들기'}
@@ -204,28 +204,40 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
 
       <button
         disabled={!canSubmit}
-        onClick={() => {
-          const newData = {
-            title,
-            subTitle,
-            coverImageUrl,
-          };
+        onClick={async () => {
+          if (!canSubmit || isCanSubmit) return;
 
-          const fullTripUpdate = {
-            explain: newData,
-          };
+          setIsCanSubmit(true); // 버튼 비활성화
+          try {
+            const newData = {
+              title,
+              subTitle,
+              coverImageUrl,
+            };
 
-          console.log(`수정된 데이터, ${fullTripUpdate}`);
+            const fullTripUpdate = {
+              explain: newData,
+            };
 
-          setContext(fullTripUpdate);
-          submitSchedule(fullTripUpdate);
+            setContext(fullTripUpdate);
+            await submitSchedule(fullTripUpdate);
+            setIsCanSubmit(false);
+          } catch (error) {
+            alert(`게시글 작성 중 오류 발생 ${error}`);
+          }
         }}
         className={`flex h-[54px] px-[0px] py-[16px] justify-center items-center shrink-0 text-center w-full text-[16px] font-bold leading-[22px] ${
           canSubmit ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
         } ${canSubmit ? 'bg-[#5938DB]' : 'bg-[#F1F1F2]'}
           disabled:cursor-not-allowed disabled:opacity-50`}
       >
-        {mode === 'create' ? '게시글 작성' : '게시글 수정'}
+        {isCanSubmit && mode === 'create'
+          ? '게시글 작성 중...'
+          : isCanSubmit && mode === 'edit'
+            ? '게시글 수정 중...'
+            : mode === 'create'
+              ? '게시글 작성하기'
+              : '게시글 수정하기'}
       </button>
     </motion.div>
   );
