@@ -1,6 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import CircleIcon from '@/public/icons/circle-icon.svg';
+import DefaultProfileAuthPcIcon from '@/public/icons/default-profile-auth-icon-pc.svg';
+import DefaultProfileAuthMobileIcon from '@/public/icons/default-profile-auth-icon-mobile.svg';
+
 import { BoardData, cityMap, periodMap, tripStyleMap } from '@/types/board';
 
 export default function BoardCard({
@@ -9,30 +12,31 @@ export default function BoardCard({
   period,
   title,
   content,
-  coverImageUrl,
-  profileImage,
-  nickname,
+  imageUrls,
   tripStyles,
+  owner,
 }: BoardData) {
   const regionName = cityMap[region]?.name;
   const periodName = periodMap[period]?.name;
 
+  const coverImage = imageUrls?.[0]; // 첫 번째 이미지
+
   return (
     <Link href={`board/${id}`}>
-      <div className="flex pc:w-[373px] tb:w-[354px] mb:w-[275px] flex-col justify-center items-start font-[Pretendard]">
-        {coverImageUrl && (
+      <div className="flex pc:w-[373px] tb:w-[354px] mb:w-full flex-col justify-center items-start font-[Pretendard]">
+        {coverImage && (
           <Image
-            className="h-[275px] self-stretch"
-            width={0}
+            className="pc:w-[373px] tb:w-[354px] h-[275px] self-stretch"
+            width={373}
             height={275}
-            src={`https://trebuddy-s3-bucket.s3.ap-northeast-2.amazonaws.com/${coverImageUrl}`}
-            alt={nickname}
+            src={`https://trebuddy-s3-bucket.s3.ap-northeast-2.amazonaws.com/${coverImage}`}
+            alt={'coverImage'}
           />
         )}
         <div className="flex p-[20px] flex-col items-start gap-[10px] self-stretch">
           <div className="flex flex-col items-start gap-[4px] self-stretch">
             <div className="flex h-[20px] items-center gap-[4px] self-stretch">
-              <h3 className=" text-[12px] font-bold leading-[18px] tracking-[-0.5px] text-[var(--Gray500)]">
+              <h3 className="text-[12px] font-bold leading-[18px] tracking-[-0.5px] text-[var(--Gray500)]">
                 {regionName}
               </h3>
               <h4 className="w-[4px] h-[5px] fill-[var(--Gray300)]">
@@ -51,19 +55,24 @@ export default function BoardCard({
           </div>
           <div className="flex items-center gap-[10px] self-stretch">
             <div className="w-[36px] h-[36px]">
-              {profileImage && (
+              {owner && owner.profileUrl !== '' ? (
                 <Image
-                  width={36}
-                  height={36}
-                  src={`https://trebuddy-s3-bucket.s3.ap-northeast-2.amazonaws.com/${profileImage}`}
-                  alt={nickname}
-                  className="w-[36px] h-[36px] shrink-0 rounded-[100px] border border-solid border-[var(--Gray200)]"
+                  className="w-[36px] h-[36px] shrink-0 rounded-[24px]"
+                  width={64}
+                  height={64}
+                  src={`https://trebuddy-s3-bucket.s3.ap-northeast-2.amazonaws.com/${owner?.profileUrl}`}
+                  alt={'userProfile'}
                 />
+              ) : (
+                <>
+                  <DefaultProfileAuthPcIcon className="hidden w-full h-full pc:block" />
+                  <DefaultProfileAuthMobileIcon className="block w-full h-full pc:hidden" />
+                </>
               )}
             </div>
             <div className="flex flex-col justify-center items-start flex-[1_0_0]">
               <span className="text-[12px] font-bold leading-[18px] tracking-[-0.5px]">
-                {nickname}
+                {owner?.nickname}
               </span>
               <span className="flex flex-wrap gap-[6px] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-[var(--Gray600)]">
                 {tripStyles.map((style) => (

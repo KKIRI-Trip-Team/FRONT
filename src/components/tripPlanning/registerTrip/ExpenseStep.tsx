@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 import { UseFunnelResults } from '@use-funnel/browser';
@@ -20,8 +20,16 @@ export default function ExpenseStep({ funnel }: ExpenseFunnel) {
   const { stepIndex, trip, setContext, setStepIndex } = useTripFunnelStore();
   const { direction } = useTransitionStore();
 
+  const divRef = useRef<HTMLDivElement>(null);
   const [moneyValid, setMoneyValid] = useState('');
   const [isValid, setIsValid] = useState(false);
+
+  // 컴포넌트가 마운트되면 포커스 설정
+  useEffect(() => {
+    if (divRef.current) {
+      divRef.current.focus();
+    }
+  }, []);
 
   useEffect(() => {
     setStepIndex(5);
@@ -43,23 +51,32 @@ export default function ExpenseStep({ funnel }: ExpenseFunnel) {
     setIsValid(true);
   };
 
-  const handleNextClick = () => {
+  const handleNext = () => {
     if (!isValidMoney) return;
 
     const nextContext = { ...trip, cost: parsedValue };
     setContext({ cost: parsedValue });
-    funnel.history.push('explainStep', nextContext);
+    funnel.history.push('explainStep', () => nextContext);
   };
 
+  // 엔터키 입력 헨들러
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && isValidMoney) {
+      handleNext();
+    }
+  };
   return (
     <motion.div
+      ref={divRef}
+      tabIndex={0}
       key="expenseStep"
       custom={direction}
       initial="initial"
       animate="animate"
       exit="exit"
       variants={slideFadeVariants}
-      className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] p-[20px] gap-[40px] bg-white font-[Pretendard] not-italic tracking-[-0.5px]"
+      onKeyDown={handleKeyDown}
+      className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] p-[20px] gap-[40px] bg-white font-[Pretendard] not-italic tracking-[-0.5px] focus:outline-none"
     >
       <div className="flex flex-col items-center self-stretch">
         <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">
@@ -117,7 +134,7 @@ export default function ExpenseStep({ funnel }: ExpenseFunnel) {
         className={`flex h-[54px] py-[16px] justify-center items-center self-stretch w-full text-[16px] font-bold leading-[22px] text-center ${
           isValidMoney ? 'text-[var(--white)]' : 'text-[var(--Gray400)]'
         } ${isValidMoney ? 'bg-[#5938DB] cursor-pointer' : 'bg-[#F1F1F2]'}`}
-        onClick={handleNextClick}
+        onClick={handleNext}
       >
         다음
       </button>

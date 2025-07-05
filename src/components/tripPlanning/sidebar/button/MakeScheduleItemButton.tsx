@@ -1,6 +1,7 @@
 'use client';
 
 import FindPlaceIcon from '@/public/icons/find-place-icon.svg';
+
 import { useMapStore } from '@/store/mapStore';
 import { useTripFunnelStore } from '@/store/tripFunnelStore';
 
@@ -28,9 +29,10 @@ export default function MakeScheduleItemButton() {
       .pop()
       ?.trim();
 
-    // 장소 추가시 포함 될 내용들
-    addPlaceToDay(currentDay, {
-      id: selectedPlace.id,
+    // 장소 추가시 포함 될 내용들(카카오 고유 ID)
+    const success = addPlaceToDay(currentDay, {
+      kakaoPlaceId: selectedPlace.id, // ScheduleItem requires kakaoPlaceId
+      id: selectedPlace.id, // 카카오 장소 고유 ID
       place_name: selectedPlace.place_name,
       road_address_name: selectedPlace.road_address_name,
       address_name: selectedPlace.address_name,
@@ -42,6 +44,10 @@ export default function MakeScheduleItemButton() {
       place_url: selectedPlace.place_url,
       distance: selectedPlace.distance,
     });
+
+    if (!success) {
+      alert('이미 선택한 장소입니다.');
+    }
   };
 
   return (

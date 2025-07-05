@@ -6,6 +6,8 @@ import Header from '@/components/common/Header';
 import Footer from '@/components/common/Footer';
 import { AuthProvider } from '@/providers/AuthProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
+import DetailTripHeader from '@/components/tripPlanning/header/TripDetailHeader';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,7 +17,6 @@ const queryClient = new QueryClient({
     },
   },
 });
-import DetailTripHeader from '@/components/tripPlanning/TripDetailHeader';
 
 export default function RootLayoutClient({
   children,
@@ -26,7 +27,9 @@ export default function RootLayoutClient({
   const isAuthRoute =
     pathname?.startsWith('/login') || pathname?.startsWith('/register');
 
-  const isTripDetailPage = pathname.startsWith('/tripPlanning/register-trip');
+  const stepIndex = useTripFunnelStore((s) => s.stepIndex);
+  const isDetailStep = stepIndex === 7;
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
@@ -36,7 +39,7 @@ export default function RootLayoutClient({
           tb:max-w-[768px] 
           mb:max-w-[375px]"
         >
-          {isTripDetailPage ? <DetailTripHeader /> : !isAuthRoute && <Header />}
+          {isDetailStep ? <DetailTripHeader /> : !isAuthRoute && <Header />}
           <main className="w-full">{children}</main>
           <Footer />
         </div>
