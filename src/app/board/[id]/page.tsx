@@ -9,12 +9,12 @@ export default async function page({
   const { id } = await params;
 
   return (
-    <div className="flex pc:w-[1200px] pb-[40px] flex-col items-start">
+    <div className="flex pc:w-[1200px] flex-col items-start">
       {/* 대표 이미지 및 유저 정보 section */}
       <UserInfo boardId={id} />
 
       {/* 일정 나열 section */}
-      {/* <TripInfo /> */}
+      <TripInfo feedId={id} />
     </div>
   );
 }

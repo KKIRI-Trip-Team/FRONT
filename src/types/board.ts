@@ -42,8 +42,15 @@ export interface ScheduleData {
   places: ScheduleItem[];
 }
 
+// 카카오맵 API에서 제공되는 장소 타입
+// API 명세서 /api/places 반환 타입
 export type ScheduleItem = {
-  id: string;
+  scheduleItemId?: number; // 서버의 일정아이템 PK
+  kakaoPlaceId: string;
+  itemOrder?: number;
+
+  id: string; // id값은 필수로 필요함
+
   place_name: string;
   address_name: string;
   road_address_name: string;
@@ -79,15 +86,18 @@ export const cityMap: Record<string, { name: string; emoji: string }> = {
   JEJU: { name: '제주', emoji: '🏝' },
 };
 
-export const periodMap: Record<string, { name: string; id?: number }> = {
-  ANYTIME: { name: '아무떄나', id: 1 },
-  DAY_TRIP: { name: '당일치기', id: 2 },
-  ONE_NIGHT: { name: '1박 2일', id: 3 },
-  TWO_NIGHT: { name: '2박 3일', id: 4 },
-  THREE_NIGHT: { name: '3박 4일', id: 5 },
-  FOUR_NIGHT: { name: '4박 5일', id: 6 },
-  FIVE_NIGHT: { name: '5박 6일', id: 7 },
-  OVER_SEVEN: { name: '7일 이상', id: 8 },
+export const periodMap: Record<
+  string,
+  { name: string; days: number; id?: number }
+> = {
+  ANYTIME: { name: '아무때나', days: 1, id: 1 },
+  DAY_TRIP: { name: '당일치기', days: 1, id: 2 },
+  ONE_NIGHT: { name: '1박 2일', days: 2, id: 3 },
+  TWO_NIGHT: { name: '2박 3일', days: 3, id: 4 },
+  THREE_NIGHT: { name: '3박 4일', days: 4, id: 5 },
+  FOUR_NIGHT: { name: '4박 5일', days: 5, id: 6 },
+  FIVE_NIGHT: { name: '5박 6일', days: 6, id: 7 },
+  OVER_SEVEN: { name: '7일 이상', days: 7, id: 8 },
 };
 
 export const genderMap: Record<string, { name: string; emoji?: string }> = {
@@ -109,17 +119,17 @@ export const tripStyleMap: Record<string, { name: string; emoji: string }> = {
   EXPERIENCE: { name: '체험', emoji: '🤿' },
   ACTIVITY: { name: '액티비티', emoji: '🏃' },
   SHOPPING: { name: '쇼핑', emoji: '🛒🛍' },
-  BROADEN_HORIZONS: { name: '견문넓히기', emoji: '🏛🖼' },
+  KNOWLEDGE: { name: '견문넓히기', emoji: '🏛🖼' },
   GOURMET: { name: '식도락', emoji: '🍕🍖' },
-  EMOTIONAL_TOUR: { name: '감성투어', emoji: '🌆' },
+  EMOTIONAL: { name: '감성투어', emoji: '🌆' },
   COST_EFFECTIVE: { name: '가성비', emoji: '💸' },
   FLEX: { name: '플랙스', emoji: '🤑' },
-  METICULOUS_PLANNING: { name: '꼼꼼한계획', emoji: '✍️⏱️' },
+  PLANNER: { name: '꼼꼼한계획', emoji: '✍️⏱️' },
   SPONTANEOUS: { name: '즉흥', emoji: '🤹‍♀️' },
   NATURE_FRIENDLY: { name: '자연친화', emoji: '🌳' },
   RELAXED: { name: '여유', emoji: '⏳' },
-  MUST_TAKE_PHOTO: { name: '인생샷필수', emoji: '📸' },
+  PHOTO_SPOT: { name: '인생샷필수', emoji: '📸' },
   HOT_PLACE: { name: '핫플', emoji: '🎪✨' },
   WAITING_OK: { name: '웨이팅가능', emoji: '📋' },
-  ANY_NEARBY_RESTAURANT: { name: '근처아무식당', emoji: '🍽️' },
+  RANDOM_FOOD: { name: '근처아무식당', emoji: '🍽️' },
 };

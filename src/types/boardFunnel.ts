@@ -1,5 +1,7 @@
+import { DayPlan } from './board';
+
 export type BoardRegisterSteps = {
-  destinationStep: {
+  regionStep: {
     region: string;
   };
 
@@ -58,5 +60,6 @@ export type BoardRegisterSteps = {
       subTitle: string;
       coverImageUrl: string;
     };
+    daysPlan: DayPlan[];
   };
 };

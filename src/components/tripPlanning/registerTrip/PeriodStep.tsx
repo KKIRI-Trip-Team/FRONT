@@ -1,14 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
 import { UseFunnelResults } from '@use-funnel/browser';
+
 import { slideFadeVariants } from '@/utils/motionVariants';
+
 import { useTransitionStore } from '@/store/transitionStore';
+import { useTripFunnelStore } from '@/store/tripFunnelStore';
+
 import { BoardRegisterSteps } from '@/types/boardFunnel';
 import { periodMap } from '@/types/board';
-import { useTripFunnelStore } from '@/store/tripFunnelStore';
+import { deleteTripItems } from '@/hooks/useTrip';
 
 interface PeriodFunnel {
   funnel: UseFunnelResults<
@@ -18,9 +22,19 @@ interface PeriodFunnel {
 }
 
 export default function PeriodStep({ funnel }: PeriodFunnel) {
-  const { stepIndex, trip, setContext, setStepIndex } = useTripFunnelStore();
+  const { stepIndex, trip, daysPlan, setContext, setStepIndex, setDayPlans } =
+    useTripFunnelStore();
   const { direction } = useTransitionStore();
   const [selectedPeriod, setSelectedPeriod] = useState('');
+  const { deleteSchedule } = deleteTripItems();
+  const divRef = useRef<HTMLDivElement>(null);
+
+  // 컴포넌트가 마운트되면 포커스 설정
+  useEffect(() => {
+    if (divRef.current) {
+      divRef.current.focus();
+    }
+  }, []);
 
   useEffect(() => {
     setStepIndex(2);
@@ -44,21 +58,47 @@ export default function PeriodStep({ funnel }: PeriodFunnel) {
       ? 'border-[0.8px] border-[#0085FF] bg-[rgba(0,133,255,0.1)]'
       : 'bg-[#F8F8F8]';
 
-  const handleNext = () => {
-    const nextContext = { ...trip, period: selectedPeriod };
+  const handleNext = async () => {
+    if (trip.period !== selectedPeriod) {
+      // 기존 상세 일정 모두 삭제
+      for (const d of daysPlan) {
+        if (d.id) {
+          try {
+            await deleteSchedule(trip.boardId!, d.id);
+          } catch (err) {
+            console.error('스케줄 삭제 실패', err);
+          }
+        }
+      }
+      setDayPlans([]);
+    }
+
     setContext({ period: selectedPeriod });
-    funnel.history.push('mateStep', nextContext);
+    funnel.history.push('mateStep', () => ({
+      ...trip,
+      period: selectedPeriod,
+    }));
+  };
+
+  // 엔터키 입력 헨들러
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && isSelected) {
+      handleNext();
+    }
   };
 
   return (
     <motion.div
+      ref={divRef}
       key="periodStep"
       custom={direction}
+      tabIndex={0}
       initial="initial"
       animate="animate"
       exit="exit"
       variants={slideFadeVariants}
-      className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-[var(--white)] shrink-0 font-[Pretendard] not-italic tracking-[-0.5px]"
+      onKeyDown={handleKeyDown}
+      className="flex flex-col items-center pc:w-[1200px] tb:w-[768px] h-[854px] pb-[40px] pl-[20px] pr-[20px] pt-[20px] gap-[40px] bg-[var(--white)] shrink-0 font-[Pretendard] not-italic tracking-[-0.5px] focus:outline-none"
     >
       <div className="flex flex-col items-center self-stretch">
         <div className="flex items-center gap-[3px] text-[var(--PrimaryLight)] text-[10px] font-bold leading-[16px] tracking-[-0.5px] text-center">

@@ -9,7 +9,7 @@ export default function SearchResultList({ q }: { q?: string }) {
   return (
     <>
       <section className="flex p-[20px] items-center gap-[10px] flex-[1_0_0]">
-        <span className="text-[var(--Gray600)] text-center font-[Pretendard] text-[14px] font-bold leading-[20px] tracking-[-0.5px]">{`${q} (${filteredData.length})`}</span>
+        {/* <span className="text-[var(--Gray600)] text-center font-[Pretendard] text-[14px] font-bold leading-[20px] tracking-[-0.5px]">{`${q} (${filteredData.length})`}</span> */}
       </section>
 
       {/* {filteredData.length > 0 ? (
