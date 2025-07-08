@@ -98,7 +98,8 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
     funnel.history.push('detailStep', () => nextContext);
   };
 
-  const isSelected = title.trim() !== '' && subTitle.trim() !== '';
+  const isSelected =
+    title.trim() !== '' && subTitle.trim() !== '' && coverImageUrl !== '';
 
   const canSubmit =
     isSelected &&
@@ -129,7 +130,7 @@ export default function ExplainStep({ funnel }: ExplainFunnel) {
         </span>
       </div>
 
-      <div className="pc:w-[1160px] pc:h-[670px] tb:w-[728px] tb:h-[335px] bg-[var(--Gray200)] flex items-center justify-center relative">
+      <div className="pc:w-[1160px] pc:h-[670px] tb:w-[728px] tb:h-[335px] mb:w-[335px] mb:h-[335px] bg-[var(--Gray200)] flex items-center justify-center relative">
         <label
           htmlFor="imageUpload"
           className="cursor-pointer w-full h-full flex justify-center items-center"

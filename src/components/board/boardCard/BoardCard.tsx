@@ -4,7 +4,12 @@ import CircleIcon from '@/public/icons/circle-icon.svg';
 import DefaultProfileAuthPcIcon from '@/public/icons/default-profile-auth-icon-pc.svg';
 import DefaultProfileAuthMobileIcon from '@/public/icons/default-profile-auth-icon-mobile.svg';
 
-import { BoardData, cityMap, periodMap, tripStyleMap } from '@/types/board';
+import {
+  cityMap,
+  periodMap,
+  tripStyleMap,
+  UnifiedBoardData,
+} from '@/types/board';
 
 export default function BoardCard({
   id,
@@ -15,7 +20,7 @@ export default function BoardCard({
   imageUrls,
   tripStyles,
   owner,
-}: BoardData) {
+}: UnifiedBoardData) {
   const regionName = cityMap[region]?.name;
   const periodName = periodMap[period]?.name;
 

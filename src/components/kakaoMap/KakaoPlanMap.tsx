@@ -12,6 +12,7 @@ import { useTripFunnelStore } from '@/store/tripFunnelStore';
 import { useKakaoMap } from '@/providers/KakaoMapProvider';
 import { UseFunnelResults } from '@use-funnel/browser';
 import { BoardRegisterSteps } from '@/types/boardFunnel';
+import { ScheduleItem } from '@/types/board';
 
 interface KakaoCategoryItem {
   id: KakaoCategory;
@@ -210,7 +211,7 @@ export default function KakaoPlanMap({ funnel }: KakaoMapProps) {
     // 새로운 마커 생성 및 지도에 추가
     const currentPlaces =
       daysPlan.find((d) => d.day === currentDay)?.places || [];
-    const newMarkers = currentPlaces.map((place) => {
+    const newMarkers = currentPlaces.map((place: ScheduleItem) => {
       const position = new kakao.maps.LatLng(+place.y, +place.x);
       const marker = new kakao.maps.Marker({ position });
       marker.setMap(map);
@@ -401,12 +402,12 @@ export default function KakaoPlanMap({ funnel }: KakaoMapProps) {
   };
 
   return (
-    <div className="relative w-full pc:h-[854px] tb:h-[712px]">
+    <div className="relative w-full pc:h-[854px] tb:h-[712px] mb:h-[418px]">
       <div
         ref={mapRef}
-        className="w-full pc:h-[854px] tb:h-[712px] bg-gray-200"
+        className="w-full pc:h-[854px] tb:h-[712px] mb:h-[418px] bg-gray-200"
       />
-      <div className="absolute flex flex-col gap-[5px] tb:left-4 tb:top-4 z-10 pc:translate-x-[320px] pc:translate-y-[10px]">
+      <div className="absolute flex flex-col gap-[5px] mb:left-2 mb:top-2 tb:left-4 tb:top-4 z-10 pc:translate-x-[320px] pc:translate-y-[10px]">
         <CategorySelect
           currentCategory={currentCategory}
           onChange={(selected) => {
@@ -419,7 +420,9 @@ export default function KakaoPlanMap({ funnel }: KakaoMapProps) {
             type="text"
             placeholder="검색어 입력"
             value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
+            onChange={(e) => {
+              setKeyword(e.target.value);
+            }}
             onKeyDown={handleKeyDown}
             className="bg-white p-2 rounded-lg shadow text-sm w-[150px]"
           />
