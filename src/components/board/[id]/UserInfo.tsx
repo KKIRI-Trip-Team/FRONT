@@ -12,11 +12,11 @@ import { useRouter } from 'next/navigation';
 import { useApi } from '@/hooks/useApi';
 import {
   ageGroupMap,
-  BoardData,
   cityMap,
   genderMap,
   periodMap,
   tripStyleMap,
+  UnifiedBoardData,
 } from '@/types/board';
 import { useAuthStore } from '@/store/authStore';
 import { User } from '@/types/user';
@@ -27,9 +27,9 @@ interface UserId extends User {
 
 export default function UserInfo({ boardId }: { boardId: number }) {
   const dropDownRef = useRef<HTMLDivElement | null>(null);
-  const [post, setPost] = useState<BoardData | null>(null);
+  const [post, setPost] = useState<UnifiedBoardData | null>(null);
   const [isOptionOpen, setIsOptionOpen] = useState(false);
-  const { delete: deleteRequest, get } = useApi<BoardData>();
+  const { delete: deleteRequest, get } = useApi<UnifiedBoardData>();
 
   // 현재 로그인한 유저 정보 가져오기
   const user = useAuthStore().user as UserId;
@@ -41,7 +41,6 @@ export default function UserInfo({ boardId }: { boardId: number }) {
       try {
         const response = await get(`feeds/${boardId}`);
         setPost(response.data);
-        console.log(response.data);
       } catch (err) {
         console.log(err);
       }
@@ -127,7 +126,7 @@ export default function UserInfo({ boardId }: { boardId: number }) {
     <section className="flex flex-col gap-[20px] bg-[var(--white)] self-stretch font-[Pretendard]">
       {coverImage && (
         <Image
-          className="self-stretch pc:w-[1200px] pc:h-[750px] tb:w-[768px] tb:h-[375px]"
+          className="self-stretch pc:w-[1200px] pc:h-[750px] tb:w-[768px] tb:h-[375px] mb:w-[375px] mb:h-[375px]"
           src={`https://trebuddy-s3-bucket.s3.ap-northeast-2.amazonaws.com/${coverImage}`}
           alt={region}
           width={1200}
