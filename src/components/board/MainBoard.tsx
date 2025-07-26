@@ -20,8 +20,8 @@ export default function MainBoard({
     type === 'Main' ? get('feeds') : get('user/me/feeds?page=1&size=10');
   }, [get]);
 
-  if (isLoading)
-    return <div className="p-4 text-center">게시글 불러오는 중...</div>;
+  // if (isLoading)
+  //   return <div className="p-4 text-center">게시글 불러오는 중...</div>;
 
   // 데이터 없음 처리
   if (

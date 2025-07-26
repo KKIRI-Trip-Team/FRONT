@@ -32,13 +32,18 @@ export function AuthGuard({ children }: AuthGuardProps) {
   }, [isAuthenticated, isLoading, pathname, router]);
 
   // Show nothing while checking authentication
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        로딩 중...
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-screen">
+  //       <img
+  //         src="/icons/loading-spinner.gif"
+  //         alt="로딩1 AuthGuard"
+  //         width={160}
+  //         height={160}
+  //       />
+  //     </div>
+  //   );
+  // }
 
   // If not authenticated on protected route, return nothing (will redirect)
   if (

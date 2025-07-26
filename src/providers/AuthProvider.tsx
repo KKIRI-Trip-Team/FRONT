@@ -3,6 +3,8 @@ import { createContext, ReactNode, useContext, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { User } from '@/types/user';
 import { useRouter } from 'next/navigation';
+import LoadingSpinner from '@/public/icons/loading-spinner.gif';
+import Image from 'next/image';
 
 interface AuthContextType {
   user: User | null;
@@ -69,7 +71,12 @@ export function withAuth(Component: React.ComponentType<any>) {
     if (isLoading) {
       return (
         <div className="flex items-center justify-center h-screen">
-          로딩 중...
+          <img
+            src="/icons/loading-spinner.gif"
+            alt="로딩2 AuthProvider"
+            width={160}
+            height={160}
+          />
         </div>
       );
     }
